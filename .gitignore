@@ -103,5 +103,3 @@ docker-compose.override.yml
 # OUTILS LOCAUX (éditeurs, assistants)
 # Réglages propres à une machine : jamais committés
 # ============================================
-.claude/
-**/.claude/

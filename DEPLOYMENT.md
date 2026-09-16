@@ -1,4 +1,4 @@
-# AfroItalia — Deployment Guide
+# UbuntuHub — Deployment Guide
 
 This guide takes you from your local machine to a live website, step by step.
 No prior deployment experience is assumed.
@@ -8,9 +8,9 @@ No prior deployment experience is assumed.
 ```
    Visitor
       │
-      ├──► afroitalia.com ............ Vercel  (React, the public site)
+      ├──► ubuntuhub.com ............ Vercel  (React, the public site)
       │           │
-      │           └── API calls ──► api.afroitalia.com ... Railway (Node/Express)
+      │           └── API calls ──► api.ubuntuhub.com ... Railway (Node/Express)
       │                                        │
       │                                        └──► PostgreSQL (Railway)
 ```
@@ -47,7 +47,7 @@ No prior deployment experience is assumed.
 | **GitHub** | Hosts the code; both platforms connect to it | github.com |
 | **Railway** | Runs the API and the database | railway.app |
 | **Vercel** | Runs the React website | vercel.com |
-| **Brevo** | Sends emails (welcome, password reset) | brevo.com |
+| **Brevo** | Sends transactional emails | brevo.com |
 
 Sign up to Railway and Vercel **using your GitHub account** — it makes
 everything that follows much simpler.
@@ -58,7 +58,7 @@ If you do not own one yet, buy it from a registrar such as Namecheap, OVH or
 Gandi (roughly €10-15 per year for a `.com`).
 
 You can deploy **without a domain** at first: Vercel gives you a free address
-like `afro-italia.vercel.app`. You can attach the real domain later without
+like `ubuntuhub.vercel.app`. You can attach the real domain later without
 breaking anything.
 
 ### Check that everything runs locally
@@ -106,7 +106,7 @@ node -e "console.log(require('crypto').randomBytes(18).toString('base64url'))"
 ### 2.2 Make sure no secret reaches GitHub
 
 ```bash
-cd /path/to/afro-italia-v2
+cd /path/to/ubuntuhub
 git status
 git ls-files | grep -E "\.env$"     # must return NOTHING
 ```
@@ -172,7 +172,7 @@ git push
 1. Go to **railway.app** → **Login with GitHub**
 2. **New Project** → **Deploy PostgreSQL**
    → a database appears in your dashboard
-3. In the same project: **New** → **GitHub Repo** → pick `afro-italia-v2`
+3. In the same project: **New** → **GitHub Repo** → pick `ubuntuhub`
 
 ### 4.2 Point Railway at the right folder
 
@@ -193,8 +193,8 @@ In the API service → **Variables** tab → **New Variable** for each:
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | references the project database |
 | `JWT_SECRET` | your secret from step 2.1 | ⚠️ never reuse it elsewhere |
 | `JWT_EXPIRES_IN` | `7d` | session lifetime |
-| `CLIENT_URL` | `https://afroitalia.com,https://www.afroitalia.com` | see box below |
-| `EMAIL_FROM` | `AfroItalia <no-reply@afroitalia.com>` | |
+| `CLIENT_URL` | `https://ubuntuhub.com,https://www.ubuntuhub.com` | see box below |
+| `EMAIL_FROM` | `UbuntuHub <no-reply@ubuntuhub.com>` | |
 | `SMTP_HOST` | `smtp-relay.brevo.com` | step 8 |
 | `SMTP_PORT` | `587` | |
 | `SMTP_USER` | provided by Brevo | |
@@ -206,7 +206,7 @@ In the API service → **Variables** tab → **New Variable** for each:
 > without `www`. Miss one and the site will load but no data will appear.
 >
 > Until you have a domain, use the Vercel address:
-> `https://afro-italia.vercel.app`
+> `https://ubuntuhub.vercel.app`
 
 **Do not set `PORT`** — Railway injects it automatically.
 
@@ -218,7 +218,7 @@ Railway redeploys automatically after every `git push`. Watch the
 ```
 ✅ Configuration verified
 ✅ Connected to PostgreSQL via Prisma
-🚀 AfroItalia API Server
+🚀 UbuntuHub API Server
 🚀 Environment: production
 ```
 
@@ -228,7 +228,7 @@ variable causing the problem.
 ### 4.5 Expose the API
 
 **Settings** → **Networking** → **Generate Domain**.
-You get an address like `afro-italia-production.up.railway.app`.
+You get an address like `ubuntuhub-production.up.railway.app`.
 
 Test it immediately:
 
@@ -238,7 +238,7 @@ curl https://YOUR-API.up.railway.app/health
 
 Expected response:
 ```json
-{"success":true,"message":"AfroItalia API is running","environment":"production"}
+{"success":true,"message":"UbuntuHub API is running","environment":"production"}
 ```
 
 ---
@@ -282,7 +282,7 @@ curl "https://YOUR-API.up.railway.app/api/meta/cities" | head -c 300
 ### 6.1 Import the project
 
 1. **vercel.com** → **Add New** → **Project**
-2. Select the `afro-italia-v2` repository
+2. Select the `ubuntuhub` repository
 3. **Root Directory** → click **Edit** → choose `client`
 4. Framework Preset: **Create React App** (detected automatically)
 
@@ -320,8 +320,8 @@ Variables are baked in at build time.
 ### 7.1 On Vercel
 
 1. Project → **Settings** → **Domains** → **Add**
-2. Enter `afroitalia.com` and confirm
-3. Add `www.afroitalia.com` too (Vercel will offer a redirect)
+2. Enter `ubuntuhub.com` and confirm
+3. Add `www.ubuntuhub.com` too (Vercel will offer a redirect)
 
 Vercel displays the DNS records to create.
 
@@ -342,14 +342,14 @@ installs the HTTPS certificate automatically and for free.
 ### 7.3 A subdomain for the API (optional, but cleaner)
 
 In Railway: **Settings** → **Networking** → **Custom Domain** →
-`api.afroitalia.com`. Railway gives you a `CNAME` to create at your registrar.
+`api.ubuntuhub.com`. Railway gives you a `CNAME` to create at your registrar.
 
 ### 7.4 ⚠️ Update the variables
 
 Once the domain is live, **go back and change**:
 
-- **Railway** → `CLIENT_URL` = `https://afroitalia.com,https://www.afroitalia.com`
-- **Vercel** → `REACT_APP_API_URL` = `https://api.afroitalia.com/api` (if using a subdomain)
+- **Railway** → `CLIENT_URL` = `https://ubuntuhub.com,https://www.ubuntuhub.com`
+- **Vercel** → `REACT_APP_API_URL` = `https://api.ubuntuhub.com/api` (if using a subdomain)
 - **Then redeploy both.**
 
 Skipping this step is the number one cause of "the site loads but nothing
@@ -360,7 +360,7 @@ appears".
 ## 8. Configure emails
 
 Without SMTP, emails are not sent — they are only printed to the logs.
-Sign-ups will work, but nobody will receive a password reset link.
+Sign-ups will work, but nobody will receive a notification.
 
 **Brevo** offers 300 emails per day for free, with no credit card required —
 more than enough to start.
@@ -375,7 +375,7 @@ SMTP_HOST = smtp-relay.brevo.com
 SMTP_PORT = 587
 SMTP_USER = (your Brevo login)
 SMTP_PASS = (the generated SMTP key)
-EMAIL_FROM = AfroItalia <no-reply@afroitalia.com>
+EMAIL_FROM = UbuntuHub <no-reply@ubuntuhub.com>
 ```
 
 5. **Authenticate your domain** in Brevo (add the SPF and DKIM records to your
@@ -426,8 +426,8 @@ declare the real domain, otherwise the "Continue with Google" button will fail.
 1. **console.cloud.google.com** → your project → **APIs & Services** → **Credentials**
 2. Click your **OAuth 2.0 Client ID**
 3. **Authorized JavaScript origins** → add:
-   - `https://afroitalia.com`
-   - `https://www.afroitalia.com`
+   - `https://ubuntuhub.com`
+   - `https://www.ubuntuhub.com`
 4. **Authorized redirect URIs** → add the same addresses
 5. Save (changes can take a few minutes to apply)
 
@@ -441,8 +441,8 @@ Go through this in order. Every item has caused an incident for someone.
 
 - [ ] `curl https://YOUR-API/health` → `success: true`
 - [ ] `curl https://YOUR-API/sitemap.xml` → lists your businesses
-- [ ] Open `https://afroitalia.com` → the home page loads
-- [ ] Open `https://afroitalia.com/activities` then **press F5**
+- [ ] Open `https://ubuntuhub.com` → the home page loads
+- [ ] Open `https://ubuntuhub.com/activities` then **press F5**
       → the page reloads (⚠️ a 404 means `vercel.json` was not applied)
 - [ ] Open a business page in a **private window** → visible without an account
 - [ ] Browser console (F12) → no red errors, in particular no `CORS`
@@ -468,12 +468,12 @@ Go through this in order. Every item has caused an incident for someone.
 
 ## 11. Search engine setup
 
-1. Edit `client/public/robots.txt`: replace `afroitalia.com` with your real
+1. Edit `client/public/robots.txt`: replace `ubuntuhub.com` with your real
    domain on the `Sitemap:` line, then redeploy
 2. Go to **search.google.com/search-console**
-3. **Add property** → **URL prefix** → `https://afroitalia.com`
+3. **Add property** → **URL prefix** → `https://ubuntuhub.com`
 4. Verify ownership (Vercel supports DNS-record verification)
-5. **Sitemaps** menu → submit: `https://api.afroitalia.com/sitemap.xml`
+5. **Sitemaps** menu → submit: `https://api.ubuntuhub.com/sitemap.xml`
 6. **URL Inspection** → test a business page → **Request indexing**
 
 > **Be patient:** Google takes anywhere from a few days to a few weeks to index
@@ -499,14 +499,14 @@ Let's be precise, because "free tiers" often hide limits.
 - **Hobby plan**: $5/month including $5 of usage. CPU, memory and network are
   billed beyond that
 
-👉 In practice, expect **$5-10/month** for AfroItalia at launch traffic.
+👉 In practice, expect **$5-10/month** for UbuntuHub at launch traffic.
 
 ### Vercel (the website)
 
 - **Hobby plan**: free, with 100 GB of transfer and 1 million requests per
   month — plenty for your early days
 - ⚠️ **Important**: the Hobby plan is restricted to **personal, non-commercial
-  use**. While AfroItalia is free and ad-free you are within the rules. The day
+  use**. While UbuntuHub is free and ad-free you are within the rules. The day
   you enable paid subscriptions or advertising, you need the **Pro plan at
   $20/month**
 
@@ -622,7 +622,7 @@ curl https://YOUR-API/health
 
 # Run checks before pushing
 cd server && npm test
-cd client && npm run check:i18n && npm run build
+cd client && npm run build
 
 # Create a migration (only after changing prisma/schema.prisma)
 cd server && npm run db:migrate
@@ -630,4 +630,4 @@ cd server && npm run db:migrate
 
 ---
 
-*AfroItalia — deployment guide, August 2026*
+*UbuntuHub — deployment guide, August 2026*

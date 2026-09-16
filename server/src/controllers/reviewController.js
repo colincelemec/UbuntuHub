@@ -8,14 +8,14 @@ const prisma = new PrismaClient();
 
 /**
  * POST /api/reviews
- * Créer un avis pour une entreprise
+ * Write a review for a business
  */
 exports.createReview = async (req, res) => {
   try {
     const { businessId, rating, comment, images } = req.body;
     const userId = req.user.id;
 
-    // Vérifier si l'entreprise existe
+    // Make sure the business exists
     const business = await prisma.business.findUnique({
       where: { id: businessId },
     });
@@ -27,7 +27,7 @@ exports.createReview = async (req, res) => {
       });
     }
 
-    // Vérifier si l'utilisateur a déjà laissé un avis
+    // Make sure the user has not already reviewed it
     const existingReview = await prisma.review.findUnique({
       where: {
         businessId_userId: {
@@ -44,7 +44,7 @@ exports.createReview = async (req, res) => {
       });
     }
 
-    // Créer l'avis
+    // Create the review
     const review = await prisma.review.create({
       data: {
         businessId,
@@ -65,7 +65,7 @@ exports.createReview = async (req, res) => {
       },
     });
 
-    // Mettre à jour les statistiques de l'entreprise
+    // Refresh the business statistics
     const reviews = await prisma.review.findMany({
       where: { businessId, isVisible: true },
       select: { rating: true },
@@ -99,7 +99,7 @@ exports.createReview = async (req, res) => {
 
 /**
  * GET /api/reviews/:businessId
- * Récupérer tous les avis d'une entreprise
+ * Fetch every review of a business
  */
 exports.getReviewsByBusiness = async (req, res) => {
   try {
@@ -108,7 +108,7 @@ exports.getReviewsByBusiness = async (req, res) => {
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Compter le total
+    // Count the total
     const total = await prisma.review.count({
       where: {
         businessId,
@@ -116,7 +116,7 @@ exports.getReviewsByBusiness = async (req, res) => {
       },
     });
 
-    // Récupérer les avis
+    // Fetch the reviews
     const reviews = await prisma.review.findMany({
       where: {
         businessId,
@@ -159,7 +159,7 @@ exports.getReviewsByBusiness = async (req, res) => {
 
 /**
  * PUT /api/reviews/:id
- * Modifier son propre avis
+ * Edit your own review
  */
 exports.updateReview = async (req, res) => {
   try {
@@ -167,7 +167,7 @@ exports.updateReview = async (req, res) => {
     const { rating, comment, images } = req.body;
     const userId = req.user.id;
 
-    // Trouver l'avis
+    // Load the review
     const review = await prisma.review.findUnique({
       where: { id },
     });
@@ -179,7 +179,7 @@ exports.updateReview = async (req, res) => {
       });
     }
 
-    // Vérifier que c'est bien l'auteur
+    // Only the author may proceed
     if (review.userId !== userId) {
       return res.status(403).json({
         success: false,
@@ -187,7 +187,7 @@ exports.updateReview = async (req, res) => {
       });
     }
 
-    // Mettre à jour l'avis
+    // Update the review
     const updateData = {};
     if (rating !== undefined) updateData.rating = rating;
     if (comment !== undefined) updateData.comment = comment;
@@ -208,7 +208,7 @@ exports.updateReview = async (req, res) => {
       },
     });
 
-    // Recalculer la moyenne si la note a changé
+    // Recompute the average when the rating changed
     if (rating !== undefined) {
       const reviews = await prisma.review.findMany({
         where: { businessId: review.businessId, isVisible: true },
@@ -243,14 +243,14 @@ exports.updateReview = async (req, res) => {
 
 /**
  * DELETE /api/reviews/:id
- * Supprimer son propre avis
+ * Delete your own review
  */
 exports.deleteReview = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
 
-    // Trouver l'avis
+    // Load the review
     const review = await prisma.review.findUnique({
       where: { id },
     });
@@ -262,7 +262,7 @@ exports.deleteReview = async (req, res) => {
       });
     }
 
-    // Vérifier que c'est bien l'auteur ou un admin
+    // Only the author or an admin may proceed
     if (review.userId !== userId && req.user.role !== 'ADMIN') {
       return res.status(403).json({
         success: false,
@@ -272,12 +272,12 @@ exports.deleteReview = async (req, res) => {
 
     const businessId = review.businessId;
 
-    // Supprimer l'avis
+    // Delete the review
     await prisma.review.delete({
       where: { id },
     });
 
-    // Mettre à jour les statistiques
+    // Refresh the statistics
     const reviews = await prisma.review.findMany({
       where: { businessId, isVisible: true },
       select: { rating: true },
@@ -311,7 +311,7 @@ exports.deleteReview = async (req, res) => {
 
 /**
  * POST /api/reviews/:id/response
- * Répondre à un avis (propriétaire de l'entreprise)
+ * Reply to a review (business owner)
  */
 exports.respondToReview = async (req, res) => {
   try {
@@ -319,7 +319,7 @@ exports.respondToReview = async (req, res) => {
     const { response } = req.body;
     const userId = req.user.id;
 
-    // Trouver l'avis avec l'entreprise
+    // Load the review together with its business
     const review = await prisma.review.findUnique({
       where: { id },
       include: {
@@ -334,7 +334,7 @@ exports.respondToReview = async (req, res) => {
       });
     }
 
-    // Vérifier que c'est le propriétaire de l'entreprise
+    // Only the business owner may reply
     if (review.business.ownerId !== userId) {
       return res.status(403).json({
         success: false,
@@ -342,7 +342,7 @@ exports.respondToReview = async (req, res) => {
       });
     }
 
-    // Mettre à jour la réponse
+    // Store the reply
     const updatedReview = await prisma.review.update({
       where: { id },
       data: {
@@ -378,7 +378,7 @@ exports.respondToReview = async (req, res) => {
 
 /**
  * PATCH /api/reviews/:id/report
- * Signaler un avis
+ * Report a review
  */
 exports.reportReview = async (req, res) => {
   try {
@@ -395,7 +395,7 @@ exports.reportReview = async (req, res) => {
       });
     }
 
-    // Marquer comme signalé
+    // Flag it as reported
     await prisma.review.update({
       where: { id },
       data: { isReported: true },
@@ -417,7 +417,7 @@ exports.reportReview = async (req, res) => {
 
 /**
  * PATCH /api/reviews/:id/visibility
- * Changer la visibilité d'un avis (ADMIN uniquement)
+ * Change a review's visibility (ADMIN only)
  */
 exports.toggleVisibility = async (req, res) => {
   try {
@@ -435,13 +435,13 @@ exports.toggleVisibility = async (req, res) => {
       });
     }
 
-    // Mettre à jour la visibilité
+    // Update the visibility
     const updatedReview = await prisma.review.update({
       where: { id },
       data: { isVisible },
     });
 
-    // Recalculer les statistiques
+    // Recompute the statistics
     const reviews = await prisma.review.findMany({
       where: { businessId: review.businessId, isVisible: true },
       select: { rating: true },

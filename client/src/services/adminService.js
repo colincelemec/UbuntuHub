@@ -1,55 +1,32 @@
 // ============================================
-// Service Admin - Appels API du pannello amministratore
-// Toutes les routes nécessitent un utilisateur ADMIN.
+// Admin service — API calls used by the administration panel
+// Every route requires an ADMIN user.
 // ============================================
 
 import api from './api';
 
 const adminService = {
-  // ── Statistiques globales ──
+  // ── Overall statistics ──
   getStats: () => api.get('/admin/stats'),
 
-  // ── Entreprises ──
+  // ── Businesses ──
   getBusinesses: (params = {}) => api.get('/admin/businesses', params),
   getPendingBusinesses: () => api.get('/admin/businesses/pending'),
 
   /**
-   * Vérifier (approuver) une entreprise → status VERIFIED
+   * Approve a business → status VERIFIED
    */
   verifyBusiness: (id) => api.patch(`/businesses/${id}/verify`),
 
   /**
-   * Changer le statut d'une entreprise
+   * Change a business status
    * status: 'PENDING' | 'VERIFIED' | 'REJECTED' | 'SUSPENDED'
    */
   updateBusinessStatus: (id, status) =>
     api.patch(`/businesses/${id}/status`, { status }),
 
-  // ── Utilisateurs ──
-  getUsers: (params = {}) => api.get('/admin/users', params),
-
-  /**
-   * Changer le rôle d'un utilisateur
-   * role: 'USER' | 'BUSINESS' | 'ADMIN'
-   */
-  updateUserRole: (id, role) =>
-    api.patch(`/admin/users/${id}/role`, { role }),
-
-  deleteUser: (id) => api.delete(`/admin/users/${id}`),
-
-  // ── Avis signalés (modération) ──
-  getReportedReviews: () => api.get('/admin/reviews/reported'),
-  deleteReview: (id) => api.delete(`/admin/reviews/${id}`),
-
-  // ── Revendications de fiches (« C'est mon activité ») ──
-  getClaims: (params = {}) => api.get('/admin/claims', params),
-
-  /**
-   * Approuver ou refuser une revendication
-   * status: 'APPROVED' | 'REJECTED'
-   */
-  reviewClaim: (id, status, adminNote) =>
-    api.patch(`/admin/claims/${id}`, { status, adminNote }),
+  // ── Users ──
+  getUsers: (params = {}) => api.get('/admin/users', params)
 };
 
 export default adminService;

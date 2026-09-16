@@ -1,5 +1,5 @@
 // ============================================
-// Routes: Meta (villes & catégories) — publiques
+// Routes: meta (cities & categories) — public
 // ============================================
 
 const express = require('express');

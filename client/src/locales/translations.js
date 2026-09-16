@@ -1,16 +1,9 @@
 // ============================================
-// Translations for AfroItalia Platform
+// Translations for UbuntuHub Platform
 // Languages: English (en), French (fr), Italian (it)
 // ============================================
 
 export const translations = {
-  // LEGAL PAGES
-  legal: {
-    back: { en: "Go back", fr: "Retour", it: "Indietro" },
-    backHome: { en: "Back to home", fr: "Retour à l'accueil", it: "Torna alla home" },
-    notFound: { en: "Document not found", fr: "Document introuvable", it: "Documento non trovato" }
-  },
-
   // LANDING PAGE
   landing: {
     hero: {
@@ -25,9 +18,9 @@ export const translations = {
         it: "Scopri e Sostieni gli Imprenditori Africani in Italia"
       },
       description: {
-        en: "AfroItalia catalogs all African diaspora businesses across Italy. Find restaurants, hair salons, services, and much more.",
-        fr: "AfroItalia recense toutes les entreprises de la diaspora africaine en Italie. Trouvez des restaurants, salons de coiffure, services et bien plus encore.",
-        it: "AfroItalia raccoglie tutte le attività della diaspora africana in Italia. Trova ristoranti, parrucchieri, servizi e molto altro."
+        en: "UbuntuHub catalogs all African diaspora businesses across Italy. Find restaurants, hair salons, services, and much more.",
+        fr: "UbuntuHub recense toutes les entreprises de la diaspora africaine en Italie. Trouvez des restaurants, salons de coiffure, services et bien plus encore.",
+        it: "UbuntuHub raccoglie tutte le attività della diaspora africana in Italia. Trova ristoranti, parrucchieri, servizi e molto altro."
       },
       ctaGetStarted: {
         en: "Get Started",
@@ -40,7 +33,7 @@ export const translations = {
         it: "Accedi"
       }
     },
-    // ── Recherche et activités directement sur l'accueil ──
+    // ── Search, straight from the home page ──
     search: {
       placeholder: {
         en: "Search a restaurant, hairdresser, shop…",
@@ -56,29 +49,6 @@ export const translations = {
         it: "Nessuna attività corrisponde alla tua ricerca"
       },
       seeAllResults: { en: "See all results for", fr: "Voir tous les résultats pour", it: "Vedi tutti i risultati per" }
-    },
-    featured: {
-      title: { en: "Discover these businesses", fr: "Découvrez ces activités", it: "Scopri queste attività" },
-      subtitle: {
-        en: "A glimpse of the community — no account needed",
-        fr: "Un aperçu de la communauté — aucun compte nécessaire",
-        it: "Uno sguardo sulla community — nessun account necessario"
-      },
-      seeAll: { en: "See all", fr: "Tout voir", it: "Vedi tutte" },
-      empty: {
-        en: "The directory is filling up. Come back soon!",
-        fr: "L'annuaire se remplit. Revenez bientôt !",
-        it: "La directory si sta riempiendo. Torna presto!"
-      }
-    },
-    browseCategories: {
-      title: { en: "Browse by category", fr: "Parcourir par catégorie", it: "Sfoglia per categoria" }
-    },
-    stats: {
-      cities: { en: "Cities covered", fr: "Villes couvertes", it: "Città coperte" },
-      categories: { en: "Categories", fr: "Catégories", it: "Categorie" },
-      languages: { en: "Languages", fr: "Langues", it: "Lingue" },
-      free: { en: "Free to join", fr: "Gratuit", it: "Gratis" }
     },
     mission: {
       title: {
@@ -131,38 +101,38 @@ export const translations = {
       },
       step1: {
         title: {
-          en: "Create Your Account",
-          fr: "Créez Votre Compte",
-          it: "Crea il Tuo Account"
+          en: "Explore Freely",
+          fr: "Explorez Librement",
+          it: "Esplora Liberamente"
         },
         description: {
-          en: "Sign up for free with a single account. No roles to choose — it takes less than 2 minutes.",
-          fr: "Inscrivez-vous gratuitement avec un compte unique. Aucun rôle à choisir — cela prend moins de 2 minutes.",
-          it: "Registrati gratuitamente con un unico account. Nessun ruolo da scegliere — ci vogliono meno di 2 minuti."
+          en: "Browse the whole directory without an account: search by city, category or name. No sign-up, no barrier.",
+          fr: "Parcourez tout l'annuaire sans compte : cherchez par ville, catégorie ou nom. Aucune inscription, aucune barrière.",
+          it: "Sfoglia tutto il catalogo senza account: cerca per città, categoria o nome. Nessuna registrazione, nessuna barriera."
         }
       },
       step2: {
         title: {
-          en: "Explore Businesses",
-          fr: "Explorez les Entreprises",
-          it: "Esplora le Attività"
+          en: "Discover a Business",
+          fr: "Découvrez une Activité",
+          it: "Scopri un'Attività"
         },
         description: {
-          en: "Browse our directory of African-owned businesses across Italy. Filter by location, category, and ratings.",
-          fr: "Parcourez notre répertoire d'entreprises africaines à travers l'Italie. Filtrez par lieu, catégorie et notes.",
-          it: "Sfoglia la nostra directory di attività di proprietà africana in tutta Italia. Filtra per posizione, categoria e valutazioni."
+          en: "Open any page: address on the map, opening hours, contact details and what other visitors have written.",
+          fr: "Ouvrez une fiche : adresse sur la carte, horaires, coordonnées et ce que les autres visiteurs en ont écrit.",
+          it: "Apri una scheda: indirizzo sulla mappa, orari, contatti e ciò che hanno scritto gli altri visitatori."
         }
       },
       step3: {
         title: {
-          en: "Connect & Add Your Service",
-          fr: "Connectez & Ajoutez Votre Service",
-          it: "Connetti & Aggiungi il Tuo Servizio"
+          en: "Create an Account to Contribute",
+          fr: "Créez un Compte pour Contribuer",
+          it: "Crea un Account per Contribuire"
         },
         description: {
-          en: "Leave reviews, save favorites, and publish your own business or service anytime from your personal space.",
-          fr: "Laissez des avis, enregistrez vos favoris et publiez votre propre activité ou service à tout moment depuis votre espace personnel.",
-          it: "Lascia recensioni, salva i preferiti e pubblica la tua attività o il tuo servizio in qualsiasi momento dal tuo spazio personale."
+          en: "An account is only needed to write a review, save favourites, or publish your own business.",
+          fr: "Le compte ne sert qu'à laisser un avis, enregistrer des favoris ou publier votre propre activité.",
+          it: "L'account serve solo per lasciare una recensione, salvare i preferiti o pubblicare la tua attività."
         }
       }
     },
@@ -316,72 +286,26 @@ export const translations = {
         }
       }
     },
-    testimonials: {
-      title: {
-        en: "What Our Community Says",
-        fr: "Ce Que Dit Notre Communauté",
-        it: "Cosa Dice la Nostra Comunità"
-      },
-      t1: {
-        text: {
-          en: "AfroItalia helped me discover amazing African restaurants in Milan I never knew existed. It's become my go-to platform!",
-          fr: "AfroItalia m'a permis de découvrir de superbes restaurants africains à Milan dont j'ignorais l'existence. C'est devenu ma plateforme préférée !",
-          it: "AfroItalia mi ha aiutato a scoprire fantastici ristoranti africani a Milano che non conoscevo. È diventata la mia piattaforma di riferimento!"
-        },
-        name: { en: "Amina K.", fr: "Amina K.", it: "Amina K." },
-        role: {
-          en: "Customer — Milano",
-          fr: "Cliente — Milano",
-          it: "Cliente — Milano"
-        }
-      },
-      t2: {
-        text: {
-          en: "Since joining AfroItalia, my hair salon's visibility has increased by 300%. The platform truly supports African businesses.",
-          fr: "Depuis mon inscription sur AfroItalia, la visibilité de mon salon de coiffure a augmenté de 300 %. La plateforme soutient vraiment les entreprises africaines.",
-          it: "Da quando sono su AfroItalia, la visibilità del mio salone è aumentata del 300%. La piattaforma sostiene davvero le attività africane."
-        },
-        name: { en: "Emmanuel O.", fr: "Emmanuel O.", it: "Emmanuel O." },
-        role: {
-          en: "Business Owner — Roma",
-          fr: "Propriétaire — Roma",
-          it: "Titolare — Roma"
-        }
-      },
-      t3: {
-        text: {
-          en: "Finally, a platform that celebrates our community! I've connected with so many entrepreneurs and customers through AfroItalia.",
-          fr: "Enfin une plateforme qui célèbre notre communauté ! J'ai rencontré tant d'entrepreneurs et de clients grâce à AfroItalia.",
-          it: "Finalmente una piattaforma che celebra la nostra comunità! Ho conosciuto tantissimi imprenditori e clienti grazie ad AfroItalia."
-        },
-        name: { en: "Fatou D.", fr: "Fatou D.", it: "Fatou D." },
-        role: {
-          en: "Business Owner — Torino",
-          fr: "Propriétaire — Torino",
-          it: "Titolare — Torino"
-        }
-      }
-    },
     finalCta: {
       title: {
-        en: "Ready to Join the Community?",
-        fr: "Prêt à Rejoindre la Communauté ?",
-        it: "Pronto a Unirti alla Comunità?"
+        en: "Find them, or make yourself findable",
+        fr: "Trouvez-les, ou faites-vous trouver",
+        it: "Trovali, o fatti trovare"
       },
       description: {
-        en: "Join thousands of community members and businesses on AfroItalia. Start your journey today!",
-        fr: "Rejoignez des milliers de membres et d'entreprises de la communauté sur AfroItalia. Commencez votre voyage aujourd'hui !",
-        it: "Unisciti a migliaia di membri della comunità e imprese su AfroItalia. Inizia il tuo viaggio oggi!"
+        en: "UbuntuHub grows city by city. Browse the directory, or put your own business on the map.",
+        fr: "UbuntuHub grandit ville après ville. Parcourez l'annuaire, ou placez votre activité sur la carte.",
+        it: "UbuntuHub cresce città dopo città. Sfoglia il catalogo, o metti la tua attività sulla mappa."
       },
-      signUpButton: {
-        en: "Sign Up Now",
-        fr: "S'inscrire Maintenant",
-        it: "Registrati Ora"
+      exploreButton: {
+        en: "Browse the directory",
+        fr: "Parcourir l'annuaire",
+        it: "Sfoglia il catalogo"
       },
-      signInButton: {
-        en: "Already a Member? Sign In",
-        fr: "Déjà Membre ? Se Connecter",
-        it: "Già Membro? Accedi"
+      publishButton: {
+        en: "Add my business",
+        fr: "Ajouter mon activité",
+        it: "Aggiungi la mia attività"
       }
     }
   },
@@ -394,9 +318,9 @@ export const translations = {
       it: "Bentornato"
     },
     subtitle: {
-      en: "Login to your AfroItalia account",
-      fr: "Connectez-vous à votre compte AfroItalia",
-      it: "Accedi al tuo account AfroItalia"
+      en: "Login to your UbuntuHub account",
+      fr: "Connectez-vous à votre compte UbuntuHub",
+      it: "Accedi al tuo account UbuntuHub"
     },
     emailLabel: {
       en: "Email",
@@ -467,57 +391,8 @@ export const translations = {
     }
   },
 
-  // FORGOT PASSWORD PAGE
-  forgotPwd: {
-    title: { en: "Forgot password", fr: "Mot de passe oublié", it: "Password dimenticata" },
-    subtitle: {
-      en: "Enter your email and we'll send you a reset link.",
-      fr: "Entrez votre email et nous vous enverrons un lien de réinitialisation.",
-      it: "Inserisci la tua email e ti invieremo un link per reimpostarla."
-    },
-    submit: { en: "Send reset link", fr: "Envoyer le lien", it: "Invia il link" },
-    sending: { en: "Sending…", fr: "Envoi…", it: "Invio…" },
-    sent: {
-      en: "If that email exists, a reset link has been sent. Check your inbox (and spam folder).",
-      fr: "Si cet email existe, un lien de réinitialisation a été envoyé. Vérifiez votre boîte de réception (et les spams).",
-      it: "Se questa email esiste, è stato inviato un link per reimpostare la password. Controlla la posta (anche lo spam)."
-    },
-    backToLogin: { en: "Back to login", fr: "Retour à la connexion", it: "Torna al login" },
-    errEmailRequired: { en: "Email is required", fr: "L'email est requis", it: "L'email è obbligatoria" },
-    errEmailInvalid: { en: "Email is invalid", fr: "L'email est invalide", it: "L'email non è valida" }
-  },
-
-  // RESET PASSWORD PAGE
-  resetPwd: {
-    title: { en: "Reset password", fr: "Réinitialiser le mot de passe", it: "Reimposta password" },
-    subtitle: {
-      en: "Choose a new password for your account.",
-      fr: "Choisissez un nouveau mot de passe pour votre compte.",
-      it: "Scegli una nuova password per il tuo account."
-    },
-    newPassword: { en: "New password", fr: "Nouveau mot de passe", it: "Nuova password" },
-    newPasswordPh: { en: "Enter a new password", fr: "Entrez un nouveau mot de passe", it: "Inserisci una nuova password" },
-    confirmPassword: { en: "Confirm password", fr: "Confirmez le mot de passe", it: "Conferma password" },
-    confirmPasswordPh: { en: "Re-enter the password", fr: "Saisissez à nouveau le mot de passe", it: "Reinserisci la password" },
-    submit: { en: "Reset password", fr: "Réinitialiser", it: "Reimposta" },
-    saving: { en: "Saving…", fr: "Enregistrement…", it: "Salvataggio…" },
-    success: {
-      en: "Your password has been reset. Redirecting to login…",
-      fr: "Votre mot de passe a été réinitialisé. Redirection vers la connexion…",
-      it: "La tua password è stata reimpostata. Reindirizzamento al login…"
-    },
-    goLogin: { en: "Go to login", fr: "Aller à la connexion", it: "Vai al login" },
-    invalidLink: {
-      en: "This reset link is invalid or has expired.",
-      fr: "Ce lien de réinitialisation est invalide ou a expiré.",
-      it: "Questo link di reimpostazione non è valido o è scaduto."
-    },
-    requestNew: { en: "Request a new link", fr: "Demander un nouveau lien", it: "Richiedi un nuovo link" },
-    errRequired: { en: "This field is required", fr: "Ce champ est requis", it: "Questo campo è obbligatorio" },
-    errTooShort: { en: "At least 6 characters", fr: "Au moins 6 caractères", it: "Almeno 6 caratteri" },
-    errNoMatch: { en: "Passwords do not match", fr: "Les mots de passe ne correspondent pas", it: "Le password non coincidono" }
-  },
-
+  
+  
   // REGISTER PAGE
   register: {
     title: {
@@ -526,9 +401,9 @@ export const translations = {
       it: "Crea Account"
     },
     subtitle: {
-      en: "Join the AfroItalia community",
-      fr: "Rejoignez la communauté AfroItalia",
-      it: "Unisciti alla comunità AfroItalia"
+      en: "Join the UbuntuHub community",
+      fr: "Rejoignez la communauté UbuntuHub",
+      it: "Unisciti alla comunità UbuntuHub"
     },
     nameLabel: {
       en: "Full Name",
@@ -686,31 +561,6 @@ export const translations = {
       fr: "Fonctionnalités",
       it: "Funzionalità"
     },
-    legal: {
-      en: "Legal",
-      fr: "Légal",
-      it: "Legale"
-    },
-    privacy: {
-      en: "Privacy Policy",
-      fr: "Politique de Confidentialité",
-      it: "Privacy"
-    },
-    terms: {
-      en: "Terms of Service",
-      fr: "Conditions d'Utilisation",
-      it: "Termini"
-    },
-    cookies: {
-      en: "Cookie Policy",
-      fr: "Politique des Cookies",
-      it: "Cookie"
-    },
-    gdpr: {
-      en: "GDPR Compliance",
-      fr: "Conformité RGPD",
-      it: "GDPR"
-    },
     contact: {
       en: "Contact",
       fr: "Contact",
@@ -763,8 +613,8 @@ export const translations = {
   },
 
   // ============================================
-  // APP — pagine autenticate (header, dashboard,
-  // attività, profilo). en / fr / it
+  // APP — authenticated pages (header, dashboard,
+  // businesses, profile). en / fr / it
   // ============================================
   app: {
     nav: {
@@ -774,9 +624,9 @@ export const translations = {
       logout: { en: "Logout", fr: "Déconnexion", it: "Esci" },
       logoutTitle: { en: "Log out?", fr: "Se déconnecter ?", it: "Vuoi uscire?" },
       logoutMessage: {
-        en: "Are you sure you want to log out of AfroItalia?",
-        fr: "Êtes-vous sûr de vouloir vous déconnecter d'AfroItalia ?",
-        it: "Sei sicuro di voler uscire da AfroItalia?"
+        en: "Are you sure you want to log out of UbuntuHub?",
+        fr: "Êtes-vous sûr de vouloir vous déconnecter d'UbuntuHub ?",
+        it: "Sei sicuro di voler uscire da UbuntuHub?"
       },
       logoutYes: { en: "Yes, log out", fr: "Oui, déconnexion", it: "Sì, esci" },
       logoutCancel: { en: "Cancel", fr: "Annuler", it: "Annulla" },
@@ -811,7 +661,7 @@ export const translations = {
       statCategories: { en: "Categories", fr: "Catégories", it: "Categorie" },
       recentNote: { en: "new businesses in the last 7 days", fr: "nouvelles activités ces 7 derniers jours", it: "nuove attività negli ultimi 7 giorni" },
 
-      // Toolbar / filtri
+      // Toolbar and filters
       searchBusiness: { en: "Search a business…", fr: "Rechercher une activité…", it: "Cerca un'attività…" },
       searchUser: { en: "Search a user…", fr: "Rechercher un utilisateur…", it: "Cerca un utente…" },
       statusAll: { en: "All", fr: "Toutes", it: "Tutte" },
@@ -820,7 +670,7 @@ export const translations = {
       status_REJECTED: { en: "Rejected", fr: "Rejetée", it: "Rifiutata" },
       status_SUSPENDED: { en: "Suspended", fr: "Suspendue", it: "Sospesa" },
 
-      // Colonne tabella
+      // Table columns
       colName: { en: "Name", fr: "Nom", it: "Nome" },
       colOwner: { en: "Owner", fr: "Propriétaire", it: "Proprietario" },
       colLocation: { en: "City", fr: "Ville", it: "Città" },
@@ -831,7 +681,7 @@ export const translations = {
       colRole: { en: "Role", fr: "Rôle", it: "Ruolo" },
       colActivity: { en: "Activity", fr: "Activité", it: "Attività" },
 
-      // Azioni
+      // Actions
       actVerify: { en: "Verify", fr: "Vérifier", it: "Verifica" },
       actReject: { en: "Reject", fr: "Rejeter", it: "Rifiuta" },
       actSuspend: { en: "Suspend", fr: "Suspendre", it: "Sospendi" },
@@ -840,18 +690,18 @@ export const translations = {
       actDeleteUser: { en: "Delete user", fr: "Supprimer l'utilisateur", it: "Elimina utente" },
       actDeleteReview: { en: "Delete review", fr: "Supprimer l'avis", it: "Elimina recensione" },
 
-      // Mini contatori utente
+      // Small per-user counters
       miniBiz: { en: "biz", fr: "act.", it: "att." },
       miniRev: { en: "rev.", fr: "avis", it: "rec." },
       you: { en: "you", fr: "vous", it: "tu" },
 
-      // Stati vuoti
+      // Empty states
       noBusinesses: { en: "No businesses found.", fr: "Aucune activité trouvée.", it: "Nessuna attività trovata." },
       noUsers: { en: "No users found.", fr: "Aucun utilisateur trouvé.", it: "Nessun utente trovato." },
       noReported: { en: "No reported reviews. All clear!", fr: "Aucun avis signalé. Tout est en ordre !", it: "Nessuna recensione segnalata. Tutto a posto!" },
       reported: { en: "Reported", fr: "Signalé", it: "Segnalato" },
 
-      // Dialog conferma
+      // Confirmation dialogs
       confirmDeleteUserTitle: { en: "Delete user?", fr: "Supprimer l'utilisateur ?", it: "Eliminare l'utente?" },
       confirmDeleteUserMsg: {
         en: "This permanently deletes the user and all their data:",
@@ -867,38 +717,15 @@ export const translations = {
       confirmYes: { en: "Yes, confirm", fr: "Oui, confirmer", it: "Sì, conferma" },
       confirmCancel: { en: "Cancel", fr: "Annuler", it: "Annulla" },
 
-      // ── Revendications de fiches ──
       toCheck: { en: "To review", fr: "À contrôler", it: "Da controllare" },
-      tabClaims: { en: "Claims", fr: "Revendications", it: "Richieste" },
-      noClaims: { en: "No claims yet.", fr: "Aucune revendication.", it: "Nessuna richiesta." },
-      claimRequester: { en: "Requester", fr: "Demandeur", it: "Richiedente" },
-      claimRole: { en: "Role", fr: "Rôle", it: "Ruolo" },
-      claimMessage: { en: "Message", fr: "Message", it: "Messaggio" },
-      claimApprove: { en: "Approve", fr: "Approuver", it: "Approva" },
-      claimReject: { en: "Reject", fr: "Refuser", it: "Rifiuta" },
-      claimApproveTitle: { en: "Approve this claim?", fr: "Approuver cette demande ?", it: "Approvare questa richiesta?" },
-      claimApproveMsg: {
-        en: "The business will be transferred to this user, who will be able to manage it.",
-        fr: "L'activité sera transférée à cet utilisateur, qui pourra la gérer.",
-        it: "L'attività sarà trasferita a questo utente, che potrà gestirla."
-      },
-      claimRejectTitle: { en: "Reject this claim?", fr: "Refuser cette demande ?", it: "Rifiutare questa richiesta?" },
-      claimRejectMsg: {
-        en: "The requester will be notified by email.",
-        fr: "Le demandeur sera notifié par email.",
-        it: "Il richiedente riceverà una notifica via email."
-      },
-      claimStatus_PENDING: { en: "Pending", fr: "En attente", it: "In attesa" },
-      claimStatus_APPROVED: { en: "Approved", fr: "Approuvée", it: "Approvata" },
-      claimStatus_REJECTED: { en: "Rejected", fr: "Refusée", it: "Rifiutata" }
     },
 
     addService: {
       title: { en: "Publish a service", fr: "Publier un service", it: "Pubblica un servizio" },
       subtitle: {
-        en: "Add your business or service to AfroItalia. It will be reviewed before going live.",
-        fr: "Ajoutez votre activité ou service à AfroItalia. Il sera vérifié avant publication.",
-        it: "Aggiungi la tua attività o servizio ad AfroItalia. Verrà verificato prima della pubblicazione."
+        en: "Add your business or service to UbuntuHub. It will be reviewed before going live.",
+        fr: "Ajoutez votre activité ou service à UbuntuHub. Il sera vérifié avant publication.",
+        it: "Aggiungi la tua attività o servizio ad UbuntuHub. Verrà verificato prima della pubblicazione."
       },
       editTitle: { en: "Edit service", fr: "Modifier le service", it: "Modifica servizio" },
       editSubtitle: {
@@ -921,7 +748,6 @@ export const translations = {
       city: { en: "City", fr: "Ville", it: "Città" },
       selectCity: { en: "Select a city", fr: "Choisir une ville", it: "Seleziona una città" },
       searchCity: { en: "Search a city…", fr: "Rechercher une ville…", it: "Cerca una città…" },
-      country: { en: "Country", fr: "Pays", it: "Paese" },
       imageHelp: {
         en: "Paste the direct link to an image (ending in .jpg, .png or .webp). A link to a web page, a Google Drive file or a photo on your computer will not work — upload it to a free host such as imgbb.com or postimages.org first.",
         fr: "Collez le lien direct vers une image (terminant par .jpg, .png ou .webp). Un lien vers une page web, un fichier Google Drive ou une photo de votre ordinateur ne fonctionnera pas — hébergez-la d'abord sur un service gratuit comme imgbb.com ou postimages.org.",
@@ -961,8 +787,6 @@ export const translations = {
         fr: "Ce lien ne mène pas à une image affichable",
         it: "Questo link non porta a un'immagine visualizzabile"
       },
-      searchCountry: { en: "Search a country…", fr: "Rechercher un pays…", it: "Cerca un paese…" },
-      noCountryFound: { en: "No country found", fr: "Aucun pays trouvé", it: "Nessun paese trovato" },
       errPhone: {
         en: "This phone number is not valid for the selected country.",
         fr: "Ce numéro n'est pas valide pour le pays sélectionné.",
@@ -1060,9 +884,9 @@ export const translations = {
       greeting: { en: "Hi", fr: "Salut", it: "Ciao" },
       welcome: { en: "welcome", fr: "bienvenue", it: "benvenuto" },
       subtitle: {
-        en: "Your personal space on AfroItalia: favorites, reviews and businesses, all in one place.",
-        fr: "Votre espace personnel sur AfroItalia : favoris, avis et activités, tout au même endroit.",
-        it: "Il tuo spazio personale su AfroItalia: preferiti, recensioni e attività, tutto in un posto."
+        en: "Your personal space on UbuntuHub: favorites, reviews and businesses, all in one place.",
+        fr: "Votre espace personnel sur UbuntuHub : favoris, avis et activités, tout au même endroit.",
+        it: "Il tuo spazio personale su UbuntuHub: preferiti, recensioni e attività, tutto in un posto."
       },
       explore: { en: "Explore businesses", fr: "Explorer les activités", it: "Esplora le attività" },
       addBusiness: { en: "+ Add your service", fr: "+ Ajoutez votre service", it: "+ Aggiungi il tuo servizio" },
@@ -1169,10 +993,9 @@ export const translations = {
       loading: { en: "Loading…", fr: "Chargement…", it: "Caricamento…" },
       page: { en: "Page", fr: "Page", it: "Pagina" },
       pageOf: { en: "of", fr: "sur", it: "di" },
-      premium: { en: "Premium", fr: "Premium", it: "Premium" },
       seeDetails: { en: "See details →", fr: "Voir les détails →", it: "Vedi dettagli →" },
 
-      // Etichette di accessibilità (lettori di schermo)
+      // Accessibility labels (screen readers)
       a11ySearch: { en: "Search a business", fr: "Rechercher une activité", it: "Cerca un'attività" },
       a11yClearSearch: { en: "Clear search", fr: "Effacer la recherche", it: "Cancella ricerca" },
       a11yScrollLeft: { en: "Scroll left", fr: "Défiler vers la gauche", it: "Scorri a sinistra" },
@@ -1187,14 +1010,14 @@ export const translations = {
       a11yMapView: { en: "Map view", fr: "Vue carte", it: "Vista mappa" }
     },
 
-    // ── Scheda attività (BusinessDetail) ──
+    // ── Business detail page ──
     businessDetail: {
       loading: { en: "Loading business…", fr: "Chargement de l'activité…", it: "Caricamento attività…" },
       notFound: { en: "Business not found.", fr: "Activité introuvable.", it: "Attività non trovata." },
       backToDirectory: { en: "← Back to directory", fr: "← Retour à l'annuaire", it: "← Torna alla directory" },
       directory: { en: "Directory", fr: "Annuaire", it: "Directory" },
 
-      // Azioni
+      // Actions
       call: { en: "Call", fr: "Appeler", it: "Chiama" },
       addFavorite: { en: "Add to favorites", fr: "Ajouter aux favoris", it: "Aggiungi ai preferiti" },
       removeFavorite: { en: "Remove from favorites", fr: "Retirer des favoris", it: "Rimuovi dai preferiti" },
@@ -1206,12 +1029,12 @@ export const translations = {
         it: "Impossibile aggiornare i preferiti. Riprova."
       },
 
-      // Schede
+      // Tabs
       tabInfo: { en: "Information", fr: "Informations", it: "Informazioni" },
       tabReviews: { en: "Reviews", fr: "Avis", it: "Recensioni" },
       tabMap: { en: "Map", fr: "Carte", it: "Mappa" },
 
-      // Informazioni
+      // Information
       about: { en: "About us", fr: "Qui sommes-nous", it: "Chi siamo" },
       followUs: { en: "Follow us", fr: "Suivez-nous", it: "Seguici" },
       websiteLink: { en: "Website", fr: "Site web", it: "Sito web" },
@@ -1219,7 +1042,7 @@ export const translations = {
       hours: { en: "Opening hours", fr: "Horaires", it: "Orari" },
       closed: { en: "Closed", fr: "Fermé", it: "Chiuso" },
 
-      // Giorni della settimana
+      // Days of the week
       monday: { en: "Monday", fr: "Lundi", it: "Lunedì" },
       tuesday: { en: "Tuesday", fr: "Mardi", it: "Martedì" },
       wednesday: { en: "Wednesday", fr: "Mercredi", it: "Mercoledì" },
@@ -1228,7 +1051,7 @@ export const translations = {
       saturday: { en: "Saturday", fr: "Samedi", it: "Sabato" },
       sunday: { en: "Sunday", fr: "Dimanche", it: "Domenica" },
 
-      // Recensioni
+      // Reviews
       reviewsCount: { en: "reviews", fr: "avis", it: "recensioni" },
       writeReview: { en: "Write a review", fr: "Écrire un avis", it: "Scrivi una recensione" },
       yourReview: { en: "Your review", fr: "Votre avis", it: "La tua recensione" },
@@ -1261,7 +1084,7 @@ export const translations = {
       loginToReview: { en: "to leave a review.", fr: "pour laisser un avis.", it: "per lasciare una recensione." },
       login: { en: "Sign in", fr: "Connectez-vous", it: "Accedi" },
 
-      // Mappa
+      // Map
       noCoords: {
         en: "GPS coordinates not available for this business.",
         fr: "Coordonnées GPS non disponibles pour cette activité.",
@@ -1269,7 +1092,7 @@ export const translations = {
       },
       outOf5: { en: "out of 5", fr: "sur 5", it: "su 5" },
 
-      // ── Condivisione ──
+      // ── Sharing ──
       share: { en: "Share", fr: "Partager", it: "Condividi" },
       shareWhatsapp: { en: "Share on WhatsApp", fr: "Partager sur WhatsApp", it: "Condividi su WhatsApp" },
       shareFacebook: { en: "Share on Facebook", fr: "Partager sur Facebook", it: "Condividi su Facebook" },
@@ -1277,57 +1100,13 @@ export const translations = {
       copyLink: { en: "Copy link", fr: "Copier le lien", it: "Copia link" },
       linkCopied: { en: "Link copied!", fr: "Lien copié !", it: "Link copiato!" },
       shareText: {
-        en: "Check out this business on AfroItalia:",
-        fr: "Découvrez cette activité sur AfroItalia :",
-        it: "Scopri questa attività su AfroItalia:"
+        en: "Check out this business on UbuntuHub:",
+        fr: "Découvrez cette activité sur UbuntuHub :",
+        it: "Scopri questa attività su UbuntuHub:"
       },
 
-      // ── Rivendicazione della scheda ──
-      claimTitle: { en: "Is this your business?", fr: "C'est votre activité ?", it: "È la tua attività?" },
-      claimButton: { en: "Claim this business", fr: "Revendiquer cette fiche", it: "Rivendica questa attività" },
-      claimIntro: {
-        en: "This listing was created from our community census. If you own or manage this business, request access to edit it, add photos and reply to reviews.",
-        fr: "Cette fiche a été créée à partir de notre recensement communautaire. Si vous êtes propriétaire ou gérant, demandez l'accès pour la modifier, ajouter des photos et répondre aux avis.",
-        it: "Questa scheda è stata creata dal nostro censimento della community. Se sei il proprietario o il gestore, richiedi l'accesso per modificarla, aggiungere foto e rispondere alle recensioni."
-      },
-      claimFullName: { en: "Full name", fr: "Nom complet", it: "Nome e cognome" },
-      claimRole: { en: "Your role", fr: "Votre rôle", it: "Il tuo ruolo" },
-      claimRolePh: { en: "Owner, manager…", fr: "Propriétaire, gérant…", it: "Proprietario, gestore…" },
-      claimPhone: { en: "Phone", fr: "Téléphone", it: "Telefono" },
-      claimEmail: { en: "Email", fr: "Email", it: "Email" },
-      claimMessage: { en: "Message (optional)", fr: "Message (facultatif)", it: "Messaggio (facoltativo)" },
-      claimMessagePh: {
-        en: "Anything that helps us verify you own this business…",
-        fr: "Tout élément nous aidant à vérifier que vous êtes le propriétaire…",
-        it: "Qualsiasi elemento che ci aiuti a verificare che sei il proprietario…"
-      },
-      claimSubmit: { en: "Send request", fr: "Envoyer la demande", it: "Invia richiesta" },
-      claimSending: { en: "Sending…", fr: "Envoi…", it: "Invio…" },
-      claimCancel: { en: "Cancel", fr: "Annuler", it: "Annulla" },
-      claimSuccess: {
-        en: "Request sent! Our team will verify it within 24-48 hours.",
-        fr: "Demande envoyée ! Notre équipe la vérifiera sous 24 à 48 heures.",
-        it: "Richiesta inviata! Il nostro team la verificherà entro 24-48 ore."
-      },
-      claimPending: {
-        en: "Your claim is being reviewed",
-        fr: "Votre demande est en cours d'examen",
-        it: "La tua richiesta è in fase di verifica"
-      },
-      claimApproved: { en: "You manage this business", fr: "Vous gérez cette activité", it: "Gestisci questa attività" },
-      claimRejected: {
-        en: "Your previous claim was not approved. You can submit a new one.",
-        fr: "Votre demande précédente n'a pas été approuvée. Vous pouvez en soumettre une nouvelle.",
-        it: "La tua richiesta precedente non è stata approvata. Puoi inviarne una nuova."
-      },
-      claimLoginFirst: {
-        en: "Sign in to claim this business",
-        fr: "Connectez-vous pour revendiquer cette fiche",
-        it: "Accedi per rivendicare questa attività"
-      },
-      claimRequired: { en: "This field is required", fr: "Ce champ est requis", it: "Campo obbligatorio" },
 
-      // ── Invitations à se connecter (sans quitter la page) ──
+      // ── Sign-in invitations (without leaving the page) ──
       signInToFavorite: {
         en: "Sign in to save this business to your favorites",
         fr: "Connectez-vous pour ajouter cette activité à vos favoris",

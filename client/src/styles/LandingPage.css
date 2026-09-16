@@ -1,11 +1,10 @@
 /* ============================================
-   LandingPage — stile GitHub.com
-   Dark #0d1117, glow, beam, Mona Sans
-   Palette adattata: oro/ambra + marrone AfroItalia
+   LandingPage — the public home page
+   Warm cream and terracotta palette
    ============================================ */
 
 .landing-page {
-  /* Token locali → derivati dai token globali (seguono il tema) */
+  /* Local tokens, derived from the global design tokens */
   --gh-bg: var(--color-bg);
   --gh-bg-soft: var(--color-surface);
   --gh-border: var(--color-border);
@@ -34,9 +33,9 @@
   z-index: 1;
 }
 
-/* ════════ EFFETTI SPECIALI ════════ */
+/* ════════ SPECIAL EFFECTS ════════ */
 
-/* Testo sfumato (come i titoli GitHub) */
+/* Gradient text */
 .gh-gradient-text {
   background: linear-gradient(95deg, var(--gh-grad-start) 30%, var(--gh-gold) 65%, var(--gh-ember) 100%);
   -webkit-background-clip: text;
@@ -44,7 +43,7 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Orbe luminose sfocate */
+/* Blurred glowing orbs */
 .gh-orb {
   position: absolute;
   border-radius: 50%;
@@ -74,7 +73,7 @@
   to   { opacity: 1; }
 }
 
-/* Beam verticale luminoso (sezione "come funziona") */
+/* Vertical glowing beam (the "how it works" section) */
 .gh-beam {
   position: absolute;
   left: 50%;
@@ -107,7 +106,7 @@
   .gh-reveal { opacity: 1; transform: none; transition: none; }
 }
 
-/* Eyebrow (le parole colorate sopra i titoli, alla GitHub) */
+/* Eyebrow: the small coloured words above a heading */
 .gh-eyebrow {
   display: inline-block;
   font-size: 0.95rem;
@@ -119,7 +118,7 @@
 .gh-eyebrow--gold { color: var(--gh-gold); }
 .gh-eyebrow--ember { color: var(--gh-ember); }
 
-/* Card scura in stile GitHub */
+/* Card surface */
 .gh-card {
   background: var(--gh-bg-soft);
   border: 1px solid var(--gh-border);
@@ -159,12 +158,15 @@
 }
 
 .hero-title {
-  font-family: var(--gh-font);
+  font-family: var(--font-title);
   font-size: clamp(2.6rem, 7vw, 4.6rem);
-  font-weight: 800;
-  font-stretch: 110%;
+  font-weight: 700;
+  /* Playfair has no width axis: the stretch meant for Mona Sans is
+     reset, and the tracking is loosened — a high-contrast serif
+     suffers from spacing that is too tight. */
+  font-stretch: normal;
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   margin: 0 0 24px;
 }
 
@@ -176,7 +178,7 @@
   margin: 0 auto 36px;
 }
 
-/* Bottoni GitHub-style */
+/* Buttons */
 .landing-page .btn {
   display: inline-flex;
   align-items: center;
@@ -230,7 +232,7 @@
   50% { transform: translate(-50%, 8px); }
 }
 
-/* ════════ SEZIONI ════════ */
+/* ════════ SECTIONS ════════ */
 .landing-page section {
   position: relative;
 }
@@ -238,8 +240,7 @@
 .mission-section,
 .how-it-works-section,
 .features-section,
-.benefits-section,
-.testimonials-section {
+.benefits-section {
   padding: 96px 0;
   border-top: 1px solid rgba(48, 54, 61, 0.6);
 }
@@ -250,16 +251,16 @@
 }
 
 .section-title {
-  font-family: var(--gh-font);
+  font-family: var(--font-title);
   font-size: clamp(1.8rem, 4vw, 2.6rem);
-  font-weight: 800;
-  font-stretch: 105%;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-stretch: normal;
+  letter-spacing: -0.005em;
   color: var(--gh-text-bright);
   margin: 0;
 }
 
-/* ── Missione ── */
+/* ── Mission ── */
 .mission-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -281,7 +282,7 @@
   margin: 0;
 }
 
-/* ── Come funziona (con beam) ── */
+/* ── How it works (with the beam) ── */
 .how-it-works-section { overflow: hidden; }
 
 .steps-container {
@@ -322,7 +323,7 @@
   margin: 0;
 }
 
-/* ── Funzionalità ── */
+/* ── Features ── */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -358,7 +359,7 @@
   font-size: 0.95rem;
 }
 
-/* ── Vantaggi ── */
+/* ── Benefits ── */
 .benefits-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -397,44 +398,9 @@
   margin-top: 3px;
 }
 
-/* ── Testimonianze ── */
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 22px;
-}
+/* ── Testimonials ── */
 
-.testimonial-card { padding: 28px; }
-
-.testimonial-quote {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 0.6;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, var(--gh-gold), var(--gh-ember));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.testimonial-text {
-  color: var(--gh-text);
-  line-height: 1.65;
-  font-size: 0.97rem;
-  margin: 0 0 20px;
-}
-
-.testimonial-author strong {
-  display: block;
-  color: var(--gh-text-bright);
-}
-
-.testimonial-author span {
-  color: var(--gh-muted);
-  font-size: 0.85rem;
-}
-
-/* ── CTA finale ── */
+/* ── Final call to action ── */
 .final-cta-section {
   position: relative;
   padding: 120px 0;
@@ -468,62 +434,8 @@
 }
 
 /* ════════ STATS BAND ════════ */
-.stats-band {
-  position: relative;
-  z-index: 2;
-  padding: 0 0 8px;
-  margin-top: -32px;
-}
 
-.stats-band__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  background: var(--gh-bg-soft);
-  border: 1px solid var(--gh-border);
-  border-radius: 16px;
-  padding: 28px 24px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 6px;
-}
-
-.stat-item__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(232, 163, 61, 0.12);
-  border: 1px solid rgba(232, 163, 61, 0.3);
-  color: var(--gh-gold);
-  margin-bottom: 4px;
-  transition: transform 0.25s ease;
-}
-
-.stat-item:hover .stat-item__icon { transform: translateY(-3px) scale(1.05); }
-
-.stat-item__value {
-  font-family: var(--gh-font);
-  font-size: 1.9rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--gh-text-bright);
-}
-
-.stat-item__label {
-  font-size: 0.85rem;
-  color: var(--gh-muted);
-}
-
-/* Icona feature: micro-animazione all'hover della card */
+/* Feature icon: subtle animation when the card is hovered */
 .feature-icon,
 .feature-card .feature-icon {
   transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
@@ -542,8 +454,7 @@
   .mission-section,
   .how-it-works-section,
   .features-section,
-  .benefits-section,
-  .testimonials-section { padding: 64px 0; }
+  .benefits-section { padding: 64px 0; }
 
   .gh-beam { display: none; }
 
@@ -551,60 +462,45 @@
 
   .final-cta-section { padding: 80px 0; }
 
-  /* Stats band: 2 colonne su mobile */
-  .stats-band { margin-top: -16px; }
-  .stats-band__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px 12px;
-    padding: 24px 16px;
-  }
-  .stat-item__value { font-size: 1.6rem; }
-}
-
-@media (max-width: 380px) {
-  .stats-band__grid { grid-template-columns: repeat(2, 1fr); }
-  .stat-item__label { font-size: 0.78rem; }
+  /* Stats band: two columns on mobile */
 }
 
 
-/* ════════ LATO CHIARO ════════ */
-[data-theme='light'] .landing-page {
+/* ════════ LIGHT SURFACES ════════ */
+.landing-page {
   --gh-grid: rgba(139, 69, 19, 0.07);
   --gh-grad-start: #2d2118;
 }
 
-/* Orbe più tenui sul chiaro */
-[data-theme='light'] .gh-orb { opacity: 0.3; }
+/* Softer orbs on the light background */
+.gh-orb { opacity: 0.3; }
 
-/* Stats band: ombra più tenue sul chiaro */
-[data-theme='light'] .stats-band__grid {
-  box-shadow: 0 12px 36px rgba(45, 33, 24, 0.10);
-}
+/* Stats band: softer shadow on the light background */
 
-/* Card hover: ombra leggera invece del bagliore scuro */
-[data-theme='light'] .gh-card:hover {
+/* Card hover: a light shadow instead of the dark glow */
+.gh-card:hover {
   box-shadow: 0 0 0 1px rgba(139, 69, 19, 0.2),
               0 16px 40px rgba(45, 33, 24, 0.12);
   border-color: rgba(139, 69, 19, 0.45);
 }
 
-/* Bottone secondario leggibile sul chiaro */
-[data-theme='light'] .landing-page .btn-secondary {
+/* Secondary button, legible on the light background */
+.landing-page .btn-secondary {
   color: var(--color-text);
   border-color: var(--color-border);
 }
 
-[data-theme='light'] .landing-page .btn-secondary:hover {
+.landing-page .btn-secondary:hover {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
 }
 
 /* ============================================
-   ACCUEIL — recherche et activités visibles
-   dès l'entrée, sans compte
+   HOME — search visible from the very first screen,
+   with no account required
    ============================================ */
 
-/* ── Barre de recherche du hero ── */
+/* ── Hero search bar ── */
 .hero-search {
   display: flex;
   align-items: center;
@@ -668,154 +564,11 @@
 
 .hero-browse:hover { color: var(--gh-gold); }
 
-/* ── Catégories ── */
-.home-cats { padding: 56px 0 16px; }
+/* ── Categories ── */
 
-.home-cats__title {
-  font-family: var(--gh-font);
-  font-size: 1.15rem;
-  color: var(--gh-muted);
-  text-align: center;
-  font-weight: 600;
-  margin: 0 0 24px;
-}
-
-.home-cats__grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
-}
-
-.home-cat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 22px 12px;
-  background: var(--gh-bg-soft);
-  border: 1px solid var(--gh-border);
-  border-radius: 14px;
-  color: var(--gh-text);
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 600;
-  text-align: center;
-  transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-}
-
-.home-cat svg { color: var(--gh-gold); }
-
-.home-cat:hover {
-  transform: translateY(-4px);
-  border-color: var(--gh-gold);
-  color: var(--gh-text-bright);
-}
-
-/* ── Activités en vedette ── */
-.home-featured { padding: 48px 0 72px; }
-
-.home-featured__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 26px;
-}
-
-.home-featured__head h2 {
-  font-family: var(--gh-font);
-  font-size: 1.7rem;
-  color: var(--gh-text-bright);
-  margin: 0 0 6px;
-}
-
-.home-featured__head p { margin: 0; color: var(--gh-muted); font-size: 0.95rem; }
-
-.home-featured__all {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--gh-gold);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  white-space: nowrap;
-}
-
-.home-featured__all:hover { text-decoration: underline; }
-
-.home-featured__empty {
-  text-align: center;
-  color: var(--gh-muted);
-  padding: 40px 0;
-}
-
-.home-featured__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.home-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--gh-bg-soft);
-  border: 1px solid var(--gh-border);
-  border-radius: 14px;
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.home-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(232, 163, 61, 0.6);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-}
-
-.home-card__media {
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(232, 163, 61, 0.08);
-  overflow: hidden;
-}
-
-.home-card__media img { width: 100%; height: 100%; object-fit: cover; }
-.home-card__fallback { color: var(--gh-gold); opacity: 0.55; }
-
-.home-card__body { padding: 16px 18px 18px; }
-
-.home-card__body h3 {
-  margin: 0 0 5px;
-  font-size: 1.02rem;
-  color: var(--gh-text-bright);
-}
-
-.home-card__meta {
-  margin: 0 0 10px;
-  font-size: 0.86rem;
-  color: var(--gh-muted);
-}
-
-.home-card__rating {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.86rem;
-  color: var(--gh-text);
-}
-
-.home-card__rating svg { color: var(--gh-gold); }
-.home-card__count { color: var(--gh-muted); }
+/* ── Featured businesses ── */
 
 /* ── Responsive ── */
-@media (max-width: 900px) {
-  .home-cats__grid { grid-template-columns: repeat(3, 1fr); }
-}
 
 @media (max-width: 760px) {
   .hero-search {
@@ -826,79 +579,65 @@
   .hero-search input { flex: 1 1 100%; padding: 6px 8px; }
   .hero-search__btn { flex: 1 1 100%; }
   .hero-search__icon { display: none; }
-
-  .home-cats { padding-top: 40px; }
-  .home-featured { padding-bottom: 48px; }
-  .home-featured__head h2 { font-size: 1.4rem; }
-}
-
-@media (max-width: 420px) {
-  .home-cats__grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ============================================
-   REFONTE CLAIRE ET CHALEUREUSE
-   Le thème clair est désormais le défaut : on remplace
-   l'esthétique « sombre et technique » (étoiles, grille,
-   faisceau, orbes contrastées) par une lumière douce et
-   des formes organiques. On privilégie l'air et l'ombre
-   portée plutôt que la bordure.
+   LIGHT AND WARM REDESIGN
+   The "dark and technical" look (stars, grid, beam, high
+   contrast orbs) gives way to soft light and organic shapes.
+   Air and drop shadows are preferred over hard borders.
    ============================================ */
 
-[data-theme='light'] .landing-page {
+.landing-page {
   --gh-grad-start: #33261c;
 }
 
-/* ── Le hero respire, plus de grille technique ── */
-[data-theme='light'] .hero-section {
+/* ── The hero breathes: no more technical grid ── */
+.hero-section {
   background:
     radial-gradient(1100px 520px at 50% -10%, #fdf1e9 0%, transparent 70%),
     radial-gradient(760px 420px at 88% 20%, rgba(224, 147, 47, 0.16) 0%, transparent 65%),
     radial-gradient(680px 420px at 10% 75%, rgba(180, 85, 45, 0.10) 0%, transparent 65%),
     var(--color-bg);
-  min-height: 82vh;                  /* moins haut : le contenu vient plus vite */
+  min-height: 82vh;                  /* shorter: the content arrives sooner */
   padding: 116px 24px 72px;
 }
 
-/* Orbes : très diffuses, elles deviennent une simple lumière colorée */
-[data-theme='light'] .gh-orb {
+/* Orbs: very diffuse, they become plain coloured light */
+.gh-orb {
   filter: blur(130px);
   opacity: 0.30;
 }
-[data-theme='light'] .gh-orb--cta {
+.gh-orb--cta {
   background: radial-gradient(circle, rgba(224, 147, 47, 0.28), transparent 70%);
 }
 
-/* ── Titres : plus doux, moins « corporate tech » ── */
-[data-theme='light'] .hero-title {
-  letter-spacing: -0.025em;
+/* ── Headings: softer, less "corporate tech" ── */
+.hero-title {
+  letter-spacing: -0.01em;
   line-height: 1.12;
 }
 
-[data-theme='light'] .hero-description {
+.hero-description {
   color: #6f6055;
   font-size: clamp(1.08rem, 2vw, 1.28rem);
 }
 
-/* ── Cartes : ombre douce, pas de bordure dure ── */
-[data-theme='light'] .gh-card,
-[data-theme='light'] .home-card,
-[data-theme='light'] .home-cat {
+/* ── Cards: a soft shadow instead of a hard border ── */
+.gh-card {
   border-color: transparent;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
 
-[data-theme='light'] .gh-card:hover,
-[data-theme='light'] .home-card:hover,
-[data-theme='light'] .home-cat:hover {
+.gh-card:hover {
   border-color: transparent;
   box-shadow: var(--shadow);
   transform: translateY(-5px);
 }
 
-/* ── Recherche : élément le plus visible de la page ── */
-[data-theme='light'] .hero-search {
+/* ── Search: the most prominent element on the page ── */
+.hero-search {
   background: #ffffff;
   border-color: transparent;
   box-shadow: var(--shadow);
@@ -906,114 +645,89 @@
   padding: 9px 9px 9px 20px;
 }
 
-[data-theme='light'] .hero-search:focus-within {
+.hero-search:focus-within {
   box-shadow: 0 0 0 4px var(--color-primary-soft), var(--shadow-lg);
 }
 
-[data-theme='light'] .hero-search__btn {
+.hero-search__btn {
   background: var(--color-primary);
   color: #fff;
   border-radius: var(--radius-lg);
   padding: 13px 26px;
 }
 
-[data-theme='light'] .hero-search__btn:hover { background: var(--color-primary-dark); }
+.hero-search__btn:hover { background: var(--color-primary-dark); }
 
-/* ── Alternance de fonds : sépare les sections sans traits ── */
-[data-theme='light'] .home-cats,
-[data-theme='light'] .features-section,
-[data-theme='light'] .testimonials-section {
+/* ── Alternating backgrounds: separates sections without rules ── */
+.features-section {
   background: var(--color-surface-alt);
 }
 
-[data-theme='light'] .home-featured,
-[data-theme='light'] .mission-section,
-[data-theme='light'] .benefits-section,
-[data-theme='light'] .how-it-works-section {
+.mission-section,
+.benefits-section,
+.how-it-works-section {
   background: var(--color-bg);
 }
 
-/* ── Plus d'air entre les sections ── */
-[data-theme='light'] .mission-section,
-[data-theme='light'] .how-it-works-section,
-[data-theme='light'] .features-section,
-[data-theme='light'] .benefits-section,
-[data-theme='light'] .testimonials-section {
+/* ── More air between the sections ── */
+.mission-section,
+.how-it-works-section,
+.features-section,
+.benefits-section {
   padding: var(--space-section) 0;
 }
 
-[data-theme='light'] .home-cats { padding: 72px 0 64px; }
-[data-theme='light'] .home-featured { padding: 72px 0 88px; }
-
 /* ── Boutons ── */
-[data-theme='light'] .landing-page .btn-primary {
+.landing-page .btn-primary {
   background: var(--color-primary);
   color: #fff;
   box-shadow: 0 6px 20px rgba(180, 85, 45, 0.28);
 }
 
-[data-theme='light'] .landing-page .btn-primary:hover {
+.landing-page .btn-primary:hover {
   background: var(--color-primary-dark);
   box-shadow: 0 10px 28px rgba(180, 85, 45, 0.36);
 }
 
-/* ── Icônes de catégorie : pastille douce ── */
-[data-theme='light'] .home-cat {
-  background: #ffffff;
-  padding: 26px 12px;
-}
+/* ── Category icons: a soft disc ── */
 
-[data-theme='light'] .home-cat svg { color: var(--color-primary); }
-
-[data-theme='light'] .home-card__media {
-  background: linear-gradient(135deg, #fdf1e9, #f7f1ea);
-}
-
-[data-theme='light'] .home-card__fallback { color: var(--color-primary-light); }
-
-/* ── CTA final : bloc chaleureux plutôt que fond sombre ── */
-[data-theme='light'] .final-cta-section {
+/* ── Final call to action: a warm block instead of a dark one ── */
+.final-cta-section {
   background:
     radial-gradient(800px 400px at 50% 50%, #fdf1e9 0%, transparent 70%),
     var(--color-bg);
 }
 
-/* ── Stats : carte flottante ── */
-[data-theme='light'] .stats-band__grid {
-  border-color: transparent;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow);
-}
+/* ── Stats: a floating card ── */
 
 @media (max-width: 760px) {
-  [data-theme='light'] .hero-section { min-height: auto; padding: 96px 20px 56px; }
-  [data-theme='light'] .mission-section,
-  [data-theme='light'] .how-it-works-section,
-  [data-theme='light'] .features-section,
-  [data-theme='light'] .benefits-section,
-  [data-theme='light'] .testimonials-section { padding: var(--space-section-sm) 0; }
+  .hero-section { min-height: auto; padding: 96px 20px 56px; }
+  .mission-section,
+  .how-it-works-section,
+  .features-section,
+  .benefits-section { padding: var(--space-section-sm) 0; }
 }
 
 /* ============================================
-   HERO PHOTO PLEIN ÉCRAN
-   Une photo de la communauté occupe tout l'écran, un voile
-   sombre garantit la lisibilité, la typographie est massive.
-   L'humain d'abord, l'outil ensuite.
+   FULL-SCREEN PHOTO HERO
+   A photo of the community fills the screen, a dark scrim
+   guarantees legibility, and the type is deliberately large.
+   People first, tooling second.
 
-   ► POUR METTRE VOTRE PHOTO :
-     déposez-la dans client/public/ (ex. hero.jpg) puis
-     remplacez la valeur de --hero-image ci-dessous par :
+   ► TO ADD YOUR OWN PHOTO:
+     drop it into client/public/ (e.g. hero.jpg) then replace
+     the --hero-image value below with:
      url('/hero.jpg')
-     Sans photo, le dégradé chaleureux s'affiche.
+     Without a photo, the warm gradient is shown instead.
    ============================================ */
 
 .hero-section--photo {
-  --hero-image: none;              /* ← votre photo ici */
-  --hero-scrim: 0.58;              /* opacité du voile sombre */
+  --hero-image: none;              /* ← your photo goes here */
+  --hero-scrim: 0.58;              /* opacity of the dark scrim */
 
   position: relative;
-  /* Le hero passe au-dessus des sections suivantes : sans cela, la bande
-     de statistiques (z-index: 2) recouvrait la liste de suggestions. */
+  /* The hero sits above the following sections: without this, the stats
+     band (z-index: 2) used to cover the suggestions list. */
   z-index: 20;
   min-height: 88vh;
   display: flex;
@@ -1021,13 +735,13 @@
   justify-content: flex-start;
   text-align: left;
   padding: 140px 0 96px;
-  /* Surtout PAS overflow:hidden : la liste de suggestions dépasse
-     du hero et serait rognée. Le média est déjà borné par inset:0. */
+  /* Definitely NOT overflow:hidden: the suggestions list extends past
+     the hero and would be clipped. The media is already bounded by inset:0. */
   overflow: visible;
-  background: none;                /* neutralise la grille technique */
+  background: none;                /* cancels the technical grid background */
 }
 
-/* Image (ou dégradé de repli) */
+/* Image (or the fallback gradient) */
 .hero-section--photo .hero-media {
   position: absolute;
   inset: 0;
@@ -1036,11 +750,11 @@
   background-size: cover;
   background-position: center 30%;
   background-repeat: no-repeat;
-  /* Pas d'agrandissement : il débordait du cadre et obligeait à
-     rogner le hero, ce qui coupait la liste de suggestions. */
+  /* No scaling up: it overflowed the frame and forced the hero to be
+     clipped, which in turn cut off the suggestions list. */
 }
 
-/* Voile : sombre à gauche pour le texte, transparent à droite */
+/* Scrim: dark on the left for the text, transparent on the right */
 .hero-section--photo .hero-scrim {
   position: absolute;
   inset: 0;
@@ -1064,7 +778,7 @@
   text-align: left;
 }
 
-/* Surtitre discret */
+/* Discreet eyebrow */
 .hero-eyebrow {
   display: inline-block;
   padding: 7px 16px;
@@ -1079,12 +793,12 @@
   letter-spacing: 0.02em;
 }
 
-/* Titre massif, comme sur la référence */
+/* Massive title, as in the reference design */
 .hero-section--photo .hero-title {
   font-size: clamp(2.7rem, 6.4vw, 5.2rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.03;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.01em;
   color: #fff;
   max-width: 15ch;
   margin: 0 0 22px;
@@ -1100,9 +814,9 @@
   text-shadow: 0 1px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Recherche : pilule blanche, l'élément le plus contrasté ── */
+/* ── Search: a white pill, the highest-contrast element ── */
 .hero-section--photo .hero-search,
-[data-theme='light'] .hero-section--photo .hero-search {
+.hero-section--photo .hero-search {
   margin: 0 0 18px;
   max-width: 660px;
   background: #fff;
@@ -1115,14 +829,14 @@
 .hero-section--photo .hero-search input { color: #33261c; }
 
 .hero-section--photo .hero-search__btn,
-[data-theme='light'] .hero-section--photo .hero-search__btn {
+.hero-section--photo .hero-search__btn {
   border-radius: 999px;
   padding: 14px 30px;
   background: var(--color-primary);
   color: #fff;
 }
 
-/* ── Lien secondaire, en pilule claire ── */
+/* ── Secondary link, a light pill ── */
 .hero-section--photo .hero-browse {
   display: inline-flex;
   align-items: center;
@@ -1143,10 +857,10 @@
   transform: translateY(-2px);
 }
 
-/* Indicateur de défilement en blanc sur la photo */
+/* Scroll indicator, white over the photo */
 .hero-section--photo .hero-scroll-indicator { color: rgba(255, 255, 255, 0.7); }
 
-/* ── Mobile : le texte se recentre, le voile s'uniformise ── */
+/* ── Mobile: the text re-centres and the scrim becomes uniform ── */
 @media (max-width: 760px) {
   .hero-section--photo {
     min-height: 78vh;
@@ -1165,9 +879,9 @@
 }
 
 /* ============================================
-   SUGGESTIONS DE RECHERCHE (accueil)
-   Les activités correspondantes apparaissent dès la
-   deuxième lettre, sous la barre de recherche.
+   SEARCH SUGGESTIONS (home page)
+   Matching businesses appear from the second letter
+   onwards, right below the search bar.
    ============================================ */
 
 .hero-search-wrap {
@@ -1177,7 +891,7 @@
   z-index: 50;
 }
 
-/* La barre reprend sa place dans le conteneur */
+/* The bar returns to its place inside the container */
 .hero-section--photo .hero-search-wrap .hero-search { margin: 0; }
 
 .hero-suggest {
@@ -1186,8 +900,8 @@
   left: 0;
   right: 0;
   z-index: 60;
-  /* Si la liste est plus longue que l'écran, elle défile
-     au lieu de s'étendre indéfiniment. */
+  /* When the list is taller than the screen it scrolls instead
+     of growing indefinitely. */
   max-height: min(60vh, 440px);
   overflow-y: auto;
   background: #fff;
@@ -1265,7 +979,7 @@
 .hero-suggest__go { color: #b4552d; flex-shrink: 0; opacity: 0; transition: opacity 0.14s ease; }
 .hero-suggest__item.is-active .hero-suggest__go { opacity: 1; }
 
-/* Dernière ligne : basculer vers la page de résultats complète */
+/* Last row: jump to the full results page */
 .hero-suggest__all {
   display: block;
   width: 100%;

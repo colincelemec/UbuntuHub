@@ -1,7 +1,7 @@
 // ============================================
-// LanguageSelector — dropdown "Seleziona lingua"
-// Apri il menu, scegli la lingua dalla lista.
-// Accessibile: tastiera, Escape, click esterno.
+// LanguageSelector — the "choose a language" dropdown
+// Open the menu, pick a language from the list.
+// Accessible: keyboard, Escape, outside click.
 // ============================================
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -28,7 +28,7 @@ const LanguageSelector = () => {
 
   const current = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
 
-  // Chiudi al click esterno o con Escape
+  // Close on an outside click or with Escape
   useEffect(() => {
     if (!open) return;
     const onClick = (e) => {

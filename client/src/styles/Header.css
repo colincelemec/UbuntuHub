@@ -21,7 +21,7 @@
 }
 
 .header-logo h1 {
-  /* Aligne le logo et le nom sur la même ligne médiane */
+  /* Aligns the logo and the name on the same baseline */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -161,110 +161,9 @@
 }
 
 /* ============================================
-   Header scuro in stile GitHub (solo home "/")
-   ============================================ */
-.header-dark {
-  background: rgba(13, 17, 23, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: none;
-  border-bottom: 1px solid rgba(240, 246, 252, 0.1);
-}
-
-.header-dark .header-logo h1 {
-  color: #f0f6fc;
-}
-
-.header-dark .login-button {
-  background: transparent;
-  color: #f0f6fc;
-  border: 1px solid rgba(240, 246, 252, 0.35);
-}
-
-.header-dark .login-button:hover {
-  border-color: #f0f6fc;
-  background: rgba(240, 246, 252, 0.08);
-}
-
-.header-dark .register-button {
-  background: #f0f6fc;
-  color: #0d1117;
-  border: 1px solid #f0f6fc;
-}
-
-.header-dark .register-button:hover {
-  background: #d9dee3;
-}
-
-.header-dark .lang-trigger {
-  background: rgba(240, 246, 252, 0.06);
-  border: 1px solid rgba(240, 246, 252, 0.25);
-  color: #f0f6fc;
-}
-
-.header-dark .lang-trigger:hover {
-  border-color: #E8A33D;
-  color: #E8A33D;
-}
-
-.header-dark .mobile-menu-toggle,
-.header-dark .menu-icon {
-  color: #f0f6fc;
-}
-
-.header-dark .mobile-nav {
-  background: #0d1117;
-}
-
-.header-dark .mobile-nav .nav-link {
-  color: #e6edf3;
-}
-
-
-/* ════════ LATO CHIARO — header della home ════════ */
-[data-theme='light'] .header-dark {
-  background: rgba(250, 248, 245, 0.88);
-  border-bottom: 1px solid var(--color-border);
-}
-
-[data-theme='light'] .header-dark .header-logo h1 { color: var(--color-text); }
-
-[data-theme='light'] .header-dark .login-button {
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-}
-
-[data-theme='light'] .header-dark .login-button:hover {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-}
-
-[data-theme='light'] .header-dark .register-button {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  border-color: var(--color-primary);
-}
-
-[data-theme='light'] .header-dark .register-button:hover {
-  background: var(--color-primary-dark);
-}
-
-[data-theme='light'] .header-dark .lang-trigger {
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  color: var(--color-text);
-}
-
-[data-theme='light'] .header-dark .mobile-menu-toggle,
-[data-theme='light'] .header-dark .menu-icon { color: var(--color-text); }
-
-[data-theme='light'] .header-dark .mobile-nav { background: var(--color-bg); }
-[data-theme='light'] .header-dark .mobile-nav .nav-link { color: var(--color-text); }
-
-/* ============================================
-   EN-TÊTE TRANSPARENT SUR LE HERO PHOTO
-   Le menu flotte au-dessus de l'image : on gagne
-   toute la hauteur d'écran pour la photo.
+   TRANSPARENT HEADER OVER THE PHOTO HERO
+   The menu floats above the image, so the photo gets
+   the full height of the screen.
    ============================================ */
 .header-over-hero {
   position: absolute;
@@ -277,7 +176,7 @@
   box-shadow: none !important;
 }
 
-/* Textes en blanc, lisibles sur la photo */
+/* White text, legible over the photo */
 .header-over-hero .nav-link,
 .header-over-hero .header-logo h1,
 .header-over-hero .mobile-menu-toggle {
@@ -286,7 +185,7 @@
 
 .header-over-hero .nav-link:hover { color: rgba(255, 255, 255, 0.75); }
 
-/* Bouton d'inscription : pilule blanche, très visible */
+/* Sign-up button: a white pill, highly visible */
 .header-over-hero .register-button {
   background: #fff;
   color: #33261c;
@@ -301,7 +200,7 @@
   color: #fff;
 }
 
-/* Connexion : pilule translucide */
+/* Sign-in: a translucent pill */
 .header-over-hero .login-button {
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.28);
@@ -313,13 +212,14 @@
 
 .header-over-hero .login-button:hover { background: rgba(255, 255, 255, 0.24); }
 
-/* Bouton de thème en blanc, lisible sur la photo */
-.header-over-hero .theme-toggle {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.28);
+/* Language selector: a light pill, legible over the photo */
+.header-over-hero .lang-trigger {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
 }
 
-/* Menu mobile déployé : fond opaque pour rester lisible */
+/* Expanded mobile menu: an opaque background keeps it readable */
 .header-over-hero .mobile-nav {
   background: rgba(20, 12, 6, 0.96);
   backdrop-filter: blur(12px);
@@ -329,10 +229,9 @@
 .header-over-hero .mobile-nav .nav-link { color: #fff; }
 
 /* ============================================
-   LOGO À CÔTÉ DU NOM
-   Le logo est dessiné en foncé sur clair : sur le thème
-   sombre et sur la photo du hero, on lui pose une pastille
-   crème pour qu'il reste lisible.
+   LOGO NEXT TO THE NAME
+   The logo is drawn dark-on-light: over the photo hero it
+   sits on a cream disc so that it stays legible.
    ============================================ */
 .logo-img {
   height: 40px;
@@ -340,21 +239,22 @@
   object-fit: contain;
   flex-shrink: 0;
   border-radius: 50%;
-  /* Léger fond crème : le logo garde son contraste partout */
+  /* Light cream backdrop: the logo keeps its contrast everywhere */
   background: #fffef9;
+  /* Terracotta ring, like the circled monogram in the reference */
+  border: 1.5px solid var(--color-primary);
   padding: 3px;
   box-sizing: border-box;
 }
 
-/* Sur le thème clair, la pastille se fond dans la page :
-   une ombre très douce suffit à la détacher. */
-[data-theme='light'] .logo-img {
+/* On the light background the disc blends into the page:
+   a very soft shadow is enough to lift it. */
+.logo-img {
   box-shadow: 0 1px 3px rgba(51, 38, 28, .10);
 }
 
-/* Sur fond sombre et sur la photo du hero, la pastille assume
-   son rôle : elle isole le logo du fond. */
-[data-theme='dark'] .logo-img,
+/* Over the photo hero the disc earns its keep: it separates
+   the logo from the background. */
 .header-over-hero .logo-img {
   box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
 }

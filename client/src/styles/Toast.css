@@ -59,6 +59,6 @@
 }
 
 @media (max-width: 480px) {
-  /* Sopra il bottone flottante del chatbot per non sovrapporsi */
+  /* Sits above the bottom-right corner so nothing overlaps */
   .toast-stack { left: 12px; right: 12px; bottom: 84px; max-width: none; }
 }

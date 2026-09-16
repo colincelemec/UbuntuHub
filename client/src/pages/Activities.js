@@ -1,7 +1,7 @@
 // ============================================
-// Activities — Directory delle attività
-// Slideboard in evidenza, vista griglia/mappa,
-// icone SVG (niente emoji), ricerca con debounce
+// Activities — the business directory
+// Featured slideboard, grid and map views,
+// inline SVG icons (no emoji), debounced search
 // ============================================
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -18,7 +18,7 @@ import Icon from '../components/common/Icon';
 import SafeImage from '../components/common/SafeImage';
 import '../styles/Activities.css';
 
-// ── Fix icone Leaflet ──
+// ── Leaflet icon fix ──
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -28,7 +28,7 @@ L.Icon.Default.mergeOptions({
 
 const ITALY_CENTER = [42.5, 12.5];
 
-// Slug identici alle categorie del database (seed)
+// Slugs identical to the database categories (seed)
 const CATEGORIES = [
   { slug: 'all',        labelKey: 'app.activities.catAll',         icon: 'all' },
   { slug: 'restaurant', labelKey: 'app.activities.catRestaurants', icon: 'ristorante' },
@@ -39,7 +39,7 @@ const CATEGORIES = [
   { slug: 'service',    labelKey: 'app.activities.catServices',    icon: 'servizi' },
 ];
 
-// Le città arrivano dal database (/api/meta/cities): tutti i capoluoghi.
+// Cities come from the database (/api/meta/cities): every provincial capital.
 const ALL_CITIES = 'ALL';
 
 const SORTS = [
@@ -87,32 +87,32 @@ const Activities = () => {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ totalPages: 1, total: 0 });
 
-  // Filtres initialisés depuis l'URL : une recherche lancée depuis
-  // l'accueil (/activities?q=…) ou un raccourci de catégorie arrive ici.
+  // Filters are initialised from the URL: a search started on the home
+  // page (/activities?q=…) or a category shortcut lands here.
   const [searchParams] = useSearchParams();
   const initialQ = searchParams.get('q') || '';
   const initialCategory = searchParams.get('category') || 'all';
   const initialCity = searchParams.get('city') || ALL_CITIES;
 
   const [category, setCategory] = useState(initialCategory);
-  // `city` contiene lo slug della città (es. 'reggio-calabria') o ALL_CITIES
+  // `city` holds the city slug (e.g. 'reggio-calabria') or ALL_CITIES
   const [city, setCity] = useState(initialCity);
   const [cities, setCities] = useState([]);
   const [sort, setSort] = useState('rating');
   const [searchInput, setSearchInput] = useState(initialQ);
   const [search, setSearch] = useState(initialQ);
   const [view, setView] = useState('grid'); // 'grid' | 'map'
-  // Barre latérale : toujours visible sur grand écran,
-  // panneau coulissant sur mobile.
+  // Sidebar: always visible on large screens, a sliding panel
+  // on mobile.
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ── Ricerca server-side (insensibile alle maiuscole, su tutto il database) ──
+  // ── Server-side search (case-insensitive, across the whole database) ──
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSuggest, setShowSuggest] = useState(false);
   const [activeSuggest, setActiveSuggest] = useState(-1);
 
-  // ── Città dal database (tutti i capoluoghi di provincia) ──
+  // ── Cities from the database (every provincial capital) ──
   useEffect(() => {
     let active = true;
     (async () => {
@@ -126,13 +126,13 @@ const Activities = () => {
     return () => { active = false; };
   }, []);
 
-  // ── Debounce ricerca ──
+  // ── Search debounce ──
   useEffect(() => {
     const t = setTimeout(() => setSearch(searchInput.trim()), 300);
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  // ── Fetch suggerimenti + risultati dal server quando c'è una query ──
+  // ── Fetch suggestions and results from the server when a query exists ──
   useEffect(() => {
     let active = true;
     if (!search) {
@@ -156,14 +156,14 @@ const Activities = () => {
     return () => { active = false; };
   }, [search, category]);
 
-  // ── Fetch dal server ──
+  // ── Fetch from the server ──
   const fetchPage = useCallback(async (pg, append = false) => {
     append ? setLoadingMore(true) : setLoading(true);
     setError(null);
     try {
       const params = { page: pg, limit: PAGE_SIZE };
       if (category !== 'all') params.category = category;
-      if (city !== ALL_CITIES) params.city = city; // `city` è già lo slug
+      if (city !== ALL_CITIES) params.city = city; // `city` already holds the slug
 
       const res = await api.get('/businesses', params);
       const data = res.data || [];
@@ -180,9 +180,9 @@ const Activities = () => {
 
   useEffect(() => { fetchPage(1); }, [fetchPage]);
 
-  // ── Filtro + ordinamento ──
-  // Con una query: risultati dal server (insensibili alle maiuscole, su tutto il DB).
-  // Senza query: la pagina caricata con paginazione.
+  // ── Filtering and sorting ──
+  // With a query: results come from the server (case-insensitive, whole DB).
+  // Without a query: the paginated page already loaded.
   const visible = useMemo(() => {
     const list = search ? searchResults : businesses;
     const sorted = [...list];
@@ -192,11 +192,11 @@ const Activities = () => {
     return sorted;
   }, [businesses, searchResults, search, sort]);
 
-  // ── Suggerimenti per l'autocompletamento (primi risultati per nome) ──
+  // ── Autocomplete suggestions (best matches by name) ──
   const suggestions = useMemo(() => {
     if (!search) return [];
     const q = search.toLowerCase();
-    // priorità ai nomi che iniziano con la query, poi gli altri
+    // names starting with the query come first, then the rest
     const ranked = [...searchResults].sort((a, b) => {
       const an = (a.name || '').toLowerCase().startsWith(q) ? 0 : 1;
       const bn = (b.name || '').toLowerCase().startsWith(q) ? 0 : 1;
@@ -205,19 +205,16 @@ const Activities = () => {
     return ranked.slice(0, 6);
   }, [searchResults, search]);
 
-  // ── In evidenza per lo slideboard: premium prima, poi migliori ──
+  // ── Featured: real rating only, no purchased placement ──
   const featured = useMemo(() => {
     return [...businesses]
-      .sort((a, b) => {
-        const premium = (b.subscriptionTier === 'PREMIUM') - (a.subscriptionTier === 'PREMIUM');
-        return premium !== 0 ? premium : (b.averageRating || 0) - (a.averageRating || 0);
-      })
+      .sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
       .slice(0, 10);
   }, [businesses]);
 
   const mappable = useMemo(() => visible.filter(b => b.latitude && b.longitude), [visible]);
 
-  // Nome leggibile della città selezionata (lo stato contiene lo slug)
+  // Readable name of the selected city (state holds the slug)
   const cityName = useMemo(
     () => cities.find(c => c.slug === city)?.name || city,
     [cities, city]
@@ -238,14 +235,14 @@ const Activities = () => {
 
   const goTo = (slug) => navigate(`/businesses/${slug}`);
 
-  // ── Selezione di un suggerimento → vai alla scheda ──
+  // ── Picking a suggestion → open the listing ──
   const selectSuggestion = (b) => {
     setShowSuggest(false);
     setActiveSuggest(-1);
     goTo(b.slug);
   };
 
-  // ── Navigazione da tastiera nel dropdown ──
+  // ── Keyboard navigation inside the dropdown ──
   const onSearchKeyDown = (e) => {
     if (!showSuggest || suggestions.length === 0) return;
     if (e.key === 'ArrowDown') {
@@ -265,7 +262,7 @@ const Activities = () => {
     }
   };
 
-  // Nome categoria tradotto — implementazione condivisa (utils/categoryLabel)
+  // Translated category name — shared implementation (utils/categoryLabel)
   const catLabel = (b) => getCategoryLabel(b.category, language);
 
   return (
@@ -298,7 +295,7 @@ const Activities = () => {
               <button className="act-searchbar__clear" onClick={() => { setSearchInput(''); setShowSuggest(false); }} aria-label={t('app.activities.a11yClearSearch')}>✕</button>
             )}
 
-            {/* ── Dropdown suggerimenti ── */}
+            {/* ── Suggestions dropdown ── */}
             {showSuggest && searchInput && (
               <div className="act-suggest" id="act-suggest-list" role="listbox">
                 {searchLoading && suggestions.length === 0 ? (
@@ -328,7 +325,7 @@ const Activities = () => {
         </div>
       </header>
 
-      {/* ════════ SLIDEBOARD — In evidenza ════════ */}
+      {/* ════════ SLIDEBOARD — Featured ════════ */}
       {!loading && !error && featured.length > 0 && (
         <section className="act-board-section">
           <div className="act-container">
@@ -363,11 +360,6 @@ const Activities = () => {
                       loading="lazy"
                       fallback={<Icon name={CATEGORIES.find(c => c.slug === b.category?.slug)?.icon || 'store'} size={42} className="act-slide__fallback" />}
                     />
-                    {b.subscriptionTier === 'PREMIUM' && (
-                      <span className="act-badge act-badge--premium">
-                        <Icon name="star" size={11} /> {t('app.activities.premium')}
-                      </span>
-                    )}
                     <div className="act-slide__overlay">
                       <h3>{b.name}</h3>
                       <p>
@@ -386,10 +378,10 @@ const Activities = () => {
         </section>
       )}
 
-      {/* ════════ MISE EN PAGE : BARRE LATÉRALE + RÉSULTATS ════════ */}
+      {/* ════════ LAYOUT: SIDEBAR + RESULTS ════════ */}
       <div className="act-layout act-container">
 
-        {/* ── Bouton d'ouverture sur mobile ── */}
+        {/* ── Open button, mobile only ── */}
         <button
           className="act-sidebar-toggle"
           onClick={() => setSidebarOpen(true)}
@@ -400,12 +392,12 @@ const Activities = () => {
           {hasActiveFilters && <span className="act-sidebar-toggle__dot" aria-hidden="true" />}
         </button>
 
-        {/* Voile sombre derrière le panneau mobile */}
+        {/* Dark scrim behind the mobile panel */}
         {sidebarOpen && (
           <div className="act-sidebar-scrim" onClick={() => setSidebarOpen(false)} role="presentation" />
         )}
 
-        {/* ── Barre latérale ── */}
+        {/* ── Sidebar ── */}
         <aside className={`act-sidebar ${sidebarOpen ? 'is-open' : ''}`}>
           <div className="act-sidebar__head">
             <h2>{t('app.activities.filters')}</h2>
@@ -416,7 +408,7 @@ const Activities = () => {
             >✕</button>
           </div>
 
-          {/* Catégories */}
+          {/* Categories */}
           <nav className="act-catnav" aria-label={t('app.activities.a11yCategories')}>
             <span className="act-sidebar__label">{t('app.activities.a11yCategories')}</span>
             {CATEGORIES.map(c => (
@@ -433,7 +425,7 @@ const Activities = () => {
             ))}
           </nav>
 
-          {/* Ville */}
+          {/* City */}
           <div className="act-sidebar__group">
             <label className="act-sidebar__label" htmlFor="act-city">
               {t('app.activities.a11yFilterCity')}
@@ -449,7 +441,7 @@ const Activities = () => {
             </select>
           </div>
 
-          {/* Tri */}
+          {/* Sorting */}
           <div className="act-sidebar__group">
             <label className="act-sidebar__label" htmlFor="act-sort">
               {t('app.activities.a11ySortBy')}
@@ -471,7 +463,7 @@ const Activities = () => {
           )}
         </aside>
 
-      {/* ════════ RISULTATI ════════ */}
+      {/* ════════ RESULTS ════════ */}
         <main className="act-results">
 
         <div className="act-results__bar">
@@ -519,7 +511,7 @@ const Activities = () => {
           </div>
         ) : view === 'map' ? (
 
-          /* ──────── VISTA MAPPA ──────── */
+          /* ──────── MAP VIEW ──────── */
           <div className="act-map">
             <MapContainer center={ITALY_CENTER} zoom={6} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
               <TileLayer
@@ -548,10 +540,10 @@ const Activities = () => {
           </div>
         ) : (
 
-          /* ──────── VUE GRILLE ────────
-             Les activités se suivent verticalement : à chaque « charger
-             plus », les nouvelles s'ajoutent en dessous. Un carrousel
-             horizontal masquait les résultats déjà chargés. */
+          /* ──────── GRID VIEW ────────
+             Businesses stack vertically: every "load more" appends the
+             new ones underneath. A horizontal carousel used to hide the
+             results that had already been loaded. */
           <>
             <div className="act-grid">
               {visible.map(b => (
@@ -570,11 +562,6 @@ const Activities = () => {
                       loading="lazy"
                       fallback={<Icon name={CATEGORIES.find(c => c.slug === b.category?.slug)?.icon || 'store'} size={46} className="act-card__fallback" />}
                     />
-                    {b.subscriptionTier === 'PREMIUM' && (
-                      <span className="act-badge act-badge--premium">
-                        <Icon name="star" size={11} /> {t('app.activities.premium')}
-                      </span>
-                    )}
                   </div>
 
                   <div className="act-card__body">

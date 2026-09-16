@@ -9,13 +9,13 @@ const { protect } = require('../middleware/auth');
 
 /**
  * GET /api/uploads/status
- * Le formulaire sait s'il peut proposer l'envoi de fichiers
+ * Lets the form know whether file upload can be offered
  */
 router.get('/status', uploadController.getUploadStatus);
 
 /**
  * GET /api/uploads/signature
- * Signature à usage unique pour un envoi direct vers Cloudinary
+ * One-time signature for a direct upload to Cloudinary
  */
 router.get('/signature', protect, uploadController.getUploadSignature);
 

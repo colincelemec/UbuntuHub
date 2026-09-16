@@ -1,23 +1,23 @@
 // ============================================
-// usePageMeta — titre et métadonnées par page
+// usePageMeta — per-page title and metadata
 //
-// L'application est une SPA : sans cela, toutes les pages partagent
-// le même <title> et la même description. Résultat : Google affiche
-// le même libellé partout et un lien partagé sur WhatsApp montre
-// « AfroItalia » au lieu du nom de l'activité.
+// The application is a SPA: without this, every page would share the
+// same <title> and description. As a result, search engines would show
+// the same label everywhere and a link shared on WhatsApp would read
+// "UbuntuHub" instead of the business name.
 //
-// Note : les robots des réseaux sociaux (WhatsApp, Facebook) ne lisent
-// pas le JavaScript. Ce hook corrige l'affichage dans le navigateur et
-// pour Google ; pour des aperçus parfaits au partage il faudra du
-// prerendering côté serveur.
+// Note: social network crawlers (WhatsApp, Facebook) do not run
+// JavaScript. This hook fixes what the browser and search engines see;
+// flawless share previews would require server-side prerendering.
+//
 // ============================================
 
 import { useEffect } from 'react';
 
-const SITE_NAME = 'AfroItalia';
-const DEFAULT_IMAGE = '/logo-afroitalia.png';
+const SITE_NAME = 'UbuntuHub';
+const DEFAULT_IMAGE = '/logo-ubuntuhub.png';
 
-/** Crée ou met à jour une balise <meta> */
+/** Creates or updates a <meta> tag */
 function setMeta(attr, key, content) {
   if (!content) return;
   let el = document.head.querySelector(`meta[${attr}="${key}"]`);
@@ -29,7 +29,7 @@ function setMeta(attr, key, content) {
   el.setAttribute('content', content);
 }
 
-/** Crée ou met à jour <link rel="canonical"> */
+/** Creates or updates <link rel="canonical"> */
 function setCanonical(url) {
   if (!url) return;
   let el = document.head.querySelector('link[rel="canonical"]');
@@ -43,10 +43,10 @@ function setCanonical(url) {
 
 /**
  * @param {Object}  meta
- * @param {string}  meta.title        Titre de la page (sans le nom du site)
- * @param {string}  meta.description  Description pour les moteurs et le partage
- * @param {string}  meta.image        URL absolue de l'image d'aperçu
- * @param {boolean} meta.noIndex      true pour les pages privées
+ * @param {string}  meta.title        Page title (without the site name)
+ * @param {string}  meta.description  Description for search engines and sharing
+ * @param {string}  meta.image        Absolute URL of the preview image
+ * @param {boolean} meta.noIndex      true for private pages
  */
 export default function usePageMeta({ title, description, image, noIndex = false } = {}) {
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function usePageMeta({ title, description, image, noIndex = false
     setMeta('name', 'twitter:title', fullTitle);
     setMeta('name', 'twitter:image', img);
 
-    // Les pages privées ne doivent pas être indexées
+    // Private pages must not be indexed
     setMeta('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow');
 
     setCanonical(url.split('?')[0]);

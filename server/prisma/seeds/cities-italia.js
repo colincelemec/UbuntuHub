@@ -1,19 +1,19 @@
 // ============================================
-// Città italiane — 107 capoluoghi di provincia
-// Copertura completa del territorio nazionale.
-// Slug in italiano (coerenti con i filtri del frontend).
-// Coordinate: centro città (WGS84).
+// Italian cities — the 107 provincial capitals
+// Complete coverage of the national territory.
+// Italian slugs (matching the frontend filters).
+// Coordinates: city centre (WGS84).
 //
-// Uso: node prisma/seeds/cities-italia.js
-// Idempotente: usa upsert sullo slug, non duplica nulla.
+// Run with: node prisma/seeds/cities-italia.js
+// Idempotent: upserts on the slug, never duplicates anything.
 // ============================================
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// order: 1-16 = grandi città (in cima alle liste), poi alfabetico (order 50)
+// order: 1-16 = major cities (shown first), then alphabetical (order 50)
 const CITIES = [
-  // ── Principali (in evidenza) ──
+  // ── Major cities (highlighted) ──
   { slug: 'roma',      name: 'Roma',      region: 'Lazio',                 latitude: 41.9028, longitude: 12.4964, order: 1 },
   { slug: 'milano',    name: 'Milano',    region: 'Lombardia',             latitude: 45.4642, longitude: 9.1900,  order: 2 },
   { slug: 'napoli',    name: 'Napoli',    region: 'Campania',              latitude: 40.8518, longitude: 14.2681, order: 3 },
@@ -163,9 +163,9 @@ const CITIES = [
   { slug: 'vicenza',       name: 'Vicenza',       region: 'Veneto', latitude: 45.5455, longitude: 11.5354, order: 50 },
 ];
 
-// ── Vecchi slug (seed iniziale in francese) → slug canonico italiano ──
-// Se il database contiene ancora queste città, le uniamo a quelle italiane
-// per evitare doppioni nel menu a tendina (es. "Milan" e "Milano").
+// ── Legacy slugs (from the original French seed) → canonical Italian slug ──
+// If the database still holds these cities, they are merged into the
+// Italian ones to avoid duplicates in the dropdown (e.g. "Milan" and "Milano").
 const LEGACY_SLUGS = {
   milan: 'milano',
   rome: 'roma',
@@ -175,8 +175,8 @@ const LEGACY_SLUGS = {
 };
 
 /**
- * Unisce le città con slug legacy a quelle canoniche:
- * sposta le attività collegate, poi elimina il doppione.
+ * Merges legacy-slug cities into the canonical ones:
+ * moves the linked businesses, then deletes the duplicate.
  */
 async function mergeLegacyCities() {
   let merged = 0;
@@ -186,9 +186,9 @@ async function mergeLegacyCities() {
     if (!legacy) continue;
 
     const canonical = await prisma.city.findUnique({ where: { slug: canonicalSlug } });
-    if (!canonical) continue; // la città canonica non esiste ancora: niente da unire
+    if (!canonical) continue; // the canonical city does not exist yet: nothing to merge
 
-    // Sposta le attività dalla città legacy a quella canonica
+    // Move the businesses from the legacy city to the canonical one
     const moved = await prisma.business.updateMany({
       where: { cityId: legacy.id },
       data: { cityId: canonical.id },
@@ -213,7 +213,7 @@ async function seedCities() {
     const existing = await prisma.city.findUnique({ where: { slug: c.slug } });
     await prisma.city.upsert({
       where: { slug: c.slug },
-      // Aggiorna i dati anagrafici ma non tocca isActive (scelta admin)
+      // Updates the descriptive fields but leaves isActive alone (an admin choice)
       update: {
         name: c.name,
         region: c.region,
@@ -226,18 +226,18 @@ async function seedCities() {
     existing ? updated++ : created++;
   }
 
-  // Pulizia dei doppioni del vecchio seed (milan/milano, rome/roma…)
+  // Clean up duplicates left by the old seed (milan/milano, rome/roma…)
   await mergeLegacyCities();
 
   const total = await prisma.city.count();
   console.log(`✅ ${created} create, ${updated} aggiornate — ${total} città in totale nel database`);
 }
 
-// Esecuzione diretta: node prisma/seeds/cities-italia.js
+// Direct execution: node prisma/seeds/cities-italia.js
 if (require.main === module) {
   seedCities()
     .catch((e) => {
-      // Database non raggiungibile: messaggio chiaro invece dello stack trace
+      // Database unreachable: print a clear message instead of a stack trace
       if (e.errorCode === 'P1001' || /Can't reach database server/i.test(e.message || '')) {
         console.error('\n❌ Database non raggiungibile.\n');
         console.error('   Il container PostgreSQL non sembra avviato. Prova:\n');
@@ -246,7 +246,7 @@ if (require.main === module) {
         console.error('     npm run db:seed:cities\n');
         process.exit(1);
       }
-      // Tabelle mancanti
+      // Missing tables
       if (e.errorCode === 'P2021' || /does not exist in the current database/i.test(e.message || '')) {
         console.error('\n❌ Tabelle mancanti nel database.\n');
         console.error('   Esegui prima:  npx prisma db push\n');

@@ -1,5 +1,5 @@
 /* ============================================
-   ImageUpload — choix et envoi d'une image
+   ImageUpload — picking and uploading an image
    ============================================ */
 
 .iu { display: flex; flex-direction: column; }
@@ -18,7 +18,7 @@
   line-height: 1.45;
 }
 
-/* ── Zone de dépôt ── */
+/* ── Drop zone ── */
 .iu__drop {
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@
   text-align: center;
 }
 
-/* ── Barre de progression ── */
+/* ── Progress bar ── */
 .iu__bar {
   display: block;
   width: 80%;
@@ -76,7 +76,7 @@
   transition: width .18s ease;
 }
 
-/* ── Aperçu de l'image choisie ── */
+/* ── Preview of the selected image ── */
 .iu__preview {
   position: relative;
   border-radius: var(--radius);

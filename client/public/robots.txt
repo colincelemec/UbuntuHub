@@ -1,5 +1,5 @@
 # ============================================
-# AfroItalia — robots.txt
+# UbuntuHub — robots.txt
 # ============================================
 
 User-agent: *
@@ -17,4 +17,4 @@ Disallow: /forgot-password
 
 # Le sitemap est généré dynamiquement par l'API
 # (remplacez par votre domaine réel après le déploiement)
-Sitemap: https://afroitalia.com/sitemap.xml
+Sitemap: https://ubuntuhub.com/sitemap.xml

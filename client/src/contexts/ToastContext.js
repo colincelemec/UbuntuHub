@@ -1,7 +1,7 @@
 // ============================================
-// ToastContext — notifiche temporanee (toast)
-// Uso: const toast = useToast();  toast.success('...'), toast.error('...')
-// I toast si impilano in basso a destra e spariscono da soli.
+// ToastContext — transient notifications (toasts)
+// Usage: const toast = useToast();  toast.success('...'), toast.error('...')
+// Toasts stack in the bottom-right corner and dismiss themselves.
 // ============================================
 
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';

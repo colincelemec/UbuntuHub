@@ -10,13 +10,13 @@ const { validateReview } = require('../middleware/validation');
 
 /**
  * POST /api/reviews
- * Créer un avis (authentification requise)
+ * Write a review (authentication required)
  */
 router.post('/', protect, validateReview, reviewController.createReview);
 
 /**
  * GET /api/reviews/:businessId
- * Récupérer tous les avis d'une entreprise
+ * Fetch every review of a business
  */
 router.get('/:businessId', reviewController.getReviewsByBusiness);
 
@@ -34,19 +34,19 @@ router.delete('/:id', protect, reviewController.deleteReview);
 
 /**
  * POST /api/reviews/:id/response
- * Répondre à un avis (propriétaire de l'entreprise)
+ * Reply to a review (business owner)
  */
 router.post('/:id/response', protect, reviewController.respondToReview);
 
 /**
  * PATCH /api/reviews/:id/report
- * Signaler un avis
+ * Report a review
  */
 router.patch('/:id/report', protect, reviewController.reportReview);
 
 /**
  * PATCH /api/reviews/:id/visibility
- * Changer la visibilité d'un avis (ADMIN uniquement)
+ * Change a review's visibility (ADMIN only)
  */
 router.patch('/:id/visibility', protect, restrictTo('ADMIN'), reviewController.toggleVisibility);
 

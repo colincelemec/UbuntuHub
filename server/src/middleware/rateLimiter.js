@@ -4,47 +4,47 @@
 
 const rateLimit = require('express-rate-limit');
 
-// In sviluppo i limiti vengono disattivati: il dev mode di React
-// (StrictMode raddoppia le richieste) e i reload esauriscono subito
-// le 100 richieste/15min, bloccando anche il login.
+// Limits are disabled in development: React's dev mode
+// (StrictMode doubles every request) and page reloads would burn
+// through the 100 requests/15 min budget and lock you out of login.
 //
-// IMPORTANTE — sicurezza: il limite si disattiva SOLO se NODE_ENV vale
-// esplicitamente 'development' o 'test'. Se la variabile manca (caso
-// frequente in produzione), la protezione resta ATTIVA.
-// Prima bastava dimenticare NODE_ENV=production per lasciare il login
-// senza alcuna protezione contro gli attacchi a forza bruta.
+// IMPORTANT — security: limits are lifted ONLY when NODE_ENV is
+// explicitly 'development' or 'test'. When the variable is missing
+// (a common case in production), protection stays ON.
+// Previously, forgetting NODE_ENV=production was enough to leave
+// login with no protection against brute-force attacks.
 const env = process.env.NODE_ENV;
 const isDev = env === 'development' || env === 'test';
 
-// Rate limiter global pour toutes les routes API
+// Global rate limiter, applied to every API route
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes par défaut
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // 100 requêtes par fenêtre
-  skip: () => isDev, // mai bloccare in sviluppo
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes by default
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // 100 requests per window
+  skip: () => isDev, // never block in development
   message: {
     success: false,
     message: 'Trop de requêtes. Veuillez réessayer plus tard.'
   },
-  standardHeaders: true, // Retourner les infos de rate limit dans les headers `RateLimit-*`
-  legacyHeaders: false, // Désactiver les headers `X-RateLimit-*`
+  standardHeaders: true, // Report rate-limit state in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the legacy `X-RateLimit-*` headers
 });
 
-// Rate limiter strict pour l'authentification (anti brute-force)
+// Strict limiter for authentication routes (anti brute-force)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 tentatives max
-  skipSuccessfulRequests: true, // Ne compter que les requêtes échouées
-  skip: () => isDev, // mai bloccare in sviluppo
+  max: 5, // at most 5 attempts
+  skipSuccessfulRequests: true, // Only count failed attempts
+  skip: () => isDev, // never block in development
   message: {
     success: false,
     message: 'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.'
   }
 });
 
-// Rate limiter pour la création de contenu
+// Limiter for content creation
 const createLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 heure
-  max: 10, // 10 créations max par heure
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // at most 10 creations per hour
   message: {
     success: false,
     message: 'Trop de créations. Veuillez réessayer plus tard.'

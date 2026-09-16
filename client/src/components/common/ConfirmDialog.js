@@ -1,6 +1,6 @@
 // ============================================
-// ConfirmDialog — popup di conferma riutilizzabile
-// Sì / Annulla, chiusura con Escape o click fuori.
+// ConfirmDialog — reusable confirmation popup
+// Yes / Cancel, dismissed with Escape or an outside click.
 // ============================================
 
 import React, { useEffect, useRef } from 'react';
@@ -10,13 +10,13 @@ import '../../styles/ConfirmDialog.css';
 const ConfirmDialog = ({ open, title, message, yesLabel, cancelLabel, onConfirm, onCancel, icon = 'alert' }) => {
   const yesRef = useRef(null);
 
-  // Escape per annullare + focus sul bottone principale
+  // Escape cancels, and focus lands on the primary button
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && onCancel();
     document.addEventListener('keydown', onKey);
     yesRef.current?.focus();
-    // blocca lo scroll della pagina dietro al popup
+    // freeze the page scroll behind the popup
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {

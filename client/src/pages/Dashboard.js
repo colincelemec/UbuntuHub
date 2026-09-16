@@ -15,7 +15,7 @@ import SafeImage from '../components/common/SafeImage';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import '../styles/Dashboard.css';
 
-// ── Fix icone Leaflet (path di default rotto con bundler) ──
+// ── Leaflet icon fix (the default paths break with bundlers) ──
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -34,7 +34,7 @@ const Stars = ({ value }) => (
   </span>
 );
 
-// ── Card attività compatta ──
+// ── Compact business card ──
 const BizCard = ({ business, onClick, language }) => (
   <article className="dh-bizcard" onClick={onClick} role="button" tabIndex={0}
     onKeyDown={e => e.key === 'Enter' && onClick()}>
@@ -126,7 +126,7 @@ const Dashboard = () => {
     return () => { mounted = false; };
   }, []);
 
-  // Attività con coordinate per la mappa
+  // Businesses that have coordinates, for the map
   const mappable = useMemo(
     () => allBusinesses.filter(b => b.latitude && b.longitude),
     [allBusinesses]
@@ -161,7 +161,7 @@ const Dashboard = () => {
 
       <div className="dh-container">
 
-        {/* ════════ STATISTICHE ════════ */}
+        {/* ════════ STATISTICS ════════ */}
         <section className="dh-stats">
           {TABS.map(tab => (
             <button
@@ -175,7 +175,7 @@ const Dashboard = () => {
           ))}
         </section>
 
-        {/* ════════ MAPPA ════════ */}
+        {/* ════════ MAP ════════ */}
         <section className="dh-map-section">
           <div className="dh-section-head">
             <h2>{t('app.dashboard.mapTitle')}</h2>

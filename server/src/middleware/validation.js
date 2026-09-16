@@ -4,14 +4,14 @@
 
 const { body, validationResult } = require('express-validator');
 
-// ── Numéros de téléphone professionnels ──
-// Accepte : "+39 02 1234567", "02 1234567", "333 123 4567", "02-1234567",
-// "(02) 1234567", "+39.06.12345678". Exige 6 à 15 chiffres au total.
+// ── Business phone numbers ──
+// Accepts: "+39 02 1234567", "02 1234567", "333 123 4567", "02-1234567",
+// "(02) 1234567", "+39.06.12345678". Requires 6 to 15 digits in total.
 const PHONE_REGEX = /^\+?[\d\s().-]{6,25}$/;
 const PHONE_MIN_DIGITS = 6;
 const PHONE_MAX_DIGITS = 15;
 
-/** Vérifie le format ET le nombre de chiffres réels */
+/** Checks both the shape AND the real digit count */
 const isValidPhone = (value) => {
   if (!PHONE_REGEX.test(value)) return false;
   const digits = value.replace(/\D/g, '');
@@ -19,7 +19,7 @@ const isValidPhone = (value) => {
 };
 
 /**
- * Middleware pour vérifier les erreurs de validation
+ * Middleware collecting the validation errors
  */
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -36,7 +36,7 @@ const validate = (req, res, next) => {
 };
 
 /**
- * Validation pour la création/modification d'une entreprise
+ * Validation rules for creating or updating a business
  */
 const validateBusiness = [
   body('name')
@@ -49,7 +49,7 @@ const validateBusiness = [
     .notEmpty().withMessage('La description est requise')
     .isLength({ min: 20 }).withMessage('La description doit contenir au moins 20 caractères'),
 
-  // Les IDs sont des cuid (et non des UUID) → on valide juste qu'ils sont présents
+  // IDs are cuid values (not UUIDs) → we only check that they are present
   body('cityId')
     .notEmpty().withMessage('La ville est requise')
     .isString().withMessage('ID de ville invalide'),
@@ -62,7 +62,7 @@ const validateBusiness = [
     .trim()
     .notEmpty().withMessage('L\'adresse est requise'),
 
-  // Coordonnées facultatives : à défaut, on utilise le centre de la ville côté contrôleur
+  // Coordinates are optional: the controller falls back to the city centre
   body('latitude')
     .optional({ checkFalsy: true })
     .isFloat({ min: -90, max: 90 }).withMessage('Latitude invalide'),
@@ -71,9 +71,9 @@ const validateBusiness = [
     .optional({ checkFalsy: true })
     .isFloat({ min: -180, max: 180 }).withMessage('Longitude invalide'),
 
-  // Téléphone : on accepte les numéros professionnels tels qu'ils s'écrivent
-  // en Italie — fixes ET mobiles, avec espaces, points, tirets, parenthèses
-  // et indicatif international. (isMobilePhone refusait les fixes, ex. 02 1234567.)
+  // Phone: business numbers are accepted the way they are written in
+  // Italy — landlines AND mobiles, with spaces, dots, dashes, brackets
+  // and the international prefix. (isMobilePhone rejected landlines, e.g. 02 1234567.)
   body('phone')
     .optional({ checkFalsy: true })
     .trim()
@@ -88,7 +88,7 @@ const validateBusiness = [
     .optional({ checkFalsy: true })
     .isEmail().withMessage('Email invalide'),
 
-  // require_tld: un domaine complet est exigé (https://exemple → invalide)
+  // require_tld: a complete domain is required (https://example → invalid)
   body('website')
     .optional({ checkFalsy: true })
     .trim()
@@ -98,41 +98,6 @@ const validateBusiness = [
   validate
 ];
 
-/**
- * Validation d'une revendication de fiche (« C'est mon activité »)
- */
-const validateClaim = [
-  body('fullName')
-    .trim()
-    .notEmpty().withMessage('Le nom complet est requis')
-    .isLength({ min: 2, max: 120 }).withMessage('Nom complet invalide'),
-
-  body('role')
-    .trim()
-    .notEmpty().withMessage('Votre rôle dans l\'entreprise est requis')
-    .isLength({ max: 80 }).withMessage('Rôle trop long'),
-
-  body('phone')
-    .trim()
-    .notEmpty().withMessage('Le téléphone est requis')
-    .custom(isValidPhone).withMessage('Numéro de téléphone invalide'),
-
-  body('email')
-    .trim()
-    .notEmpty().withMessage('L\'email est requis')
-    .isEmail().withMessage('Email invalide'),
-
-  body('message')
-    .optional({ checkFalsy: true })
-    .trim()
-    .isLength({ max: 1000 }).withMessage('Message trop long (1000 caractères max)'),
-
-  validate
-];
-
-/**
- * Validation pour l'inscription
- */
 const validateRegister = [
   body('email')
     .trim()
@@ -160,7 +125,7 @@ const validateRegister = [
 ];
 
 /**
- * Validation pour la connexion
+ * Validation rules for sign-in
  */
 const validateLogin = [
   body('email')
@@ -175,11 +140,11 @@ const validateLogin = [
 ];
 
 /**
- * Validation pour un review
+ * Validation rules for a review
  */
 const validateReview = [
-  // Les IDs sont des cuid (ex. « cmf3x8k2p0000qw3h5n8t2y1a »), pas des UUID :
-  // isUUID() rejetait donc toutes les publications d'avis.
+  // IDs are cuid values (e.g. "cmf3x8k2p0000qw3h5n8t2y1a"), not UUIDs:
+  // isUUID() therefore rejected every review submission.
   body('businessId')
     .notEmpty().withMessage('L\'ID de l\'entreprise est requis')
     .isString().withMessage('ID d\'entreprise invalide'),
@@ -199,7 +164,6 @@ const validateReview = [
 module.exports = {
   validate,
   validateBusiness,
-  validateClaim,
   validateRegister,
   validateLogin,
   validateReview

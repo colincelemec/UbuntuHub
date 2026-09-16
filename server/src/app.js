@@ -31,17 +31,17 @@ const app = express();
 // MIDDLEWARES GLOBAUX
 // ============================================
 
-// Derrière un proxy (Railway, Render, Heroku, Nginx…) l'IP réelle du
-// visiteur est dans X-Forwarded-For. Sans ceci, express-rate-limit
-// voit l'IP du proxy et limite tout le monde ensemble (ou lève une erreur).
+// Behind a proxy (Railway, Render, Heroku, Nginx…) the visitor's real
+// IP sits in X-Forwarded-For. Without this, express-rate-limit sees
+// the proxy IP and throttles everyone together (or throws).
 app.set('trust proxy', 1);
 
-// Sécurité avec Helmet
+// Security headers via Helmet
 app.use(helmet());
 
 // ── CORS ──
-// Plusieurs origines possibles : domaine avec et sans www, previews Vercel…
-// CLIENT_URL accepte une liste séparée par des virgules.
+// Several origins are possible: domain with and without www, Vercel previews…
+// CLIENT_URL accepts a comma-separated list.
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
   .split(',')
   .map(o => o.trim().replace(/\/$/, ''))
@@ -49,11 +49,11 @@ const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Pas d'origine = appel serveur-à-serveur, curl, app mobile : autorisé
+    // No origin = server-to-server call, curl, mobile app: allowed
     if (!origin) return callback(null, true);
     const clean = origin.replace(/\/$/, '');
     if (allowedOrigins.includes(clean)) return callback(null, true);
-    // Prévisualisations Vercel du même projet
+    // Vercel preview deployments of the same project
     if (/^https:\/\/[\w-]+\.vercel\.app$/.test(clean) && process.env.ALLOW_VERCEL_PREVIEWS === 'true') {
       return callback(null, true);
     }
@@ -64,7 +64,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Compression des réponses
+// Response compression
 app.use(compression());
 
 // Parser JSON et URL-encoded
@@ -86,13 +86,13 @@ app.use('/api/', limiter);
 // HEALTH CHECK
 // ============================================
 
-// Sitemap XML pour les moteurs de recherche
+// XML sitemap for search engines
 app.get('/sitemap.xml', sitemapController.getSitemap);
 
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'AfroItalia API is running',
+    message: 'UbuntuHub API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });

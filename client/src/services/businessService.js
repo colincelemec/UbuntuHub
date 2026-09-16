@@ -1,14 +1,14 @@
 // ============================================
-// Service: Business (Entreprises)
-// Appels AJAX vers l'API REST
+// Service: businesses
+// AJAX calls to the REST API
 // ============================================
 
 import api from './api';
 
 const businessService = {
   /**
-   * Récupérer toutes les entreprises (avec pagination et filtres)
-   * @param {Object} params - { page, limit, city, category, subscription }
+   * List every business (paginated and filtered)
+   * @param {Object} params - { page, limit, city, category }
    */
   getAllBusinesses: async (params = {}) => {
     try {
@@ -20,7 +20,7 @@ const businessService = {
   },
 
   /**
-   * Rechercher des entreprises
+   * Search for businesses
    * @param {Object} params - { q, city, category, lat, lng, radius }
    */
   searchBusinesses: async (params) => {
@@ -33,7 +33,7 @@ const businessService = {
   },
 
   /**
-   * Récupérer une entreprise par son slug
+   * Fetch one business by its slug
    * @param {string} slug
    */
   getBusinessBySlug: async (slug) => {
@@ -46,7 +46,7 @@ const businessService = {
   },
 
   /**
-   * Récupérer les avis d'une entreprise
+   * Fetch the reviews of a business
    * @param {string} id
    * @param {Object} params - { page, limit }
    */
@@ -60,7 +60,7 @@ const businessService = {
   },
 
   /**
-   * Créer une nouvelle entreprise
+   * Create a new business
    * @param {Object} businessData
    */
   createBusiness: async (businessData) => {
@@ -73,7 +73,7 @@ const businessService = {
   },
 
   /**
-   * Mettre à jour une entreprise
+   * Update a business
    * @param {string} id
    * @param {Object} updateData
    */
@@ -87,7 +87,7 @@ const businessService = {
   },
 
   /**
-   * Supprimer une entreprise
+   * Delete a business
    * @param {string} id
    */
   deleteBusiness: async (id) => {
@@ -100,7 +100,7 @@ const businessService = {
   },
 
   /**
-   * Ajouter/retirer des favoris
+   * Add to or remove from favourites
    * @param {string} id
    */
   toggleFavorite: async (id) => {
@@ -113,7 +113,7 @@ const businessService = {
   },
 
   /**
-   * Récupérer la liste des villes (référentiel formulaire)
+   * Fetch the list of cities (form reference data)
    */
   getCities: async () => {
     try {
@@ -125,7 +125,7 @@ const businessService = {
   },
 
   /**
-   * Récupérer la liste des catégories (référentiel formulaire)
+   * Fetch the list of categories (form reference data)
    */
   getCategories: async () => {
     try {
@@ -137,7 +137,7 @@ const businessService = {
   },
 
   /**
-   * Récupérer mes entreprises
+   * Fetch my own businesses
    */
   getMyBusinesses: async () => {
     try {
@@ -149,7 +149,7 @@ const businessService = {
   },
 
   /**
-   * Vérifier une entreprise (ADMIN)
+   * Grant the verified badge (ADMIN)
    * @param {string} id
    */
   verifyBusiness: async (id) => {
@@ -162,7 +162,7 @@ const businessService = {
   },
 
   /**
-   * Changer le statut d'une entreprise (ADMIN)
+   * Change a business status (ADMIN)
    * @param {string} id
    * @param {string} status
    */
@@ -175,14 +175,6 @@ const businessService = {
     }
   },
 
-  /**
-   * Revendiquer une fiche (« C'est mon activité »)
-   * payload: { fullName, role, phone, email, message }
-   */
-  claimBusiness: (id, payload) => api.post(`/businesses/${id}/claim`, payload),
-
-  /** Statut de ma revendication sur cette fiche */
-  getMyClaim: (id) => api.get(`/businesses/${id}/claim/me`)
 };
 
 export default businessService;

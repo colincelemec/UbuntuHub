@@ -5,9 +5,8 @@
 const express = require('express');
 const router = express.Router();
 const businessController = require('../controllers/businessController');
-const claimController = require('../controllers/claimController');
 const { protect, restrictTo } = require('../middleware/auth');
-const { validateBusiness, validateClaim } = require('../middleware/validation');
+const { validateBusiness } = require('../middleware/validation');
 
 // ============================================
 // ROUTES PUBLIQUES
@@ -15,49 +14,37 @@ const { validateBusiness, validateClaim } = require('../middleware/validation');
 
 /**
  * GET /api/businesses
- * Récupérer toutes les entreprises (avec pagination et filtres)
+ * List every business (paginated and filtered)
  * Query params: page, limit, city, category, search
  */
 router.get('/', businessController.getAllBusinesses);
 
 /**
  * GET /api/businesses/search
- * Recherche avancée d'entreprises
+ * Advanced business search
  * Query params: q, city, category, lat, lng, radius
  */
 router.get('/search', businessController.searchBusinesses);
 
 /**
  * GET /api/businesses/:slug
- * Récupérer une entreprise par son slug
+ * Fetch one business by its slug
  */
 router.get('/:slug', businessController.getBusinessBySlug);
 
 /**
  * GET /api/businesses/:id/reviews
- * Récupérer les avis d'une entreprise
+ * Fetch the reviews of a business
  */
 router.get('/:id/reviews', businessController.getBusinessReviews);
 
 // ============================================
-// ROUTES PROTÉGÉES (Authentification requise)
+// PROTECTED ROUTES (authentication required)
 // ============================================
 
 /**
- * POST /api/businesses/:id/claim
- * Revendiquer la propriété d'une fiche (« C'est mon activité »)
- */
-router.post('/:id/claim', protect, validateClaim, claimController.createClaim);
-
-/**
- * GET /api/businesses/:id/claim/me
- * Statut de ma revendication sur cette fiche
- */
-router.get('/:id/claim/me', protect, claimController.getMyClaim);
-
-/**
  * POST /api/businesses
- * Créer une nouvelle entreprise (USER ou BUSINESS)
+ * Create a new business (USER or BUSINESS)
  */
 router.post('/',
   protect,
@@ -67,7 +54,7 @@ router.post('/',
 
 /**
  * PUT /api/businesses/:id
- * Mettre à jour une entreprise (propriétaire uniquement)
+ * Update a business (owner only)
  */
 router.put('/:id',
   protect,
@@ -77,7 +64,7 @@ router.put('/:id',
 
 /**
  * DELETE /api/businesses/:id
- * Supprimer une entreprise (propriétaire ou admin)
+ * Delete a business (owner or admin)
  */
 router.delete('/:id',
   protect,
@@ -86,7 +73,7 @@ router.delete('/:id',
 
 /**
  * POST /api/businesses/:id/favorite
- * Ajouter aux favoris
+ * Add to or remove from favourites
  */
 router.post('/:id/favorite',
   protect,
@@ -95,7 +82,7 @@ router.post('/:id/favorite',
 
 /**
  * GET /api/businesses/my/list
- * Récupérer mes entreprises (propriétaire)
+ * Fetch my own businesses (owner)
  */
 router.get('/my/list',
   protect,
@@ -103,12 +90,12 @@ router.get('/my/list',
 );
 
 // ============================================
-// ROUTES ADMIN
+// ADMIN ROUTES
 // ============================================
 
 /**
  * PATCH /api/businesses/:id/verify
- * Vérifier une entreprise (ADMIN uniquement)
+ * Grant the verified badge (ADMIN only)
  */
 router.patch('/:id/verify',
   protect,
@@ -118,7 +105,7 @@ router.patch('/:id/verify',
 
 /**
  * PATCH /api/businesses/:id/status
- * Changer le statut d'une entreprise (ADMIN uniquement)
+ * Change a business status (ADMIN only)
  */
 router.patch('/:id/status',
   protect,

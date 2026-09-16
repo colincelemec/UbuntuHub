@@ -11,49 +11,37 @@ const { authLimiter } = require('../middleware/rateLimiter');
 
 /**
  * POST /api/auth/register
- * Inscription d'un nouvel utilisateur
+ * Register a new user
  */
 router.post('/register', authLimiter, validateRegister, authController.register);
 
 /**
  * POST /api/auth/login
- * Connexion d'un utilisateur
+ * Sign a user in
  */
 router.post('/login', authLimiter, validateLogin, authController.login);
 
 /**
  * POST /api/auth/logout
- * Déconnexion (optionnel - côté client surtout)
+ * Sign out (optional — mostly handled client-side)
  */
 router.post('/logout', protect, authController.logout);
 
 /**
  * GET /api/auth/me
- * Récupérer les informations de l'utilisateur connecté
+ * Return the signed-in user's details
  */
 router.get('/me', protect, authController.getMe);
 
 /**
  * PUT /api/auth/update-password
- * Changer le mot de passe
+ * Change the password
  */
 router.put('/update-password', protect, authController.updatePassword);
 
 /**
- * POST /api/auth/forgot-password
- * Demander un reset de mot de passe
- */
-router.post('/forgot-password', authLimiter, authController.forgotPassword);
-
-/**
- * POST /api/auth/reset-password/:token
- * Réinitialiser le mot de passe avec le token
- */
-router.post('/reset-password/:token', authController.resetPassword);
-
-/**
  * POST /api/auth/google
- * Accesso con Google OAuth (verifica idToken lato client)
+ * Sign in with Google OAuth (verifies the client-side idToken)
  */
 router.post('/google', authLimiter, authController.googleAuth);
 

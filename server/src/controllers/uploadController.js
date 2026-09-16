@@ -1,14 +1,14 @@
 // ============================================
-// Controller: Upload d'images (Cloudinary)
+// Controller: image upload (Cloudinary)
 //
-// Le fichier ne transite PAS par notre serveur : le navigateur
-// l'envoie directement à Cloudinary. Notre API se contente de
-// signer la demande, ce qui évite d'exposer la clé secrète et
-// n'utilise ni bande passante ni disque côté serveur — essentiel
-// sur Railway, dont le disque est effacé à chaque déploiement.
+// The file never travels through our server: the browser sends it
+// straight to Cloudinary. Our API only signs the request, which
+// avoids exposing the secret key and uses neither bandwidth nor
+// disk on the server — essential on Railway, whose disk is wiped
+// on every deployment.
 //
-// Si Cloudinary n'est pas configuré, l'endpoint répond 503 et le
-// formulaire retombe sur la saisie d'une URL : rien n'est cassé.
+// When Cloudinary is not configured the endpoint answers 503 and
+// the form falls back to a plain URL field: nothing breaks.
 // ============================================
 
 const crypto = require('crypto');
@@ -17,18 +17,18 @@ const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const API_KEY = process.env.CLOUDINARY_API_KEY;
 const API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
-// Valeurs d'exemple : traitées comme « non configuré »
+// Example values: treated as "not configured"
 const isPlaceholder = (v) => !v || /your-|xxx|changeme/i.test(v);
 
 const isConfigured = Boolean(
   !isPlaceholder(CLOUD_NAME) && !isPlaceholder(API_KEY) && !isPlaceholder(API_SECRET)
 );
 
-// Dossiers autorisés : on ne laisse pas le client écrire où il veut
-const ALLOWED_FOLDERS = ['afroitalia/logos', 'afroitalia/covers', 'afroitalia/avatars'];
+// Allowed folders: the client cannot write wherever it likes
+const ALLOWED_FOLDERS = ['ubuntuhub/logos', 'ubuntuhub/covers', 'ubuntuhub/avatars'];
 
 /**
- * Signature Cloudinary : SHA-1 des paramètres triés + api_secret.
+ * Cloudinary signature: SHA-1 of the sorted parameters + api_secret.
  * https://cloudinary.com/documentation/signatures
  */
 function signParams(params, secret) {
@@ -40,9 +40,9 @@ function signParams(params, secret) {
 }
 
 /**
- * @route   GET /api/uploads/signature?folder=afroitalia/logos
- * @desc    Fournit une signature à usage unique pour un envoi direct
- * @access  Privé (authentifié)
+ * @route   GET /api/uploads/signature?folder=ubuntuhub/logos
+ * @desc    Provides a one-time signature for a direct upload
+ * @access  Private (authenticated)
  */
 exports.getUploadSignature = (req, res) => {
   if (!isConfigured) {
@@ -59,13 +59,13 @@ exports.getUploadSignature = (req, res) => {
 
   const timestamp = Math.round(Date.now() / 1000);
 
-  // Ces paramètres — et eux seuls — devront accompagner l'envoi.
-  // Cloudinary rejette la requête si le client en modifie un.
+  // These parameters — and only these — must accompany the upload.
+  // Cloudinary rejects the request if the client alters any of them.
   const params = {
     folder,
     timestamp,
-    // Redimensionnement à la volée : on ne stocke pas des photos
-    // de 8 Mo sorties d'un téléphone.
+    // Resized on the fly: we do not store 8 MB photos straight
+    // out of a phone camera.
     transformation: 'c_limit,w_1600,h_1600,q_auto:good',
   };
 
@@ -86,7 +86,7 @@ exports.getUploadSignature = (req, res) => {
 
 /**
  * @route   GET /api/uploads/status
- * @desc    Le formulaire sait s'il doit proposer l'upload ou l'URL
+ * @desc    Tells the form whether to offer file upload or a URL field
  * @access  Public
  */
 exports.getUploadStatus = (req, res) => {

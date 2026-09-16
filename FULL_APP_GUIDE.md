@@ -1,4 +1,4 @@
-# AfroItalia — Full Application Guide
+# UbuntuHub — Full Application Guide
 
 Everything you need to run, understand and work on the platform.
 
@@ -23,7 +23,7 @@ Everything you need to run, understand and work on the platform.
 
 ## 1. What the platform does
 
-AfroItalia is a **directory of African diaspora businesses in Italy** —
+UbuntuHub is a **directory of African diaspora businesses in Italy** —
 restaurants, hairdressers, grocery stores, fashion, beauty and services.
 
 **Three kinds of users:**
@@ -32,11 +32,10 @@ restaurants, hairdressers, grocery stores, fashion, beauty and services.
   No account required.
 - **Registered users** save favourites, write reviews, and publish their own
   business.
-- **Administrators** verify submitted businesses, moderate reported reviews,
-  manage users and approve ownership claims.
+- **Administrators** verify submitted businesses, moderate reported reviews
+  and manage users.
 
-The interface is available in **Italian, French and English**, with a dark and
-a light theme.
+The interface is available in **Italian, French and English**.
 
 ---
 
@@ -82,8 +81,7 @@ restarted independently.
 | **React Router 6** | Client-side routing |
 | **Zustand** | Authentication state (lightweight alternative to Redux) |
 | **Leaflet + react-leaflet** | Interactive maps with OpenStreetMap tiles |
-| **libphonenumber-js** | Phone formatting and validation for ~245 countries |
-| **Plain CSS with variables** | Theming (dark/light), no CSS framework |
+| **Plain CSS with variables** | Design tokens, no CSS framework |
 | **Native `fetch`** | HTTP calls (no axios) |
 
 ### Backend (`server/`)
@@ -98,12 +96,12 @@ restarted independently.
 | **Helmet, CORS, express-rate-limit** | Security hardening |
 | **express-validator** | Request payload validation |
 | **Nodemailer** | Transactional emails |
-| **Jest + Supertest** | Automated tests (62 tests) |
+| **Jest + Supertest** | Automated tests (78 tests) |
 
 ### Tooling
 
-Docker Compose for local PostgreSQL, ESLint via `react-scripts`, and two
-custom scripts: `check:i18n` (translation coverage) and `db:seed:cities`.
+Docker Compose for local PostgreSQL, ESLint via `react-scripts`, and the
+seed scripts under `server/prisma/seeds/`.
 
 ---
 
@@ -157,7 +155,7 @@ cd client && npm start
 
 | Email | Password | Role |
 |---|---|---|
-| `admin@afroitalia.com` | `password123` | ADMIN |
+| `admin@ubuntuhub.com` | `password123` | ADMIN |
 | `john@example.com` | `password123` | USER |
 | `owner@example.com` | `password123` | BUSINESS |
 
@@ -169,21 +167,18 @@ cd client && npm start
 ## 5. Project structure
 
 ```
-afro-italia-v2/
+ubuntuhub/
 ├── client/                        React application
 │   ├── public/
 │   │   ├── index.html
 │   │   └── robots.txt             Search engine rules
-│   ├── scripts/
-│   │   └── check-i18n.js          Verifies translation completeness
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── auth/              Route guards (ProtectedRoute, AdminRoute)
-│   │   │   ├── business/          ClaimModal, ShareButtons
-│   │   │   ├── common/            Icon, ChatBot, CitySelect, PhoneInput…
+│   │   │   ├── business/          ShareButtons
+│   │   │   ├── common/            Icon, CitySelect, ImageUpload…
 │   │   │   └── layout/            Header, Footer
-│   │   ├── contexts/              Language, Theme, Toast
-│   │   ├── data/                  Chatbot FAQ, legal texts
+│   │   ├── contexts/              Language, Toast
 │   │   ├── hooks/                 usePageMeta (SEO)
 │   │   ├── locales/               translations.js — all UI strings
 │   │   ├── pages/                 One file per screen
@@ -220,7 +215,7 @@ afro-italia-v2/
 
 ## 6. Data model
 
-Seven tables, managed by Prisma:
+Six tables, managed by Prisma:
 
 ```
 User ──────< Business >────── City
@@ -229,7 +224,6 @@ User ──────< Business >────── City
  │              │
  ├──< Review >──┤
  ├──< Favorite >┤
- └──< BusinessClaim >
 ```
 
 | Table | Purpose |
@@ -240,7 +234,6 @@ User ──────< Business >────── City
 | **Business** | The listings. Status: `PENDING` → `VERIFIED` / `REJECTED` / `SUSPENDED` |
 | **Review** | Rating 1-5 + comment, one per user per business, owner can reply |
 | **Favorite** | Saved businesses |
-| **BusinessClaim** | "This is my business" requests, approved by an admin |
 
 A new business is always created as `PENDING` and only appears publicly once an
 administrator verifies it.
@@ -288,8 +281,6 @@ POST   /auth/register              Sign up (sends welcome email)
 POST   /auth/login                 Sign in → JWT
 POST   /auth/google                Google OAuth
 GET    /auth/me                    Current profile               [auth]
-POST   /auth/forgot-password       Sends a reset link
-POST   /auth/reset-password/:token Sets a new password
 ```
 
 ### Authenticated users
@@ -300,8 +291,6 @@ PUT    /businesses/:id             Update (owner only)
 DELETE /businesses/:id             Delete (owner only)
 POST   /businesses/:id/favorite    Toggle favourite
 GET    /businesses/my/list         My businesses
-POST   /businesses/:id/claim       Claim a listing
-GET    /businesses/:id/claim/me    Status of my claim
 POST   /reviews                    Write a review
 PUT    /reviews/:id                Edit my review
 POST   /reviews/:id/response       Owner reply
@@ -318,8 +307,6 @@ GET    /admin/businesses           All listings (filter by status)
 GET    /admin/users                All users
 PATCH  /admin/users/:id/role       Change a role
 GET    /admin/reviews/reported     Reported reviews
-GET    /admin/claims               Ownership claims
-PATCH  /admin/claims/:id           Approve / reject a claim
 PATCH  /businesses/:id/verify      Verify a listing (sends an email)
 PATCH  /businesses/:id/status      Change status (sends an email)
 ```
@@ -341,36 +328,10 @@ If you drag the pin manually, automatic search stops overriding your choice
 until you edit the address again. In edit mode, the first search is skipped so
 the saved position is preserved.
 
-### Business ownership claims
-
-Listings from the census belong to a placeholder account. A real owner opens
-the listing, clicks **"Claim this business"**, and fills in a short form.
-
-The request appears in the admin **Claims** tab. On approval, three things
-happen in a single transaction: the listing is transferred, the user's role
-becomes `BUSINESS`, and competing claims are auto-rejected. The requester
-receives an email either way.
-
-### International phone input
-
-A country selector (flag + dial code, searchable across ~245 countries) sits
-next to the number field. Digits are formatted live according to the selected
-country — `3331234567` becomes `333 123 4567` for Italy, `(202) 555-0123` for
-the US. The value is stored in **E.164** format (`+393331234567`).
-
-Validation uses the real numbering plan of each country, so landlines are
-accepted (a common failure of naive phone validation).
-
-### Support chatbot
-
-A floating widget with **nine predefined questions and answers** in three
-languages, matched by keyword. No external AI service, no API cost — the
-answers live in `client/src/data/chatbotFaq.js`.
-
 ### Emails
 
-Four transactional emails, all trilingual: welcome, password reset, business
-approved/rejected, and claim approved/rejected. Without SMTP configured, they
+Two transactional emails, both trilingual: welcome, and business
+approved/rejected. Without SMTP configured, they
 are printed to the console instead of being sent — development never breaks.
 
 ---
@@ -392,10 +353,6 @@ attribute automatically.
 
 **Before committing translation changes, run:**
 
-```bash
-cd client && npm run check:i18n
-```
-
 It verifies that every key exists in all three languages and that every
 `t('…')` call in the code points to a key that actually exists. It exits with
 an error code, so it can be wired into CI.
@@ -408,14 +365,14 @@ an error code, so it can be wired into CI.
 cd server && npm test
 ```
 
-**62 tests** across six suites:
+**78 tests** across seven suites:
 
 | Suite | What it covers |
 |---|---|
 | `auth.test.js` | Registration, login, invalid credentials |
 | `businesses.test.js` | Listing, pagination, filters, detail, 404 |
 | `reviews.test.js` | Reviews, permissions, validation |
-| `claims.test.js` | Ownership claims, admin approval, public access |
+| `uploads.test.js` | Upload signature, allowed folders, configuration |
 | `validation.test.js` | Italian phone formats, URLs, required fields |
 | `sitemap.test.js` | XML validity, health check, error handling |
 
@@ -430,7 +387,6 @@ are fast (~2 seconds) and safe to run anywhere.
 
 1. Add the key in `client/src/locales/translations.js` with `en`, `fr`, `it`
 2. Use it: `t('app.section.myKey')`
-3. Verify: `npm run check:i18n`
 
 ### Add an API endpoint
 
@@ -517,4 +473,4 @@ working as intended — configure `SMTP_*` variables to send real emails.
 
 ---
 
-*AfroItalia — full application guide, August 2026*
+*UbuntuHub — full application guide, August 2026*

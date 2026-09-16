@@ -1,8 +1,8 @@
 // ============================================
-// ProtectedRoute — réservé aux utilisateurs connectés
+// ProtectedRoute — reserved for signed-in users
 //
-// On mémorise la page demandée : après connexion, l'utilisateur y
-// est renvoyé automatiquement au lieu d'atterrir sur la dashboard.
+// The requested page is remembered: after signing in the user is
+// sent straight back to it instead of landing on the dashboard.
 // ============================================
 
 import React from 'react';

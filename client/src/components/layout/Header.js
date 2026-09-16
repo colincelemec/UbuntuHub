@@ -5,8 +5,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LanguageSelector from '../common/LanguageSelector';
-import ThemeToggle from '../common/ThemeToggle';
-import BrandName from '../common/BrandName';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useAuthStore from '../../stores/authStore';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -24,10 +22,10 @@ const Header = () => {
 
   // Determine if we're on the landing page (public view)
   const isLandingPage = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/register';
-  // Home: header scuro in stile GitHub
+  // Home page gets the transparent header laid over the photo
   const isHome = location.pathname === '/';
 
-  // Il bottone apre il popup di conferma; l'uscita avviene solo su "Sì"
+  // The button opens the confirmation popup; signing out only happens on "Yes"
   const handleLogout = () => setLogoutDialogOpen(true);
 
   const confirmLogout = () => {
@@ -40,23 +38,23 @@ const Header = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  // `header-over-hero` = en-tête transparent posé sur la photo :
-  // uniquement sur l'accueil. Ailleurs (connexion, inscription…),
-  // le fond est clair et le texte doit rester foncé.
+  // `header-over-hero` = transparent header laid over the photo:
+  // home page only. Elsewhere (login, register…) the background is
+  // light and the text must stay dark.
   return (
-    <header className={`header ${isLandingPage ? 'header-landing' : 'header-app'} ${isHome ? 'header-over-hero header-dark' : ''}`}>
+    <header className={`header ${isLandingPage ? 'header-landing' : 'header-app'} ${isHome ? 'header-over-hero' : ''}`}>
       <div className="header-container">
         <div className="header-logo">
           <Link to={isAuthenticated ? "/dashboard" : "/"}>
             <h1>
               <img
-                src="/logo-afroitalia.png"
+                src="/logo_UH.png"
                 alt=""
                 className="logo-img"
                 width="40"
                 height="40"
               />
-              <BrandName />
+              UbuntuHub
             </h1>
           </Link>
         </div>
@@ -69,7 +67,6 @@ const Header = () => {
               <Link to="/login" className="nav-button login-button">{t('footer.signIn')}</Link>
               <Link to="/register" className="nav-button register-button">{t('footer.signUp')}</Link>
               <LanguageSelector />
-              <ThemeToggle />
             </>
           ) : (
             // App Mode - Full Navigation
@@ -96,7 +93,6 @@ const Header = () => {
                 </>
               )}
               <LanguageSelector />
-              <ThemeToggle />
             </>
           )}
         </nav>
@@ -116,7 +112,6 @@ const Header = () => {
               <Link to="/login" className="nav-link" onClick={toggleMobileMenu}>{t('footer.signIn')}</Link>
               <Link to="/register" className="nav-link" onClick={toggleMobileMenu}>{t('footer.signUp')}</Link>
               <LanguageSelector />
-              <ThemeToggle />
             </>
           ) : (
             // App Mode - Full Navigation
@@ -147,7 +142,7 @@ const Header = () => {
         </nav>
       )}
 
-      {/* Popup di conferma uscita */}
+      {/* Sign-out confirmation popup */}
       <ConfirmDialog
         open={logoutDialogOpen}
         title={t('app.nav.logoutTitle')}

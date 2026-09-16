@@ -1,5 +1,5 @@
 // ============================================
-// Tests: /api/businesses — annuaire des activités
+// Tests: /api/businesses — the public directory
 // ============================================
 
 jest.mock('@prisma/client', () => require('./helpers/mockPrisma').prismaClientMock);
@@ -105,8 +105,8 @@ describe('POST /api/businesses', () => {
     expect(res.status).toBe(401);
   });
 
-  // Comportement voulu : une activité publiée apparaît tout de suite
-  // dans l'annuaire, y compris pour les visiteurs sans compte.
+  // Expected behaviour: a published business appears immediately in the
+  // directory, including for visitors without an account.
   it('publie l\'activité immédiatement, sans badge de vérification', async () => {
     const jwt = require('jsonwebtoken');
     const user = {
@@ -132,14 +132,14 @@ describe('POST /api/businesses', () => {
 
     expect(res.status).toBe(201);
     const created = mockPrisma.business.create.mock.calls[0][0].data;
-    expect(created.status).toBe('VERIFIED');   // visible dans l'annuaire
-    expect(created.isVerified).toBe(false);    // mais pas encore de badge
+    expect(created.status).toBe('VERIFIED');   // visible in the directory
+    expect(created.isVerified).toBe(false);    // but no badge yet
   });
 });
 
 describe('Visibilité publique', () => {
-  // Régression : le filtre exigeait isVerified, donc toute activité
-  // fraîchement publiée restait invisible tant qu'un admin n'agissait pas.
+  // Regression: the filter required isVerified, so any freshly published
+  // business stayed invisible until an admin acted.
   it('n\'exige pas le badge de vérification pour être listée', async () => {
     mockPrisma.business.findMany.mockResolvedValue([]);
     mockPrisma.business.count.mockResolvedValue(0);

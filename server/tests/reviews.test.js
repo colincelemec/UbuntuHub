@@ -1,5 +1,5 @@
 // ============================================
-// Tests: /api/reviews — recensioni
+// Tests: /api/reviews — reviews
 // ============================================
 
 jest.mock('@prisma/client', () => require('./helpers/mockPrisma').prismaClientMock);
@@ -61,7 +61,7 @@ describe('POST /api/reviews', () => {
   });
 
   it('refuse une note invalide (validation 400)', async () => {
-    mockPrisma.user.findUnique.mockResolvedValue(authUser); // pour protect()
+    mockPrisma.user.findUnique.mockResolvedValue(authUser); // for protect()
 
     const res = await request(app)
       .post('/api/reviews')
@@ -72,9 +72,9 @@ describe('POST /api/reviews', () => {
     expect(res.body.success).toBe(false);
   });
 
-  // Régression : la validation exigeait un UUID alors que Prisma génère des
-  // cuid. Résultat, toute publication d'avis échouait sur « ID d'entreprise
-  // invalide », quel que soit le contenu du formulaire.
+  // Regression: validation required a UUID while Prisma generates cuid
+  // values. Every review submission therefore failed with "invalid
+  // business ID", whatever the form contained.
   it('accepte un businessId au format cuid', async () => {
     const cuid = 'cmf3x8k2p0000qw3h5n8t2y1a';
     mockPrisma.user.findUnique.mockResolvedValue(authUser);
@@ -90,7 +90,7 @@ describe('POST /api/reviews', () => {
       .set('Authorization', `Bearer ${tokenFor(authUser.id)}`)
       .send({ businessId: cuid, rating: 5, comment: 'Bellissimo ristorante e pulito' });
 
-    // La validation ne doit plus bloquer sur le format de l'identifiant
+    // Validation must no longer reject the identifier format
     const failedFields = (res.body.errors || []).map(e => e.path || e.param);
     expect(failedFields).not.toContain('businessId');
     expect(res.status).not.toBe(400);

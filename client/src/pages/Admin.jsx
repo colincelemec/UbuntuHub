@@ -1,7 +1,7 @@
 // ============================================
-// Admin Panel — pannello amministratore
-// Tabs: Overview · Attività · Utenti · Recensioni
-// Tutte le azioni passano da adminService (route ADMIN).
+// Admin panel
+// Tabs: Overview · Businesses · Users · Reviews
+// Every action goes through adminService (ADMIN routes).
 // ============================================
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -15,7 +15,7 @@ import Icon from '../components/common/Icon';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import '../styles/Admin.css';
 
-// ── Mappa stato attività → colore badge + icona ──
+// ── Business status → badge colour and icon ──
 const STATUS_META = {
   PENDING:   { cls: 'pending',  icon: 'clock' },
   VERIFIED:  { cls: 'verified', icon: 'check' },
@@ -41,16 +41,15 @@ const Admin = () => {
   const [businesses, setBusinesses] = useState([]);
   const [users, setUsers] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filtri attività / utenti
+  // Business and user filters
   const [bizStatus, setBizStatus] = useState('');
   const [bizSearch, setBizSearch] = useState('');
   const [userSearch, setUserSearch] = useState('');
 
-  // Dialog di conferma generico
+  // Generic confirmation dialog
   const [dialog, setDialog] = useState(null); // { title, message, onConfirm }
 
   // ── Loaders ──
@@ -80,13 +79,6 @@ const Admin = () => {
     } catch (e) { setError(e.message); }
   }, [userSearch]);
 
-  const loadClaims = useCallback(async () => {
-    try {
-      const res = await adminService.getClaims();
-      setClaims(res.data?.claims || []);
-    } catch (e) { setError(e.message); }
-  }, []);
-
   const loadReviews = useCallback(async () => {
     try {
       const res = await adminService.getReportedReviews();
@@ -94,21 +86,21 @@ const Admin = () => {
     } catch (e) { setError(e.message); }
   }, []);
 
-  // Carica i dati al primo render
+  // Load the data on first render
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await Promise.allSettled([loadStats(), loadBusinesses(), loadUsers(), loadReviews(), loadClaims()]);
+      await Promise.allSettled([loadStats(), loadBusinesses(), loadUsers(), loadReviews()]);
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Ricarica le attività quando cambiano i filtri
+  // Reload the businesses when the filters change
   useEffect(() => { loadBusinesses(); }, [loadBusinesses]);
   useEffect(() => { loadUsers(); }, [loadUsers]);
 
-  // ── Azioni attività ──
+  // ── Business actions ──
   const changeBusinessStatus = async (id, status) => {
     try {
       await adminService.updateBusinessStatus(id, status);
@@ -116,7 +108,7 @@ const Admin = () => {
     } catch (e) { setError(e.message); }
   };
 
-  // ── Azioni utenti ──
+  // ── User actions ──
   const changeUserRole = async (id, role) => {
     try {
       await adminService.updateUserRole(id, role);
@@ -136,20 +128,7 @@ const Admin = () => {
     },
   });
 
-  // ── Azioni richieste di rivendicazione ──
-  const askReviewClaim = (claim, status) => setDialog({
-    title: t(status === 'APPROVED' ? 'app.admin.claimApproveTitle' : 'app.admin.claimRejectTitle'),
-    message: `${t(status === 'APPROVED' ? 'app.admin.claimApproveMsg' : 'app.admin.claimRejectMsg')} — ${claim.business?.name}`,
-    onConfirm: async () => {
-      setDialog(null);
-      try {
-        await adminService.reviewClaim(claim.id, status);
-        await Promise.all([loadClaims(), loadBusinesses(), loadStats()]);
-      } catch (e) { setError(e.message); }
-    },
-  });
-
-  // ── Azioni recensioni ──
+  // ── Review actions ──
   const askDeleteReview = (r) => setDialog({
     title: t('app.admin.confirmDeleteReviewTitle'),
     message: t('app.admin.confirmDeleteReviewMsg'),
@@ -171,7 +150,6 @@ const Admin = () => {
     { id: 'businesses', label: t('app.admin.tabBusinesses'), icon: 'store', count: businesses.length },
     { id: 'users',      label: t('app.admin.tabUsers'),      icon: 'users', count: users.length },
     { id: 'reviews',    label: t('app.admin.tabReviews'),    icon: 'flag',  count: reviews.length },
-    { id: 'claims',     label: t('app.admin.tabClaims'),     icon: 'shield', count: claims.filter(c => c.status === 'PENDING').length },
   ];
 
   // ════════ OVERVIEW ════════
@@ -268,8 +246,8 @@ const Admin = () => {
                       <span className={`ad-badge ad-badge--${meta.cls}`}>
                         <Icon name={meta.icon} size={12} /> {t(`app.admin.status_${b.status}`)}
                       </span>
-                      {/* Publiée mais pas encore contrôlée : elle est
-                          visible du public et attend seulement le badge. */}
+                      {/* Published but not yet checked: it is publicly
+                          visible and merely awaits the badge. */}
                       {b.status === 'VERIFIED' && !b.isVerified && (
                         <span className="ad-badge ad-badge--tocheck">
                           <Icon name="clock" size={12} /> {t('app.admin.toCheck')}
@@ -391,70 +369,6 @@ const Admin = () => {
     </>
   );
 
-  // ════════ RICHIESTE DI RIVENDICAZIONE ════════
-  const renderClaims = () => (
-    claims.length === 0 ? (
-      <div className="ad-empty"><Icon name="shield" size={32} /><p>{t('app.admin.noClaims')}</p></div>
-    ) : (
-      <ul className="ad-claims">
-        {claims.map(c => (
-          <li key={c.id} className={`ad-claim ad-claim--${c.status.toLowerCase()}`}>
-            <div className="ad-claim__main">
-              <div className="ad-claim__head">
-                <strong>{c.business?.name}</strong>
-                <span className="ad-sub">{c.business?.city?.name}</span>
-                <span className={`ad-badge ad-badge--${c.status === 'PENDING' ? 'pending' : c.status === 'APPROVED' ? 'verified' : 'rejected'}`}>
-                  {t(`app.admin.claimStatus_${c.status}`)}
-                </span>
-              </div>
-
-              <div className="ad-claim__grid">
-                <div>
-                  <span className="ad-claim__label">{t('app.admin.claimRequester')}</span>
-                  <strong>{c.fullName}</strong>
-                  <span className="ad-sub">{c.user?.email}</span>
-                </div>
-                <div>
-                  <span className="ad-claim__label">{t('app.admin.claimRole')}</span>
-                  <strong>{c.role}</strong>
-                </div>
-                <div>
-                  <span className="ad-claim__label">{t('app.admin.colActions')}</span>
-                  <a href={`tel:${c.phone}`} className="ad-claim__link">{c.phone}</a>
-                  <a href={`mailto:${c.email}`} className="ad-claim__link">{c.email}</a>
-                </div>
-                <div>
-                  <span className="ad-claim__label">{t('app.admin.colCreated')}</span>
-                  <strong>{fmtDate(c.createdAt)}</strong>
-                </div>
-              </div>
-
-              {c.message && (
-                <p className="ad-claim__message">
-                  <span className="ad-claim__label">{t('app.admin.claimMessage')}</span>
-                  “{c.message}”
-                </p>
-              )}
-            </div>
-
-            {c.status === 'PENDING' && (
-              <div className="ad-claim__actions">
-                <button className="ad-btn ad-btn--ok" title={t('app.admin.claimApprove')}
-                  onClick={() => askReviewClaim(c, 'APPROVED')}>
-                  <Icon name="check" size={14} /> {t('app.admin.claimApprove')}
-                </button>
-                <button className="ad-btn ad-btn--danger" title={t('app.admin.claimReject')}
-                  onClick={() => askReviewClaim(c, 'REJECTED')}>
-                  <Icon name="ban" size={14} /> {t('app.admin.claimReject')}
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    )
-  );
-
   // ════════ REPORTED REVIEWS ════════
   const renderReviews = () => (
     reviews.length === 0 ? (
@@ -525,7 +439,6 @@ const Admin = () => {
           ) : activeTab === 'overview' ? renderOverview()
             : activeTab === 'businesses' ? renderBusinesses()
             : activeTab === 'users' ? renderUsers()
-            : activeTab === 'claims' ? renderClaims()
             : renderReviews()}
         </section>
       </div>

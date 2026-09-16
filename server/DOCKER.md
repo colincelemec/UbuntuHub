@@ -36,7 +36,7 @@ The database is reachable at `localhost:5432`, which matches the default
 `DATABASE_URL` in `.env`:
 
 ```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/afroitalia_db?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ubuntuhub_db?schema=public"
 ```
 
 ---
@@ -83,7 +83,7 @@ node prisma/seeds/businesses-reali.js
 npx prisma studio
 
 # Open a psql session
-docker compose exec postgres psql -U postgres -d afroitalia_db
+docker compose exec postgres psql -U postgres -d ubuntuhub_db
 ```
 
 ---
@@ -92,10 +92,10 @@ docker compose exec postgres psql -U postgres -d afroitalia_db
 
 ```bash
 # Export
-docker compose exec postgres pg_dump -U postgres afroitalia_db > backup.sql
+docker compose exec postgres pg_dump -U postgres ubuntuhub_db > backup.sql
 
 # Import
-docker compose exec -T postgres psql -U postgres afroitalia_db < backup.sql
+docker compose exec -T postgres psql -U postgres ubuntuhub_db < backup.sql
 ```
 
 ---

@@ -1,5 +1,5 @@
 // ============================================
-// Controller: Business (Entreprises)
+// Controller: businesses
 // ============================================
 
 const { PrismaClient } = require('@prisma/client');
@@ -9,7 +9,7 @@ const { devDetails } = require('../utils/errorResponse');
 
 /**
  * @route   GET /api/businesses
- * @desc    Récupérer toutes les entreprises (avec pagination et filtres)
+ * @desc    List every business (paginated and filtered)
  * @access  Public
  */
 exports.getAllBusinesses = async (req, res) => {
@@ -19,17 +19,16 @@ exports.getAllBusinesses = async (req, res) => {
       limit = 12,
       city,
       category,
-      status = 'VERIFIED',
-      subscription
+      status = 'VERIFIED'
     } = req.query;
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Deux notions distinctes, à ne pas confondre :
-    //   • `status`     → la fiche est-elle publiée ? (VERIFIED = oui)
-    //   • `isVerified` → l'équipe a-t-elle contrôlé la fiche ? (badge)
-    // On filtre donc sur la publication seule : une fiche visible mais
-    // pas encore contrôlée s'affiche, simplement sans badge.
+    // Two distinct notions, not to be confused:
+    //   • `status`     → is the listing published? (VERIFIED = yes)
+    //   • `isVerified` → has the team checked the listing? (badge)
+    // We therefore filter on publication alone: a listing that is visible
+    // but not yet checked still shows, simply without a badge.
     const where = {
       status: status
     };
@@ -42,11 +41,7 @@ exports.getAllBusinesses = async (req, res) => {
       where.category = { slug: category };
     }
 
-    if (subscription) {
-      where.subscriptionTier = subscription;
-    }
-
-    // Récupérer les entreprises avec pagination
+    // Fetch the businesses, paginated
     const [businesses, total] = await Promise.all([
       prisma.business.findMany({
         where,
@@ -63,8 +58,9 @@ exports.getAllBusinesses = async (req, res) => {
             select: { firstName: true, lastName: true }
           }
         },
+        // No privileged placement: only the real rating counts, and on a
+        // tie the most recently published listing comes first.
         orderBy: [
-          { subscriptionTier: 'desc' }, // Premium d'abord
           { averageRating: 'desc' },
           { createdAt: 'desc' }
         ]
@@ -95,20 +91,20 @@ exports.getAllBusinesses = async (req, res) => {
 
 /**
  * @route   GET /api/businesses/search
- * @desc    Recherche avancée d'entreprises
+ * @desc    Advanced business search
  * @access  Public
  */
 exports.searchBusinesses = async (req, res) => {
   try {
     const { q, city, category, lat, lng, radius = 10 } = req.query;
 
-    // Comme ci-dessus : on cherche parmi les fiches publiées,
-    // qu'elles aient été contrôlées ou non.
+    // As above: we search among the published listings, whether or
+    // not they have been checked.
     const where = {
       status: 'VERIFIED'
     };
 
-    // Recherche par texte
+    // Free-text search
     if (q) {
       where.OR = [
         { name: { contains: q, mode: 'insensitive' } },
@@ -134,7 +130,7 @@ exports.searchBusinesses = async (req, res) => {
       take: 50
     });
 
-    // Si lat/lng fournis, filtrer par distance (géolocalisation)
+    // When lat/lng are supplied, filter by distance
     let results = businesses;
     if (lat && lng) {
       results = businesses.filter(business => {
@@ -166,7 +162,7 @@ exports.searchBusinesses = async (req, res) => {
 
 /**
  * @route   GET /api/businesses/:slug
- * @desc    Récupérer une entreprise par son slug
+ * @desc    Fetch one business by its slug
  * @access  Public
  */
 exports.getBusinessBySlug = async (req, res) => {
@@ -210,7 +206,7 @@ exports.getBusinessBySlug = async (req, res) => {
       });
     }
 
-    // Incrémenter le compteur de vues
+    // Increment the view counter
     await prisma.business.update({
       where: { id: business.id },
       data: { viewCount: { increment: 1 } }
@@ -233,16 +229,16 @@ exports.getBusinessBySlug = async (req, res) => {
 
 /**
  * @route   POST /api/businesses
- * @desc    Créer une nouvelle entreprise
- * @access  Private (authentifié)
+ * @desc    Create a new business
+ * @access  Private (authenticated)
  */
 exports.createBusiness = async (req, res) => {
   try {
     const userId = req.user.id;
     const body = req.body;
 
-    // Liste blanche des champs autorisés (on ne fait jamais confiance au client
-    // pour status, ownerId, isVerified, etc.)
+    // Allow-list of accepted fields (the client is never trusted with
+    // status, ownerId, isVerified and the like)
     const allowed = [
       'name', 'description', 'shortDesc',
       'cityId', 'address', 'zipCode', 'latitude', 'longitude',
@@ -256,25 +252,25 @@ exports.createBusiness = async (req, res) => {
       if (body[key] !== undefined && body[key] !== '') businessData[key] = body[key];
     }
 
-    // Vérifier que la ville existe (et récupérer ses coordonnées par défaut)
+    // Check that the city exists (and read its default coordinates)
     const city = await prisma.city.findUnique({ where: { id: businessData.cityId } });
     if (!city) {
       return res.status(400).json({ success: false, message: 'Ville invalide' });
     }
 
-    // Vérifier que la catégorie existe
+    // Check that the category exists
     const category = await prisma.category.findUnique({ where: { id: businessData.categoryId } });
     if (!category) {
       return res.status(400).json({ success: false, message: 'Catégorie invalide' });
     }
 
-    // Coordonnées : si non fournies, utiliser le centre de la ville
+    // Coordinates: fall back to the city centre when not supplied
     businessData.latitude = businessData.latitude != null
       ? parseFloat(businessData.latitude) : city.latitude;
     businessData.longitude = businessData.longitude != null
       ? parseFloat(businessData.longitude) : city.longitude;
 
-    // Générer un slug unique
+    // Build a unique slug
     const slug = generateSlug(businessData.name);
 
     const business = await prisma.business.create({
@@ -282,12 +278,12 @@ exports.createBusiness = async (req, res) => {
         ...businessData,
         slug,
         ownerId: userId,
-        // Publiée tout de suite : visible par tous, y compris les
-        // visiteurs sans compte. Un annuaire dont les fiches attendent
-        // une validation décourage ceux qui les déposent.
+        // Published straight away: visible to everyone, including visitors
+        // without an account. A directory whose listings sit waiting for
+        // approval discourages the very people who submit them.
         status: 'VERIFIED',
-        // Pas encore contrôlée par l'équipe : donc pas de badge.
-        // L'admin peut vérifier (badge), suspendre ou rejeter ensuite.
+        // Not yet checked by the team: hence no badge.
+        // An admin may later grant the badge, suspend or reject it.
         isVerified: false
       },
       include: {
@@ -314,8 +310,8 @@ exports.createBusiness = async (req, res) => {
 
 /**
  * @route   PUT /api/businesses/:id
- * @desc    Mettre à jour une entreprise
- * @access  Private (propriétaire uniquement)
+ * @desc    Update a business
+ * @access  Private (owner only)
  */
 exports.updateBusiness = async (req, res) => {
   try {
@@ -323,7 +319,7 @@ exports.updateBusiness = async (req, res) => {
     const userId = req.user.id;
     const body = req.body;
 
-    // Vérifier que l'utilisateur est le propriétaire
+    // Only the owner may proceed
     const business = await prisma.business.findUnique({
       where: { id }
     });
@@ -342,7 +338,7 @@ exports.updateBusiness = async (req, res) => {
       });
     }
 
-    // Liste blanche : on ne laisse jamais le client modifier status, ownerId, etc.
+    // Allow-list: the client may never change status, ownerId and the like
     const allowed = [
       'name', 'description', 'shortDesc',
       'cityId', 'address', 'zipCode', 'latitude', 'longitude',
@@ -385,8 +381,8 @@ exports.updateBusiness = async (req, res) => {
 
 /**
  * @route   DELETE /api/businesses/:id
- * @desc    Supprimer une entreprise
- * @access  Private (propriétaire ou admin)
+ * @desc    Delete a business
+ * @access  Private (owner or admin)
  */
 exports.deleteBusiness = async (req, res) => {
   try {
@@ -432,7 +428,7 @@ exports.deleteBusiness = async (req, res) => {
 
 /**
  * @route   POST /api/businesses/:id/favorite
- * @desc    Ajouter/retirer des favoris
+ * @desc    Add to or remove from favourites
  * @access  Private
  */
 exports.toggleFavorite = async (req, res) => {
@@ -440,7 +436,7 @@ exports.toggleFavorite = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    // Vérifier si déjà en favoris
+    // Is it already a favourite?
     const existing = await prisma.favorite.findUnique({
       where: {
         userId_businessId: {
@@ -451,7 +447,7 @@ exports.toggleFavorite = async (req, res) => {
     });
 
     if (existing) {
-      // Retirer des favoris
+      // Remove from favourites
       await prisma.favorite.delete({
         where: { id: existing.id }
       });
@@ -462,7 +458,7 @@ exports.toggleFavorite = async (req, res) => {
         isFavorite: false
       });
     } else {
-      // Ajouter aux favoris
+      // Add to favourites
       await prisma.favorite.create({
         data: {
           userId,
@@ -489,7 +485,7 @@ exports.toggleFavorite = async (req, res) => {
 
 /**
  * @route   GET /api/businesses/my/list
- * @desc    Récupérer mes entreprises
+ * @desc    Fetch my own businesses
  * @access  Private
  */
 exports.getMyBusinesses = async (req, res) => {
@@ -523,7 +519,7 @@ exports.getMyBusinesses = async (req, res) => {
 
 /**
  * @route   PATCH /api/businesses/:id/verify
- * @desc    Vérifier une entreprise (ADMIN)
+ * @desc    Grant the verified badge (ADMIN)
  * @access  Private/Admin
  */
 exports.verifyBusiness = async (req, res) => {
@@ -540,7 +536,7 @@ exports.verifyBusiness = async (req, res) => {
       include: { owner: { select: { email: true, firstName: true } } }
     });
 
-    // Notifier le propriétaire par email (non bloquant)
+    // Notify the owner by email (non-blocking)
     emailService
       .sendBusinessStatusEmail(business.owner, business, 'VERIFIED')
       .catch(err => console.error('Email approvazione non inviata:', err.message));
@@ -563,7 +559,7 @@ exports.verifyBusiness = async (req, res) => {
 
 /**
  * @route   PATCH /api/businesses/:id/status
- * @desc    Changer le statut (ADMIN)
+ * @desc    Change the status (ADMIN)
  * @access  Private/Admin
  */
 exports.updateBusinessStatus = async (req, res) => {
@@ -577,7 +573,7 @@ exports.updateBusinessStatus = async (req, res) => {
       include: { owner: { select: { email: true, firstName: true } } }
     });
 
-    // Notifier le propriétaire si approuvé/rejeté (non bloquant)
+    // Notify the owner when approved or rejected (non-blocking)
     if (status === 'VERIFIED' || status === 'REJECTED') {
       emailService
         .sendBusinessStatusEmail(business.owner, business, status)
@@ -602,7 +598,7 @@ exports.updateBusinessStatus = async (req, res) => {
 
 /**
  * @route   GET /api/businesses/:id/reviews
- * @desc    Récupérer les avis d'une entreprise
+ * @desc    Fetch the reviews of a business
  * @access  Public
  */
 exports.getBusinessReviews = async (req, res) => {
@@ -675,7 +671,7 @@ function generateSlug(name) {
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Rayon de la Terre en km
+  const R = 6371; // Earth radius in km
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =

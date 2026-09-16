@@ -1,6 +1,6 @@
 // ============================================
-// ScrollToTop — riporta la pagina in cima a ogni
-// cambio di rotta. Va inserito dentro <Router>.
+// ScrollToTop — scrolls back to the top on every route
+// change. Must be placed inside <Router>.
 // ============================================
 
 import { useEffect } from 'react';

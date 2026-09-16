@@ -4,8 +4,6 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import api from '../services/api';
-import businessService from '../services/businessService';
-import ClaimModal from '../components/business/ClaimModal';
 import ShareButtons from '../components/business/ShareButtons';
 import useAuthStore from '../stores/authStore';
 import { useToast } from '../contexts/ToastContext';
@@ -45,7 +43,7 @@ const StarPicker = ({ value, onChange }) => (
   </div>
 );
 
-// Ordine dei giorni; le etichette arrivano dalle traduzioni
+// Day order; the labels come from the translations
 const DAY_KEYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 const BusinessDetail = () => {
@@ -73,21 +71,6 @@ const BusinessDetail = () => {
 
   const [activeTab, setActiveTab] = useState('info');
   const [activeImage, setActiveImage] = useState(0);
-
-  // Rivendicazione della scheda
-  const [claimOpen, setClaimOpen] = useState(false);
-  const [myClaim, setMyClaim] = useState(null);
-
-  // Stato della mia richiesta (solo se connesso)
-  const loadMyClaim = useCallback(async (businessId) => {
-    if (!isAuthenticated || !businessId) return;
-    try {
-      const res = await businessService.getMyClaim(businessId);
-      setMyClaim(res.data || null);
-    } catch {
-      setMyClaim(null);
-    }
-  }, [isAuthenticated]);
 
   const fetchBusiness = useCallback(async () => {
     try {
@@ -118,12 +101,11 @@ const BusinessDetail = () => {
   useEffect(() => {
     if (business?.id) {
       fetchReviews(business.id);
-      loadMyClaim(business.id);
     }
-  }, [business, fetchReviews, loadMyClaim]);
+  }, [business, fetchReviews]);
 
-  // Le visiteur n'est jamais éjecté de la page : on l'invite à se connecter
-  // en conservant l'endroit où il se trouvait, pour y revenir ensuite.
+  // The visitor is never kicked off the page: we invite them to sign in
+  // while remembering where they were, so they come back here.
   const goToLogin = () => navigate('/login', { state: { from: location.pathname } });
 
   const handleFavorite = async () => {
@@ -163,8 +145,8 @@ const BusinessDetail = () => {
       fetchReviews(business.id);
       fetchBusiness();
     } catch (err) {
-      // Les messages de validation du serveur sont en français : dans une
-      // interface traduite on affiche notre message localisé à la place.
+      // The server's validation messages are in French: in a translated
+      // interface we show our own localised message instead.
       const isValidationError = Boolean(err.fieldErrors && Object.keys(err.fieldErrors).length);
       setReviewError(isValidationError ? t('reviewError') : (err.message || t('reviewError')));
     } finally {
@@ -172,7 +154,7 @@ const BusinessDetail = () => {
     }
   };
 
-  // Métadonnées de la page : nom de l'activité dans l'onglet et au partage
+  // Page metadata: the business name in the tab title and when shared
   usePageMeta({
     title: business ? `${business.name}${business.city?.name ? ` — ${business.city.name}` : ''}` : null,
     description: business?.shortDesc || business?.description?.slice(0, 160),
@@ -201,8 +183,6 @@ const BusinessDetail = () => {
   }
 
   const hasCoords = business.latitude && business.longitude;
-  // Il proprietario non vede il riquadro di rivendicazione
-  const isOwner = isAuthenticated && business.owner?.id && business.owner.id === user?.id;
 
   return (
     <div className="bd-page">
@@ -254,9 +234,6 @@ const BusinessDetail = () => {
             <div>
               <div className="bd-title-row">
                 <h1 className="bd-title">{business.name}</h1>
-                {business.subscriptionTier === 'PREMIUM' && (
-                  <span className="bd-premium-badge"><Icon name="star" size={12} /> Premium</span>
-                )}
               </div>
               <div className="bd-meta-row">
                 <span className="bd-cat-badge">{getCategoryLabel(business.category, language)}</span>
@@ -324,36 +301,9 @@ const BusinessDetail = () => {
                 <section className="bd-section">
                   <h2>{t('about')}</h2>
                   <p className="bd-description">{business.description}</p>
-                  {/* Condivisione: fondamentale per la diffusione passaparola */}
+                  {/* Sharing: essential for word-of-mouth reach */}
                   <ShareButtons business={business} />
                 </section>
-
-                {/* ── « È la tua attività? » — rivendicazione della scheda ── */}
-                {!isOwner && (
-                  <section className="bd-claim">
-                    {myClaim?.status === 'PENDING' ? (
-                      <p className="bd-claim__status bd-claim__status--pending">
-                        <Icon name="clock" size={16} /> {t('claimPending')}
-                      </p>
-                    ) : (
-                      <>
-                        <div className="bd-claim__text">
-                          <h3><Icon name="shield" size={16} /> {t('claimTitle')}</h3>
-                          <p>{t('claimIntro')}</p>
-                          {myClaim?.status === 'REJECTED' && (
-                            <p className="bd-claim__rejected">{t('claimRejected')}</p>
-                          )}
-                        </div>
-                        <button
-                          className="bd-claim__btn"
-                          onClick={() => isAuthenticated ? setClaimOpen(true) : goToLogin()}
-                        >
-                          {isAuthenticated ? t('claimButton') : t('claimLoginFirst')}
-                        </button>
-                      </>
-                    )}
-                  </section>
-                )}
 
                 {/* Social */}
                 {(business.facebook || business.instagram || business.twitter || business.tiktok || business.website) && (
@@ -570,15 +520,6 @@ const BusinessDetail = () => {
           </div>
         )}
       </div>
-
-      {/* Modale di rivendicazione della scheda */}
-      <ClaimModal
-        open={claimOpen}
-        business={business}
-        user={user}
-        onClose={() => setClaimOpen(false)}
-        onSubmitted={() => loadMyClaim(business.id)}
-      />
     </div>
   );
 };
