@@ -1,5 +1,5 @@
 /* ============================================
-   Business Detail Page - Afro Italia
+   Business Detail Page - UbuntuHub
    ============================================ */
 
 .bd-page {
@@ -170,16 +170,6 @@
   font-weight: 800;
   color: var(--color-text);
   margin: 0;
-}
-
-.bd-premium-badge {
-  background: var(--color-accent);
-  color: var(--color-text);
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: 20px;
-  white-space: nowrap;
 }
 
 .bd-meta-row {
@@ -672,7 +662,6 @@
 
 .bd-contact-row span:first-child,
 .bd-city,
-.bd-premium-badge,
 .bd-contact-btn,
 .bd-social-link,
 .bd-write-btn {
@@ -683,73 +672,3 @@
 .bd-contact-row .ai-icon { color: var(--color-primary); }
 .bd-cover-fallback { color: rgba(255,255,255,.6); }
 
-/* ============================================
-   « È la tua attività? » — riquadro di rivendicazione
-   ============================================ */
-.bd-claim {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 1.5rem;
-  padding: 20px;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-primary-soft);
-}
-
-.bd-claim__text { flex: 1; min-width: 240px; }
-
-.bd-claim__text h3 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 6px;
-  font-size: 1rem;
-  color: var(--color-text-bright);
-}
-
-.bd-claim__text p {
-  margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--color-muted);
-}
-
-.bd-claim__rejected {
-  margin-top: 8px !important;
-  color: var(--color-error) !important;
-  font-weight: 600;
-}
-
-.bd-claim__btn {
-  padding: 12px 22px;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font: inherit;
-  font-weight: 700;
-  font-size: 0.92rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s ease;
-}
-
-.bd-claim__btn:hover { background: var(--color-primary-dark); }
-
-.bd-claim__status {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.92rem;
-}
-
-.bd-claim__status--pending { color: var(--color-primary); }
-
-@media (max-width: 560px) {
-  .bd-claim { flex-direction: column; align-items: stretch; }
-  .bd-claim__btn { width: 100%; }
-}

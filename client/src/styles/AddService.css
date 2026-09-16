@@ -1,6 +1,6 @@
 /* ============================================
-   Add Service — modulo creazione attività/servizio
-   Token tema (chiaro/scuro) di index.css
+   AddService — the business creation form
+   Uses the design tokens from index.css
    ============================================ */
 
 .as {
@@ -105,7 +105,7 @@ select.as-input { cursor: pointer; }
 }
 .as-map .leaflet-container { height: 100%; width: 100%; }
 
-/* ──────── Stato ricerca indirizzo (geocoding) ──────── */
+/* ──────── Address lookup state (geocoding) ──────── */
 .as-geo {
   display: flex;
   align-items: center;
@@ -135,7 +135,7 @@ select.as-input { cursor: pointer; }
 
 .as-geo .ai-icon { flex-shrink: 0; }
 
-/* Spinner della ricerca */
+/* Lookup spinner */
 .as-geo__spinner {
   width: 14px;
   height: 14px;

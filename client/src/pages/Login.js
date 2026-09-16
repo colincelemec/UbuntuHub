@@ -14,8 +14,8 @@ import '../styles/Auth.css';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // Page d'origine mémorisée par ProtectedRoute ou par une invitation
-  // à se connecter : on y retourne après authentification.
+  // The origin page remembered by ProtectedRoute or by a sign-in
+  // invitation: we return there once authenticated.
   const redirectTo = location.state?.from || '/dashboard';
   const { language } = useLanguage();
   const { login, googleLogin, isLoading, error, clearError } = useAuthStore();
@@ -74,7 +74,7 @@ const Login = () => {
     }
   };
 
-  // Google popup login — manda l'access token al backend
+  // Google popup sign-in — sends the access token to the backend
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
@@ -98,7 +98,7 @@ const Login = () => {
           <p>{t('login.subtitle')}</p>
         </div>
 
-        {/* Bottone Google */}
+        {/* Google button */}
         <button
           type="button"
           className="google-button"
@@ -157,12 +157,6 @@ const Login = () => {
             {formErrors.password && (
               <span className="field-error">{formErrors.password}</span>
             )}
-          </div>
-
-          <div className="form-footer">
-            <Link to="/forgot-password" className="forgot-link">
-              {t('login.forgotPassword')}
-            </Link>
           </div>
 
           <button

@@ -1,11 +1,11 @@
 // ============================================
-// PasswordInput — champ mot de passe avec bouton afficher/masquer
+// PasswordInput — password field with a show/hide button
 //
-// Saisir un mot de passe à l'aveugle est la première cause d'échec
-// d'inscription : une faute de frappe invisible, et l'utilisateur
-// recommence sans comprendre. Le bouton œil corrige cela.
+// Typing a password blind is the leading cause of failed sign-ups:
+// one invisible typo and the user starts over without understanding
+// why. The eye button fixes that.
 //
-// S'utilise comme un <input> classique : mêmes props (value, onChange,
+// Used exactly like a plain <input>: same props (value, onChange,
 // name, id, placeholder, className).
 // ============================================
 
@@ -41,12 +41,12 @@ const PasswordInput = ({
         {...rest}
       />
       <button
-        type="button"                    /* jamais submit : ne valide pas le formulaire */
+        type="button"                    /* never a submit button: it must not validate the form */
         className="pwd__toggle"
         onClick={() => setVisible(v => !v)}
         aria-label={visible ? hideLabel : showLabel}
         title={visible ? hideLabel : showLabel}
-        tabIndex={-1}                    /* ne casse pas la navigation clavier du formulaire */
+        tabIndex={-1}                    /* keeps the form's keyboard navigation intact */
       >
         <Icon name={visible ? 'eyeOff' : 'eye'} size={18} />
       </button>

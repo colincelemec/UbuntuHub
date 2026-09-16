@@ -1,5 +1,5 @@
 /* ============================================
-   Profile Page Styles — palette AfroItalia
+   Profile page styles
    ============================================ */
 
 .profile-container {
@@ -215,7 +215,7 @@
   background-color: #5a6268;
 }
 
-/* ── Collegamenti rapidi ── */
+/* ── Quick links ── */
 .profile-links {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

@@ -1,7 +1,7 @@
 // ============================================
-// ShareButtons — condivisione di una scheda attività
-// Su mobile usa la condivisione nativa del sistema (navigator.share);
-// altrimenti mostra WhatsApp, Facebook, email e « copia link ».
+// ShareButtons — share a business listing
+// On mobile it uses the system share sheet (navigator.share);
+// otherwise it shows WhatsApp, Facebook, email and "copy link".
 // ============================================
 
 import React, { useState, useCallback } from 'react';
@@ -21,15 +21,15 @@ const ShareButtons = ({ business }) => {
   const [copied, setCopied] = useState(false);
 
   const url = typeof window !== 'undefined' ? window.location.href : '';
-  const title = business?.name || 'AfroItalia';
+  const title = business?.name || 'UbuntuHub';
   const text = `${t('shareText')} ${title}`;
 
-  // Condivisione nativa (mobile): un solo tocco, apre il menu di sistema
+  // Native sharing (mobile): one tap opens the system share sheet
   const nativeShare = async () => {
     try {
       await navigator.share({ title, text, url });
     } catch {
-      /* l'utente ha annullato: nessuna azione */
+      /* the user cancelled: nothing to do */
     }
   };
 
@@ -40,7 +40,7 @@ const ShareButtons = ({ business }) => {
       toast.success(t('linkCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Browser senza accesso agli appunti: selezione manuale
+      // Browser without clipboard access: fall back to manual selection
       window.prompt(t('copyLink'), url);
     }
   };
@@ -76,7 +76,7 @@ const ShareButtons = ({ business }) => {
       <span className="sb__label"><Icon name="arrowR" size={14} /> {t('share')}</span>
 
       <div className="sb__buttons">
-        {/* Mobile: condivisione di sistema */}
+        {/* Mobile: system share sheet */}
         {canShareNatively && (
           <button type="button" className="sb-btn sb-btn--native" onClick={nativeShare}>
             <Icon name="arrowR" size={15} /> {t('share')}

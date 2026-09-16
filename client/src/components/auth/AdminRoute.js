@@ -1,6 +1,6 @@
 // ============================================
 // Admin Route Component
-// Accesso riservato agli utenti con ruolo ADMIN
+// Access restricted to users holding the ADMIN role
 // ============================================
 
 import React from 'react';
@@ -10,12 +10,12 @@ import useAuthStore from '../../stores/authStore';
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  // Non autenticato → login
+  // Not signed in → login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Autenticato ma non admin → dashboard
+  // Signed in but not an admin → dashboard
   if (user?.role !== 'ADMIN') {
     return <Navigate to="/dashboard" replace />;
   }

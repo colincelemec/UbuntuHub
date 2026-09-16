@@ -1,21 +1,21 @@
 // ============================================
-// CENSIMENTO — Attività della diaspora africana in Italia
-// Dati reali raccolti da fonti pubbliche (giugno 2026):
-// guide gastronomiche, stampa, siti ufficiali delle attività.
+// FIELD CENSUS — African diaspora businesses in Italy
+// Real data gathered from public sources (June 2026):
+// food guides, press articles, the businesses' own websites.
 //
-// NOTE IMPORTANTI:
-// - Le coordinate sono APPROSSIMATIVE (centro città + offset):
-//   da raffinare con geocoding degli indirizzi.
-// - I dati (indirizzi, aperture) vanno verificati prima della
-//   pubblicazione definitiva: le attività possono cambiare.
+// IMPORTANT NOTES:
+// - Coordinates are APPROXIMATE (city centre + offset):
+//   they should be refined by geocoding the addresses.
+// - The data (addresses, opening hours) must be verified before
+//   final publication: businesses change over time.
 //
-// Esecuzione:  node prisma/seeds/businesses-reali.js
+// Run with:  node prisma/seeds/businesses-reali.js
 // ============================================
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// ── Città (slug in italiano: coerenti con i filtri del frontend) ──
+// ── Cities (Italian slugs, matching the frontend filters) ──
 const CITIES = [
   { slug: 'milano',  name: 'Milano',  region: 'Lombardia',      latitude: 45.4642, longitude: 9.1900 },
   { slug: 'roma',    name: 'Roma',    region: 'Lazio',          latitude: 41.9028, longitude: 12.4964 },
@@ -35,10 +35,10 @@ const CITIES = [
   { slug: 'cagliari', name: 'Cagliari', region: 'Sardegna',     latitude: 39.2238, longitude: 9.1217 },
 ];
 
-// ── Censimento (category = slug categoria esistente nel seed) ──
+// ── Census entries (category = a category slug created by the seed) ──
 const BUSINESSES = [
 
-  // ════════ RISTORANTI — Milano ════════
+  // ════════ RESTAURANTS — Milan ════════
   { name: 'Warsa', city: 'milano', category: 'restaurant',
     address: 'Via Melzo 16',
     shortDesc: 'Storico ristorante eritreo di Porta Venezia',
@@ -72,7 +72,7 @@ const BUSINESSES = [
     shortDesc: 'Cucina senegalese e cultura a Sesto San Giovanni',
     description: 'Spazio di cucina senegalese e incontro culturale alle porte di Milano. Piatti della tradizione e iniziative per la comunità.' },
 
-  // ════════ RISTORANTI — Roma ════════
+  // ════════ RESTAURANTS — Rome ════════
   { name: 'Sahara', city: 'roma', category: 'restaurant',
     address: 'Viale Ippocrate 43',
     shortDesc: 'Il primo ristorante africano di Roma',
@@ -98,7 +98,7 @@ const BUSINESSES = [
     shortDesc: 'Cucina eritrea tradizionale vicino Termini',
     description: 'Ristorante rispettoso dei canoni della cucina tradizionale eritrea; il personale guida alla scoperta dei piatti più adatti.' },
 
-  // ════════ RISTORANTI — Torino ════════
+  // ════════ RESTAURANTS — Turin ════════
   { name: 'Mar Rosso Afro Restaurant & Cafe', city: 'torino', category: 'restaurant',
     address: 'Via Silvio Pellico 13/E',
     shortDesc: 'Trent\'anni di cucina africana a San Salvario',
@@ -108,13 +108,13 @@ const BUSINESSES = [
     shortDesc: 'Cucina afrodiscendente nel polo culturale di Borgo Dora',
     description: 'Ristorante sociale nel polo torinese dedicato alla cultura africana: piatti senegalesi, congolesi, marocchini e gambiani. Yassa di cipolle caramellate e fataya di Dakar.' },
 
-  // ════════ RISTORANTI — Bologna ════════
+  // ════════ RESTAURANTS — Bologna ════════
   { name: 'Ristorante Africano Adal', city: 'bologna', category: 'restaurant',
     address: 'Bologna',
     shortDesc: 'L\'Africa a Bologna dal 1990',
     description: 'Al servizio della clientela dal 1990: un menu che attraversa i sapori di tutta l\'Africa, dallo zighinì al cous cous, dallo yassa all\'alicià.' },
 
-  // ════════ RISTORANTI — Firenze ════════
+  // ════════ RESTAURANTS — Florence ════════
   { name: 'Corno d\'Africa Firenze', city: 'firenze', category: 'restaurant',
     address: 'Firenze',
     shortDesc: 'Il regno della cucina eritrea di Almaz',
@@ -128,13 +128,13 @@ const BUSINESSES = [
     shortDesc: 'Cucina eritrea ed etiope in centro',
     description: 'Cucina eritrea ed etiope nel centro di Firenze: injera, zighinì e specialità vegetariane della tradizione.' },
 
-  // ════════ RISTORANTI — Napoli ════════
+  // ════════ RESTAURANTS — Naples ════════
   { name: 'Loty', city: 'napoli', category: 'restaurant',
     address: 'Via Bologna 45',
     shortDesc: 'Cucina senegalese al mercato di Via Bologna',
     description: 'Porzioni abbondanti di carne grigliata, riso con pesce, yassa e mafè nel cuore del mercato interetnico di Via Bologna.' },
 
-  // ════════ RISTORANTI — Palermo ════════
+  // ════════ RESTAURANTS — Palermo ════════
   { name: 'Ciwara', city: 'palermo', category: 'restaurant',
     address: 'Quartiere Vucciria',
     shortDesc: 'Sapori dal Senegal e dal Mali alla Vucciria',
@@ -148,7 +148,7 @@ const BUSINESSES = [
     shortDesc: 'Cucina italo-ghanese, una storia d\'amore',
     description: 'Nato dall\'amore tra Azzurra, siciliana, e Mohammed Musah, ghanese: piatti espressi, ghanesi e siciliani, con cucina sempre attiva dal mezzogiorno.' },
 
-  // ════════ RISTORANTI — Genova ════════
+  // ════════ RESTAURANTS — Genoa ════════
   { name: 'Eritrea Huwnet', city: 'genova', category: 'restaurant',
     address: 'Via Macelli di Soziglia 32R',
     shortDesc: 'Vasta scelta di piatti eritrei nel centro storico',
@@ -158,7 +158,7 @@ const BUSINESSES = [
     shortDesc: 'Cucina eritrea da asporto nei caruggi',
     description: 'Takeaway specializzato in cucina eritrea nel centro storico di Genova: sapori del Corno d\'Africa da portare via.' },
 
-  // ════════ RISTORANTI — Verona / Padova ════════
+  // ════════ RESTAURANTS — Verona / Padua ════════
   { name: 'Zigni', city: 'verona', category: 'restaurant',
     address: 'Verona',
     shortDesc: 'Ristorante eritreo a Verona',
@@ -168,7 +168,7 @@ const BUSINESSES = [
     shortDesc: 'Specialità del Corno d\'Africa in ambiente familiare',
     description: 'Ristorante eritreo ed etiope: specialità del Corno d\'Africa servite in un ambiente familiare e confortevole.' },
 
-  // ════════ RISTORANTI — Bergamo ════════
+  // ════════ RESTAURANTS — Bergamo ════════
   { name: 'Dahlak', city: 'bergamo', category: 'restaurant',
     address: 'Via Borgo Palazzo 82/I',
     shortDesc: 'Sapori eritrei autentici a Borgo Palazzo dal 2014',
@@ -178,7 +178,7 @@ const BUSINESSES = [
     shortDesc: 'Ristorante tipico africano a Bergamo',
     description: 'Cucina tipica africana a Bergamo: piatti della tradizione subsahariana in un ambiente accogliente.' },
 
-  // ════════ RISTORANTI — Venezia / Catania / Bari ════════
+  // ════════ RESTAURANTS — Venice / Catania / Bari ════════
   { name: 'Africa Experience', city: 'venezia', category: 'restaurant',
     address: 'Dorsoduro, zona Accademia',
     shortDesc: 'Cucina africana e senegalese a Dorsoduro',
@@ -192,7 +192,7 @@ const BUSINESSES = [
     shortDesc: 'Cucina africana a Bari',
     description: 'Ristorante africano a Bari: un viaggio nei sapori del continente, dal cous cous ai piatti subsahariani.' },
 
-  // ════════ RISTORANTI — Parma / Cagliari ════════
+  // ════════ RESTAURANTS — Parma / Cagliari ════════
   { name: 'Africa 2', city: 'parma', category: 'restaurant',
     address: 'Centro storico',
     shortDesc: 'Cucina eritrea in centro a Parma dal 1983',
@@ -210,7 +210,7 @@ const BUSINESSES = [
     shortDesc: 'Cucina keniota a conduzione familiare',
     description: 'Ristorante africano a conduzione familiare: piatti tipici del Kenya e dell\'Africa orientale nel cuore della Sardegna.' },
 
-  // ════════ COIFFEUR / BARBIERI ════════
+  // ════════ HAIRDRESSERS / BARBERS ════════
   { name: 'Rella\'s Eden', city: 'milano', category: 'coiffeur',
     address: 'Via San Gregorio 18',
     shortDesc: 'La specialista milanese dei capelli afro e ricci',
@@ -240,7 +240,7 @@ const BUSINESSES = [
     shortDesc: 'Treccine e acconciature afro a domicilio in Campania',
     description: 'Servizio mobile di parrucchiere afro in tutta la Campania: treccine classiche e strette, dreads, crochet braids e twist senegalesi.' },
 
-  // ════════ ÉPICERIE / ALIMENTARI ════════
+  // ════════ GROCERY STORES ════════
   { name: 'Emporio Officinale (ex Afro World)', city: 'bologna', category: 'epicerie',
     address: 'Via O. Serra 22',
     shortDesc: 'Alimentari, cosmetici e artigianato africano dal 2001',
@@ -254,7 +254,7 @@ const BUSINESSES = [
     shortDesc: 'Prodotti africani nel quartiere Esquilino',
     description: 'I dintorni di Piazza Vittorio sono costellati di negozi alimentari con prodotti africani: farine, spezie, pesce essiccato e verdure tropicali.' },
 
-  // ════════ MODA ════════
+  // ════════ FASHION ════════
   { name: 'KeChic', city: 'milano', category: 'mode',
     address: 'Milano',
     shortDesc: 'La sartoria multietnica che unisce Milano a Dakar',
@@ -272,7 +272,7 @@ const BUSINESSES = [
     shortDesc: 'Moda sostenibile con tessuti wax africani',
     description: 'Brand di moda etica: abbigliamento etnico e accessori realizzati a mano in Italia con materiali upcycling e tessuti wax africani, in collaborazione con sartorie sociali.' },
 
-  // ════════ BEAUTÉ ════════
+  // ════════ BEAUTY ════════
   { name: 'Divina BLK', city: 'milano', category: 'beaute',
     address: 'Milano',
     shortDesc: 'Cosmetici per capelli ricci, super-ricci e afro',
@@ -283,13 +283,13 @@ const BUSINESSES = [
     description: 'Negozio di riferimento dal 2003 per prodotti per capelli, treccine, extension, accessori e cosmetici afro.' },
 ];
 
-// ── offset deterministico per distribuire i marker sulla mappa ──
+// ── Deterministic offset, so map markers do not overlap ──
 const offset = (i) => ((i % 7) - 3) * 0.004;
 
 async function main() {
   console.log('🌍 Censimento attività della diaspora africana in Italia\n');
 
-  // 1. Città (slug italiani)
+  // 1. Cities (Italian slugs)
   console.log('🏙️  Città...');
   const cityMap = {};
   for (const c of CITIES) {
@@ -302,7 +302,7 @@ async function main() {
   }
   console.log(`✅ ${Object.keys(cityMap).length} città pronte`);
 
-  // 2. Categorie esistenti
+  // 2. Existing categories
   const categories = await prisma.category.findMany();
   const catMap = Object.fromEntries(categories.map(c => [c.slug, c]));
   const missing = [...new Set(BUSINESSES.map(b => b.category))].filter(s => !catMap[s]);
@@ -310,20 +310,20 @@ async function main() {
     throw new Error(`Categorie mancanti nel database: ${missing.join(', ')} — esegui prima il seed principale.`);
   }
 
-  // 3. Proprietario placeholder per le attività censite
+  // 3. Placeholder owner for the census listings
   const owner = await prisma.user.upsert({
-    where: { email: 'censimento@afroitalia.it' },
+    where: { email: 'censimento@ubuntuhub.it' },
     update: {},
     create: {
-      email: 'censimento@afroitalia.it',
+      email: 'censimento@ubuntuhub.it',
       firstName: 'Censimento',
-      lastName: 'AfroItalia',
+      lastName: 'UbuntuHub',
       role: 'BUSINESS',
       isVerified: true,
     },
   });
 
-  // 4. Attività
+  // 4. Businesses
   console.log('🏢 Attività...');
   let created = 0;
   for (let i = 0; i < BUSINESSES.length; i++) {
@@ -347,12 +347,14 @@ async function main() {
         address: b.address,
         cityId: city.id,
         categoryId: catMap[b.category].id,
-        // coordinate approssimative (centro città + offset) — da geocodificare
+        // approximate coordinates (city centre + offset) — to be geocoded
         latitude: city.latitude + offset(i),
         longitude: city.longitude + offset(i + 3),
+        // `status` drives publication: listings are visible straight away.
+        // `isVerified` is a badge instead, earned only after a human check:
+        // the census grants it to nobody.
         status: 'VERIFIED',
-        isVerified: true,
-        verifiedAt: new Date(),
+        isVerified: false,
       },
     });
     created++;
@@ -360,7 +362,7 @@ async function main() {
 
   console.log(`✅ ${created} attività censite e classificate\n`);
 
-  // Riepilogo per categoria
+  // Summary by category
   const summary = {};
   for (const b of BUSINESSES) summary[b.category] = (summary[b.category] || 0) + 1;
   console.log('📊 Riepilogo per categoria:');

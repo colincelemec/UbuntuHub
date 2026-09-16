@@ -1,19 +1,19 @@
 // ============================================
-// Sitemap XML — généré depuis la base
-// Liste les pages publiques : accueil, annuaire, villes et
-// toutes les fiches vérifiées, pour que Google les découvre.
+// XML sitemap — generated from the database
+// Lists the public pages: home, directory, cities and every
+// published listing, so that search engines can find them.
 // ============================================
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Domaine public du site (pas celui de l'API)
+// Public domain of the site (not the API one)
 const SITE_URL = (process.env.CLIENT_URL || 'http://localhost:3000')
   .split(',')[0]
   .trim()
   .replace(/\/$/, '');
 
-/** Échappe les caractères interdits dans le XML */
+/** Escapes characters that are not allowed in XML */
 const escapeXml = (str = '') =>
   str.replace(/[<>&'"]/g, (c) => ({
     '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;',
@@ -34,8 +34,8 @@ exports.getSitemap = async (req, res) => {
   try {
     const [businesses, cities] = await Promise.all([
       prisma.business.findMany({
-        // Toutes les fiches publiées, contrôlées ou non : elles sont
-        // publiques, donc elles doivent être indexables.
+        // Every published listing, checked or not: they are public,
+        // so they must be indexable.
         where: { status: 'VERIFIED' },
         select: { slug: true, updatedAt: true },
         orderBy: { updatedAt: 'desc' },
@@ -52,21 +52,21 @@ exports.getSitemap = async (req, res) => {
       { loc: `${SITE_URL}/register`, changefreq: 'monthly', priority: '0.5' },
       { loc: `${SITE_URL}/login`, changefreq: 'monthly', priority: '0.3' },
 
-      // Pages légales
+      // Static pages
       ...['privacy', 'terms', 'cookies'].map(type => ({
         loc: `${SITE_URL}/legal/${type}`,
         changefreq: 'yearly',
         priority: '0.2',
       })),
 
-      // Annuaire filtré par ville : autant de pages d'atterrissage
+      // Directory filtered by city: one landing page per city
       ...cities.map(c => ({
         loc: `${SITE_URL}/activities?city=${c.slug}`,
         changefreq: 'weekly',
         priority: '0.6',
       })),
 
-      // Fiches des activités
+      // Business detail pages
       ...businesses.map(b => ({
         loc: `${SITE_URL}/businesses/${b.slug}`,
         lastmod: b.updatedAt?.toISOString().split('T')[0],

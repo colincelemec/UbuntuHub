@@ -1,10 +1,10 @@
 // ============================================
-// Détails d'erreur pour les réponses API
+// Error details returned in API responses
 //
-// En développement il est pratique de renvoyer error.message au client.
-// En production c'est une fuite d'information : les messages de Prisma
-// exposent les noms de tables, de colonnes et parfois des fragments de
-// requêtes SQL, précieux pour un attaquant.
+// In development, returning error.message to the client is convenient.
+// In production it leaks information: Prisma messages expose table
+// and column names, and sometimes fragments of SQL queries — all
+// valuable to an attacker.
 //
 // Usage :
 //   res.status(500).json({ success: false, message: '…', ...devDetails(error) });
@@ -13,8 +13,8 @@
 const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
 
 /**
- * Renvoie { error: '…' } en développement, {} en production.
- * L'erreur complète reste toujours visible dans les logs serveur.
+ * Returns { error: '…' } in development, {} in production.
+ * The full error always remains visible in the server logs.
  */
 function devDetails(error) {
   if (!isDev) return {};

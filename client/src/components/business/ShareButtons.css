@@ -1,5 +1,5 @@
 /* ============================================
-   ShareButtons — condivisione della scheda
+   ShareButtons — sharing a business listing
    ============================================ */
 
 .sb {
@@ -67,7 +67,7 @@
 @media (max-width: 560px) {
   .sb { flex-direction: column; align-items: stretch; }
   .sb__buttons { justify-content: space-between; }
-  /* Su schermi stretti restano solo le icone */
+  /* On narrow screens only the icons remain */
   .sb-btn__text { display: none; }
   .sb-btn { padding: 10px 14px; justify-content: center; flex: 1; }
   .sb-btn--native .sb-btn__text { display: inline; }

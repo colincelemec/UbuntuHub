@@ -1,6 +1,6 @@
 // ============================================
 // Profile Page — editable & savable
-// Campi supportati dal backend: firstName, lastName, phone, avatar
+// Fields supported by the backend: firstName, lastName, phone, avatar
 // ============================================
 
 import React, { useState } from 'react';
@@ -215,7 +215,7 @@ const Profile = () => {
           </form>
         </div>
 
-        {/* Collegamenti rapidi */}
+        {/* Quick links */}
         <div className="profile-links">
           <h2>{t('app.profile.mySpace')}</h2>
           <Link to="/dashboard" className="profile-link-card">

@@ -14,7 +14,7 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Erreur de ressource non trouvée Prisma
+  // Prisma "record not found" error
   if (err.code === 'P2025') {
     return res.status(404).json({
       success: false,
@@ -46,7 +46,7 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Erreur par défaut
+  // Default error
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Erreur serveur interne';
 

@@ -1,4 +1,4 @@
-# Dockerfile pour AfroItalia API (Development)
+# Dockerfile pour UbuntuHub API (Development)
 FROM node:18-alpine
 
 # Installer dumb-init pour gérer les signaux correctement

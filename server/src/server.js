@@ -5,8 +5,8 @@
 require('dotenv').config();
 const { checkEnv } = require('./config/checkEnv');
 
-// Vérifie la configuration AVANT de charger l'app :
-// en production, un secret d'exemple interrompt le démarrage.
+// Check the configuration BEFORE loading the app:
+// in production, an example secret aborts start-up.
 checkEnv();
 
 const app = require('./app');
@@ -14,23 +14,23 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
-const HOST = '0.0.0.0'; // Requis par Railway/Render pour exposer le port
+const HOST = '0.0.0.0'; // Required by Railway/Render to expose the port
 
 // ============================================
-// DÉMARRAGE DU SERVEUR
+// SERVER START-UP
 // ============================================
 
 const startServer = async () => {
   try {
-    // Test de connexion à la base de données
+    // Database connectivity check
     await prisma.$connect();
     console.log('✅ Connecté à PostgreSQL via Prisma');
 
-    // Démarrer le serveur
+    // Start the server
     app.listen(PORT, HOST, () => {
       console.log('');
       console.log('🚀 ============================================');
-      console.log(`🚀 AfroItalia API Server`);
+      console.log(`🚀 UbuntuHub API Server`);
       console.log(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🚀 Port: ${PORT}`);
       console.log(`🚀 Health Check: /health`);
@@ -45,7 +45,7 @@ const startServer = async () => {
 };
 
 // ============================================
-// GESTION DE L'ARRÊT PROPRE
+// GRACEFUL SHUTDOWN
 // ============================================
 
 const gracefulShutdown = async (signal) => {
@@ -61,9 +61,9 @@ const gracefulShutdown = async (signal) => {
   }
 };
 
-// Écouter les signaux d'arrêt
+// Listen for shutdown signals
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Démarrer
+// Start
 startServer();

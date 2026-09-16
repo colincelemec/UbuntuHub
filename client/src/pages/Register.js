@@ -86,7 +86,7 @@ const Register = () => {
     }
 
     try {
-      // Découper le nom complet en prénom / nom pour l'API
+      // Split the full name into first and last name for the API
       const trimmed = formData.name.trim();
       const spaceIdx = trimmed.indexOf(' ');
       const firstName = spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx);

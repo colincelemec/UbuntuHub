@@ -1,5 +1,5 @@
 // ============================================
-// Seed Database - Données de test
+// Database seed — reference data and demo accounts
 // ============================================
 
 const { PrismaClient } = require('@prisma/client');
@@ -11,12 +11,12 @@ async function main() {
   console.log('🌱 Début du seed de la base de données...\n');
 
   // ============================================
-  // 1. VILLES ITALIENNES
+  // 1. ITALIAN CITIES
   // ============================================
   console.log('📍 Création des villes...');
 
-  // NB: les slugs/noms sont en italien (canoniques dans toute l'app).
-  // La liste complète des 107 chefs-lieux est dans seeds/cities-italia.js.
+  // NB: slugs and names are Italian (canonical across the whole app).
+  // The full list of the 107 provincial capitals lives in seeds/cities-italia.js.
   const cities = await Promise.all([
     prisma.city.upsert({
       where: { slug: 'milano' },
@@ -88,7 +88,7 @@ async function main() {
   console.log(`✅ ${cities.length} villes créées\n`);
 
   // ============================================
-  // 2. CATÉGORIES
+  // 2. CATEGORIES
   // ============================================
   console.log('🏷️  Création des catégories...');
 
@@ -164,16 +164,16 @@ async function main() {
   console.log(`✅ ${categories.length} catégories créées\n`);
 
   // ============================================
-  // 3. UTILISATEURS
+  // 3. USERS
   // ============================================
   console.log('👥 Création des utilisateurs...');
 
-  // ── Sécurité ──
-  // Les comptes de démonstration ne doivent JAMAIS exister en production
-  // avec un mot de passe connu. On refuse de les créer si NODE_ENV=production
-  // sans mot de passe explicite.
+  // ── Security ──
+  // Demo accounts must NEVER exist in production with a known password.
+  // We refuse to create them when NODE_ENV=production and no explicit
+  // password was provided.
   const isProduction = process.env.NODE_ENV === 'production';
-  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@afroitalia.com';
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@ubuntuhub.com';
   const adminPassword = process.env.SEED_ADMIN_PASSWORD;
 
   if (isProduction && !adminPassword) {
@@ -195,18 +195,15 @@ async function main() {
       email: adminEmail,
       passwordHash: hashedAdminPassword,
       firstName: 'Admin',
-      lastName: 'AfroItalia',
+      lastName: 'UbuntuHub',
       role: 'ADMIN',
       isVerified: true
     }
   });
 
-  // ── Comptes de démonstration : jamais en production ──
-  let user1 = null;
-  let businessOwner = null;
-
+  // ── Demo accounts: never in production ──
   if (!isProduction) {
-    user1 = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: 'john@example.com' },
       update: {},
       create: {
@@ -219,7 +216,7 @@ async function main() {
       }
     });
 
-    businessOwner = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: 'owner@example.com' },
       update: {},
       create: {
@@ -242,140 +239,15 @@ async function main() {
   }
 
   // ============================================
-  // 4. ENTREPRISES (données de démonstration)
+  // 4. BUSINESSES
   // ============================================
-  // En production on s'arrête ici : les vraies attività proviennent du
-  // recensement (prisma/seeds/businesses-reali.js), pas de fausses fiches.
-  if (isProduction) {
-    console.log('⏭️  Données de démonstration ignorées (production).');
-    console.log('   Lancez ensuite : npm run db:seed:cities && node prisma/seeds/businesses-reali.js\n');
-    return;
-  }
-
-  console.log('🏢 Création des entreprises...');
-
-  const business1 = await prisma.business.create({
-    data: {
-      ownerId: businessOwner.id,
-      name: 'Ristorante Africano Milano',
-      slug: 'ristorante-africano-milano-' + Date.now(),
-      description: 'Découvrez les saveurs authentiques de l\'Afrique de l\'Ouest dans notre restaurant chaleureux. Spécialités sénégalaises et nigérianes.',
-      shortDesc: 'Cuisine africaine authentique à Milan',
-      cityId: cities[0].id, // Milan
-      categoryId: categories[0].id, // Restaurant
-      address: 'Via Paolo Sarpi, 123',
-      latitude: 45.4808,
-      longitude: 9.1844,
-      zipCode: '20154',
-      phone: '+39 02 1234567',
-      email: 'info@ristoranteafricano.it',
-      subscriptionTier: 'PREMIUM',
-      status: 'VERIFIED',
-      isVerified: true,
-      verifiedAt: new Date()
-    }
-  });
-
-  const business2 = await prisma.business.create({
-    data: {
-      ownerId: businessOwner.id,
-      name: 'African Hair Salon',
-      slug: 'african-hair-salon-' + Date.now(),
-      description: 'Salon de coiffure spécialisé dans les coiffures afro. Tresses, nattes, tissages et soins capillaires.',
-      shortDesc: 'Coiffure afro professionnelle',
-      cityId: cities[0].id, // Milan
-      categoryId: categories[1].id, // Coiffeur
-      address: 'Via Padova, 45',
-      latitude: 45.4875,
-      longitude: 9.2194,
-      zipCode: '20127',
-      phone: '+39 02 9876543',
-      subscriptionTier: 'BASIC',
-      status: 'VERIFIED',
-      isVerified: true,
-      verifiedAt: new Date()
-    }
-  });
-
-  const business3 = await prisma.business.create({
-    data: {
-      ownerId: businessOwner.id,
-      name: 'Africa Market Roma',
-      slug: 'africa-market-roma-' + Date.now(),
-      description: 'Épicerie africaine proposant une large gamme de produits alimentaires, cosmétiques et articles traditionnels d\'Afrique.',
-      shortDesc: 'Produits africains à Rome',
-      cityId: cities[1].id, // Rome
-      categoryId: categories[2].id, // Épicerie
-      address: 'Via Casilina, 789',
-      latitude: 41.8864,
-      longitude: 12.5439,
-      zipCode: '00177',
-      phone: '+39 06 1234567',
-      website: 'https://africamarket.it',
-      subscriptionTier: 'FREE',
-      status: 'VERIFIED',
-      isVerified: true,
-      verifiedAt: new Date()
-    }
-  });
-
-  console.log(`✅ 3 entreprises créées\n`);
-
-  // ============================================
-  // 5. REVIEWS
-  // ============================================
-  console.log('⭐ Création des avis...');
-
-  await prisma.review.create({
-    data: {
-      businessId: business1.id,
-      userId: user1.id,
-      rating: 5,
-      comment: 'Excellente cuisine ! Le thieboudienne était délicieux. Ambiance chaleureuse et service impeccable.',
-      isVisible: true
-    }
-  });
-
-  await prisma.review.create({
-    data: {
-      businessId: business1.id,
-      userId: admin.id,
-      rating: 4,
-      comment: 'Très bon restaurant, portions généreuses. Je recommande !',
-      isVisible: true
-    }
-  });
-
-  await prisma.review.create({
-    data: {
-      businessId: business2.id,
-      userId: user1.id,
-      rating: 5,
-      comment: 'Coiffeuse très professionnelle, mes tresses sont parfaites !',
-      isVisible: true
-    }
-  });
-
-  console.log('✅ 3 avis créés\n');
-
-  // ============================================
-  // 6. FAVORIS
-  // ============================================
-  console.log('❤️  Création des favoris...');
-
-  await prisma.favorite.create({
-    data: {
-      userId: user1.id,
-      businessId: business1.id
-    }
-  });
-
-  console.log('✅ 1 favori créé\n');
+  // No fictional businesses: every listing comes from the field census
+  // (prisma/seeds/businesses-reali.js).
+  // A directory built on trust cannot invent its own data.
+  console.log('🏢 Attività: nessun dato di esempio.');
+  console.log('   Caricale con: node prisma/seeds/businesses-reali.js\n');
 
   console.log('🎉 Seed terminé avec succès !\n');
-  console.log('Vous pouvez maintenant vous connecter avec :');
-  console.log('  Email: admin@afroitalia.com');
-  console.log('  Password: password123\n');
 }
 
 main()

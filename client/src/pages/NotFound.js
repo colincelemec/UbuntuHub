@@ -1,5 +1,5 @@
 // ============================================
-// NotFound — pagina 404 trilingue
+// NotFound — trilingual 404 page
 // ============================================
 
 import React from 'react';
@@ -17,7 +17,7 @@ const NotFound = () => {
   const { language } = useLanguage();
   const t = (path) => getTranslation(path, language);
 
-  // Une page 404 ne doit jamais être indexée
+  // A 404 page must never be indexed
   usePageMeta({ title: t('common.notFound.title'), noIndex: true });
 
   return (

@@ -1,6 +1,6 @@
 // ============================================
-// Controller: Meta (villes & catégories)
-// Données de référence pour les formulaires (publiques)
+// Controller: meta (cities & categories)
+// Reference data used by the forms (public)
 // ============================================
 
 const { PrismaClient } = require('@prisma/client');
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 /**
  * GET /api/meta/cities
- * Liste des villes actives (pour les selects du formulaire)
+ * Active cities, used by the form dropdowns
  */
 exports.getCities = async (req, res) => {
   try {
@@ -39,7 +39,7 @@ exports.getCities = async (req, res) => {
 
 /**
  * GET /api/meta/categories
- * Liste des catégories actives
+ * Active categories
  */
 exports.getCategories = async (req, res) => {
   try {

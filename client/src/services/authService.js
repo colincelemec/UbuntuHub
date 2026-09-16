@@ -6,8 +6,8 @@
 import api from './api';
 
 /**
- * Il backend risponde con { success, message, data: { user, token } }.
- * Normalizziamo la risposta esponendo user e token al livello superiore.
+ * The backend answers with { success, message, data: { user, token } }.
+ * We normalise it, lifting user and token to the top level.
  */
 const normalizeAuthResponse = (response) => {
   const payload = response?.data || response || {};
@@ -63,7 +63,7 @@ const authService = {
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    // La navigazione è gestita da chi chiama (SPA, niente ricaricamento completo)
+    // Navigation is handled by the caller (SPA, no full page reload)
   },
 
   /**
@@ -142,34 +142,6 @@ const authService = {
       }
 
       return response;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  /**
-   * Request password reset
-   * @param {string} email - User email
-   * @returns {Promise}
-   */
-  forgotPassword: async (email, lang) => {
-    try {
-      return await api.post('/auth/forgot-password', { email, lang });
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  /**
-   * Reset password
-   * @param {string} token - Reset token (dal link email)
-   * @param {string} newPassword - New password
-   * @returns {Promise}
-   */
-  resetPassword: async (token, newPassword) => {
-    try {
-      // Il backend si aspetta il token nell'URL e { newPassword } nel body
-      return await api.post(`/auth/reset-password/${token}`, { newPassword });
     } catch (error) {
       throw error;
     }

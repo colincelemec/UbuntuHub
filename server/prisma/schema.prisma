@@ -1,5 +1,5 @@
-// Schéma Prisma pour AfroItalia Platform
-// Base de données: PostgreSQL avec extension PostGIS
+// Prisma schema for the UbuntuHub platform
+// Database: PostgreSQL
 
 generator client {
   provider = "prisma-client-js"
@@ -11,13 +11,13 @@ datasource db {
 }
 
 // ============================================
-// UTILISATEURS & AUTHENTIFICATION
+// USERS & AUTHENTICATION
 // ============================================
 
 enum UserRole {
-  USER          // Utilisateur simple
-  BUSINESS      // Propriétaire d'entreprise
-  ADMIN         // Administrateur
+  USER          // Regular user
+  BUSINESS      // Business owner
+  ADMIN         // Administrator
 }
 
 model User {
@@ -27,7 +27,7 @@ model User {
   firstName     String?   @map("first_name")
   lastName      String?   @map("last_name")
   phone         String?
-  avatar        String?   // URL de l'avatar
+  avatar        String?   // Avatar URL
   role          UserRole  @default(USER)
   isVerified    Boolean   @default(false) @map("is_verified")
   googleId      String?   @unique @map("google_id")
@@ -38,26 +38,25 @@ model User {
   businesses    Business[]
   reviews       Review[]
   favorites     Favorite[]
-  claims        BusinessClaim[]
 
   @@map("users")
 }
 
 // ============================================
-// VILLES & CATÉGORIES
+// CITIES & CATEGORIES
 // ============================================
 
 model City {
   id          String      @id @default(cuid())
   name        String      @unique
   slug        String      @unique
-  region      String      // Ex: Lombardia, Lazio
+  region      String      // e.g. Lombardia, Lazio
   latitude    Float
   longitude   Float
   description String?
-  image       String?     // Image de la ville
+  image       String?     // City picture
   isActive    Boolean     @default(true) @map("is_active")
-  order       Int         @default(0) // Pour l'ordre d'affichage
+  order       Int         @default(0) // Display order
 
   // Relations
   businesses  Business[]
@@ -70,8 +69,8 @@ model Category {
   name        String      @unique
   slug        String      @unique
   description String?
-  icon        String?     // Icon name ou URL
-  color       String?     // Couleur pour l'UI
+  icon        String?     // Icon name or URL
+  color       String?     // Colour used in the UI
   order       Int         @default(0)
   isActive    Boolean     @default(true) @map("is_active")
 
@@ -82,7 +81,7 @@ model Category {
 }
 
 // ============================================
-// ENTREPRISES
+// BUSINESSES
 // ============================================
 
 enum SubscriptionTier {
@@ -92,10 +91,10 @@ enum SubscriptionTier {
 }
 
 enum BusinessStatus {
-  PENDING     // En attente de vérification
-  VERIFIED    // Vérifié
-  REJECTED    // Rejeté
-  SUSPENDED   // Suspendu
+  PENDING     // Awaiting a check
+  VERIFIED    // Published
+  REJECTED    // Rejected
+  SUSPENDED   // Suspended
 }
 
 model Business {
@@ -104,16 +103,16 @@ model Business {
   name            String
   slug            String            @unique
   description     String
-  shortDesc       String?           @map("short_desc") // Description courte pour les listes
+  shortDesc       String?           @map("short_desc") // Short description used in lists
 
-  // Localisation
+  // Location
   cityId          String            @map("city_id")
   address         String
   latitude        Float
   longitude       Float
   zipCode         String?           @map("zip_code")
 
-  // Catégorie
+  // Category
   categoryId      String            @map("category_id")
 
   // Contact
@@ -122,15 +121,15 @@ model Business {
   website         String?
   whatsapp        String?
 
-  // Médias
-  logo            String?           // URL du logo
+  // Media
+  logo            String?           // Logo URL
   coverImage      String?           @map("cover_image")
-  images          String[]          // Array d'URLs
+  images          String[]          // Array of URLs
 
-  // Horaires (JSON: {monday: {open: "09:00", close: "18:00"}, ...})
+  // Opening hours (JSON: {monday: {open: "09:00", close: "18:00"}, ...})
   hours           Json?
 
-  // Réseaux sociaux
+  // Social networks
   facebook        String?
   instagram       String?
   twitter         String?
@@ -152,7 +151,7 @@ model Business {
   metaTitle       String?           @map("meta_title")
   metaDescription String?           @map("meta_description")
 
-  // Abonnement
+  // Subscription
   subscriptionEndsAt DateTime?      @map("subscription_ends_at")
 
   createdAt       DateTime          @default(now()) @map("created_at")
@@ -164,7 +163,6 @@ model Business {
   category        Category          @relation(fields: [categoryId], references: [id])
   reviews         Review[]
   favorites       Favorite[]
-  claims          BusinessClaim[]
 
   @@index([cityId])
   @@index([categoryId])
@@ -173,65 +171,24 @@ model Business {
   @@map("businesses")
 }
 
-// ============================================
-// REVENDICATION DE FICHE (« C'est mon activité »)
-// Les fiches issues du recensement appartiennent à un compte
-// placeholder : le vrai propriétaire demande à en prendre le contrôle.
-// ============================================
-
-enum ClaimStatus {
-  PENDING     // En attente de vérification par un admin
-  APPROVED    // Approuvée : la fiche a été transférée
-  REJECTED    // Refusée
-}
-
-model BusinessClaim {
-  id           String      @id @default(cuid())
-  businessId   String      @map("business_id")
-  userId       String      @map("user_id")      // Demandeur
-
-  // Informations fournies par le demandeur
-  fullName     String      @map("full_name")
-  role         String                            // Ex: propriétaire, gérant
-  phone        String
-  email        String
-  message      String?                           // Justification libre
-
-  status       ClaimStatus @default(PENDING)
-  adminNote    String?     @map("admin_note")    // Motif du refus, notes internes
-  reviewedAt   DateTime?   @map("reviewed_at")
-  reviewedById String?     @map("reviewed_by_id")
-
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-
-  business     Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Une seule demande en cours par utilisateur et par fiche
-  @@unique([businessId, userId])
-  @@index([status])
-  @@index([businessId])
-  @@map("business_claims")
-}
 
 // ============================================
-// AVIS & NOTES
+// REVIEWS & RATINGS
 // ============================================
 
 model Review {
   id          String    @id @default(cuid())
   businessId  String    @map("business_id")
   userId      String    @map("user_id")
-  rating      Int       // 1-5 étoiles
+  rating      Int       // 1-5 stars
   comment     String?
-  images      String[]  // Photos du client
+  images      String[]  // Customer photos
 
-  // Réponse du propriétaire
+  // Owner's reply
   response    String?
   respondedAt DateTime? @map("responded_at")
 
-  // Modération
+  // Moderation
   isVisible   Boolean   @default(true) @map("is_visible")
   isReported  Boolean   @default(false) @map("is_reported")
 
@@ -242,14 +199,14 @@ model Review {
   business    Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([businessId, userId]) // Un user ne peut laisser qu'un avis par business
+  @@unique([businessId, userId]) // A user may leave only one review per business
   @@index([businessId])
   @@index([userId])
   @@map("reviews")
 }
 
 // ============================================
-// FAVORIS
+// FAVOURITES
 // ============================================
 
 model Favorite {
@@ -268,6 +225,6 @@ model Favorite {
   @@map("favorites")
 }
 
-// NB : le modèle Payment (Stripe) a été retiré avec la fonctionnalité
-// d'abonnement. L'énumération SubscriptionTier est conservée : elle sert
-// encore au badge « Premium » et au tri des résultats.
+// NB: the Payment model (Stripe) was removed together with the
+// subscription feature. The SubscriptionTier enum is no longer used
+// anywhere in the application: a migration could drop it.

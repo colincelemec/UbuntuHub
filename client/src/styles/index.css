@@ -1,95 +1,50 @@
 /* ============================================
-   AfroItalia — Design Tokens
-   Tema unico GitHub-dark (coerente con la landing):
-   oro/ambra su #0d1117, font Mona Sans
+   UbuntuHub — design tokens
+   A single theme: warm cream and terracotta.
+   Every colour in the interface starts here.
    ============================================ */
 
 :root {
-  /* Palette — GitHub dark adattata all'identità AfroItalia */
-  --color-primary: #e8a33d;        /* oro/ambra: azioni, link, stati attivi */
-  --color-primary-dark: #cf8a26;   /* hover */
-  --color-primary-light: #f0b95e;  /* dettagli chiari */
-  --color-primary-soft: rgba(232, 163, 61, 0.12); /* sfondi tenui */
-  --color-on-primary: #1a1106;     /* testo sopra il colore primario */
-  --color-accent: #e8a33d;         /* stelle, highlight */
-  --color-ember: #d97e4a;          /* secondario caldo (gradienti) */
-  --color-brown: #8b4513;          /* marrone identitario (orbe, gradienti) */
-
-  --color-bg: #0d1117;             /* sfondo pagina */
-  --color-surface: #161b22;        /* card / superfici */
-  --color-border: #30363d;         /* bordi */
-
-  --color-text: #e6edf3;           /* testo principale */
-  --color-text-bright: #f0f6fc;    /* titoli */
-  --color-muted: #8d96a0;          /* testo secondario */
-
-  --color-success: #3fb950;        /* verde GitHub */
-  --color-success-soft: rgba(63, 185, 80, 0.15);
-  --color-error: #f85149;          /* rosso GitHub */
-  --color-error-soft: rgba(248, 81, 73, 0.15);
-
-  /* Tipografia — Mona Sans ovunque (come la landing) */
-  --font-base: 'Mona Sans Variable', 'Mona Sans', 'DM Sans', -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-  --font-display: 'Mona Sans Variable', 'Mona Sans', 'Poppins', -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
-  /* Formes — arrondis généreux : l'interface paraît plus douce,
-     plus accueillante, moins « logicielle ». */
-  --radius-sm: 10px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.55);
-
-  /* Rythme vertical : une seule échelle, pour un espacement cohérent */
-  --space-section: 96px;
-  --space-section-sm: 64px;
-
-  /* Skeleton / shimmer (caricamento) */
-  --skeleton-base: #161b22;
-  --skeleton-shine: #21262d;
-
-  color-scheme: dark;
-}
-
-/* ============================================
-   Lato chiaro — [data-theme='light']
-   Palette calda crema/marrone, stessa identità
-   ============================================ */
-[data-theme='light'] {
-  /* Terracotta : plus chaleureuse et plus lisible que le marron foncé,
-     elle évoque la terre africaine sans assombrir l'interface. */
+  /* Terracotta: evokes African soil without darkening the interface */
   --color-primary: #b4552d;
   --color-primary-dark: #8f3f1e;
   --color-primary-light: #d17a4e;
-  --color-primary-soft: #fdf1e9;   /* fonds de badges, états actifs */
-  --color-on-primary: #ffffff;
-  --color-accent: #e0932f;         /* ambre : étoiles, points forts */
-  --color-ember: #d97e4a;
-  --color-brown: #8b4513;
+  --color-primary-soft: #fdf1e9;   /* badge backgrounds and active states */
+  --color-on-primary: #ffffff;     /* text placed on the primary colour */
+  --color-accent: #e0932f;         /* amber: stars and highlights */
+  --color-ember: #d97e4a;          /* warm secondary (gradients) */
+  --color-brown: #8b4513;          /* brand brown */
 
-  /* Fonds : crème très clair, jamais blanc pur — plus doux pour l'œil */
+  /* Backgrounds: very light cream, never pure white — easier on the eye */
   --color-bg: #fdfaf6;
   --color-surface: #ffffff;
-  --color-surface-alt: #f7f1ea;    /* alternance de sections */
+  --color-surface-alt: #f7f1ea;    /* alternating section background */
   --color-border: #ece2d6;
 
   --color-text: #33261c;
-  --color-text-bright: #1d130b;
-  /* Assombri : #857567 tombait à 4,26:1, sous le seuil WCAG AA de 4,5 */
-  --color-muted: #786858;
+  --color-text-bright: #1d130b;    /* headings */
+  --color-muted: #786858;          /* secondary text (AA contrast) */
 
   --color-success: #2e7d32;
   --color-success-soft: #e9f4ea;
   --color-error: #c0392b;
   --color-error-soft: #fceae7;
 
-  /* Ombres douces et diffuses : c'est elles qui donnent l'air,
-     bien plus que les bordures. */
+  /* Typography */
+  --font-base: 'Mona Sans Variable', 'Mona Sans', 'DM Sans', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --font-display: 'Mona Sans Variable', 'Mona Sans', 'Poppins', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* High-contrast serif, reserved for the main headings */
+  --font-title: 'Playfair Display', Georgia, 'Times New Roman', serif;
+
+  /* Shapes: generous corners for a softer interface */
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Diffuse shadows: they separate elements better than borders */
   --shadow-sm: 0 1px 2px rgba(51, 38, 28, 0.04),
                0 2px 8px rgba(51, 38, 28, 0.04);
   --shadow: 0 2px 4px rgba(51, 38, 28, 0.04),
@@ -97,17 +52,15 @@
   --shadow-lg: 0 4px 8px rgba(51, 38, 28, 0.05),
                0 24px 56px rgba(51, 38, 28, 0.10);
 
+  /* Vertical rhythm */
+  --space-section: 96px;
+  --space-section-sm: 64px;
+
+  /* Loading (skeleton effect) */
   --skeleton-base: #efe7dd;
   --skeleton-shine: #f8f3ec;
 
   color-scheme: light;
-}
-
-/* Transizione morbida quando si cambia lato */
-body,
-.header,
-.footer {
-  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
 * {
@@ -131,56 +84,47 @@ code {
 }
 
 /* ============================================
-   THÈME CLAIR — douceur globale
-   Sur fond clair, l'ombre portée sépare mieux les éléments
-   que la bordure : plus aéré, moins « grillagé ».
+   Cross-cutting rules
+   On a light background a drop shadow separates better
+   than a border: airier, less of a grid.
    ============================================ */
-[data-theme='light'] {
-  /* Cartes et surfaces : ombre douce, bordure quasi invisible */
-  --card-shadow: var(--shadow-sm);
-  --card-shadow-hover: var(--shadow);
-}
 
-[data-theme='light'] .act-card:hover,
-[data-theme='light'] .act-slide:hover,
-[data-theme='light'] .dh-bizcard:hover {
-  box-shadow: var(--card-shadow-hover);
+.act-card:hover,
+.act-slide:hover,
+.dh-bizcard:hover {
+  box-shadow: var(--shadow);
   transform: translateY(-4px);
 }
 
-/* Champs de saisie : plus hauts et plus ronds, ils respirent */
-[data-theme='light'] input:not([type='checkbox']):not([type='radio']),
-[data-theme='light'] select,
-[data-theme='light'] textarea {
+/* Text fields: taller and rounder, they breathe */
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
   border-radius: var(--radius);
 }
 
-/* Barres d'en-tête de page : dégradé chaleureux au lieu d'un aplat */
-[data-theme='light'] .act-hero,
-[data-theme='light'] .dh-hero,
-[data-theme='light'] .ad-hero {
+/* Page headers: a warm gradient instead of a flat colour */
+.act-hero,
+.dh-hero,
+.ad-hero {
   background:
     radial-gradient(900px 400px at 50% -20%, #fdf1e9 0%, transparent 70%),
     var(--color-surface-alt);
   border-bottom: 1px solid var(--color-border);
 }
 
-/* Boutons principaux : ombre colorée douce */
-[data-theme='light'] .act-btn,
-[data-theme='light'] .dh-btn--primary,
-[data-theme='light'] .as-btn--primary,
-[data-theme='light'] .claim__btn--primary,
-[data-theme='light'] .nf-btn--primary {
+/* Primary buttons: a soft coloured shadow */
+.act-btn,
+.dh-btn--primary,
+.as-btn--primary,
+.nf-btn--primary {
   box-shadow: 0 4px 14px rgba(180, 85, 45, 0.22);
 }
 
-/* La modale et les popups flottent au lieu d'être encadrés */
-[data-theme='light'] .cdialog,
-[data-theme='light'] .claim,
-[data-theme='light'] .cb-panel,
-[data-theme='light'] .cs-list,
-[data-theme='light'] .pi-dropdown,
-[data-theme='light'] .toast {
+/* Modals and pop-up menus: they float instead of being framed */
+.cdialog,
+.cs-list,
+.toast {
   border-color: transparent;
   box-shadow: var(--shadow-lg);
 }

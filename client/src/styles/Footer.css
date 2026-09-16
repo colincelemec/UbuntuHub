@@ -1,5 +1,5 @@
 /* ============================================
-   FOOTER STYLES - AfroItalia
+   FOOTER STYLES - UbuntuHub
    ============================================ */
 
 .footer {
@@ -69,70 +69,13 @@
   padding-left: 5px;
 }
 
-.footer-social {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.footer-social a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 45px;
-  height: 45px;
-  background: #161b22;
-  border: 1px solid #30363d;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.footer-social a:hover {
-  transform: translateY(-3px) scale(1.1);
-}
-
 /* Facebook - Bleu */
-.social-facebook:hover {
-  background: #1877F2;
-}
 
-.social-facebook:hover .social-icon {
-  color: #ffffff;
-}
+/* Instagram — purple/pink gradient */
 
-/* Instagram - Dégradé violet/rose */
-.social-instagram:hover {
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-}
-
-.social-instagram:hover .social-icon {
-  color: #ffffff;
-}
-
-/* X (Twitter) - Noir avec icône blanche */
-.social-x:hover {
-  background: #000000;
-}
-
-.social-x:hover .social-icon {
-  color: #ffffff;
-}
+/* X (Twitter) — black with a white icon */
 
 /* LinkedIn - Bleu */
-.social-linkedin:hover {
-  background: #0A66C2;
-}
-
-.social-linkedin:hover .social-icon {
-  color: #ffffff;
-}
-
-.social-icon {
-  font-size: 1.3rem;
-  color: #ffffff;
-  transition: color 0.3s ease;
-}
 
 .footer-divider {
   width: 100%;
@@ -189,10 +132,6 @@
     justify-content: center;
   }
 
-  .footer-social {
-    justify-content: center;
-  }
-
   .footer-title {
     font-size: 1.5rem;
   }
@@ -210,15 +149,6 @@
   .footer-tagline {
     font-size: 0.9rem !important;
   }
-
-  .footer-social a {
-    width: 40px;
-    height: 40px;
-  }
-
-  .social-icon {
-    font-size: 1.3rem;
-  }
 }
 
 .footer-links a {
@@ -230,29 +160,22 @@
 
 
 /* ════════ LATO CHIARO ════════ */
-[data-theme='light'] .footer-title {
+.footer-title {
   background: linear-gradient(95deg, #2d2118 20%, #8b4513 60%, #d97e4a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-[data-theme='light'] .footer-subtitle { color: var(--color-primary); }
+.footer-subtitle { color: var(--color-primary); }
 
-[data-theme='light'] .footer-description,
-[data-theme='light'] .footer-links a { color: var(--color-muted); }
+.footer-description,
+.footer-links a { color: var(--color-muted); }
 
-[data-theme='light'] .footer-links a:hover { color: var(--color-primary); }
+.footer-links a:hover { color: var(--color-primary); }
 
-[data-theme='light'] .footer-social a {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-}
+.footer-tagline { color: var(--color-primary) !important; }
 
-[data-theme='light'] .social-icon { color: var(--color-muted); }
-
-[data-theme='light'] .footer-tagline { color: var(--color-primary) !important; }
-
-[data-theme='light'] .footer-divider {
+.footer-divider {
   background: linear-gradient(90deg, transparent, var(--color-border) 20%, var(--color-primary) 50%, var(--color-border) 80%, transparent);
 }

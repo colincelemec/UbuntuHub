@@ -1,6 +1,6 @@
 // ============================================
-// Tests: signature d'upload d'images
-// Cloudinary n'est pas configuré en test → mode dégradé.
+// Tests: image upload signature
+// Cloudinary is not configured in tests → degraded mode.
 // ============================================
 
 jest.mock('@prisma/client', () => require('./helpers/mockPrisma').prismaClientMock);
@@ -61,8 +61,8 @@ describe('GET /api/uploads/signature', () => {
 });
 
 describe('Calcul de la signature', () => {
-  // Conforme à la documentation Cloudinary : paramètres triés
-  // par ordre alphabétique, concaténés, puis SHA-1 avec le secret.
+  // Matches the Cloudinary documentation: parameters sorted
+  // alphabetically, concatenated, then SHA-1 with the secret.
   it('trie les paramètres par ordre alphabétique', () => {
     const secret = 'abcd';
     const params = { timestamp: 1315060510, public_id: 'sample_image' };
@@ -76,13 +76,13 @@ describe('Calcul de la signature', () => {
 
   it('produit une signature différente si un paramètre change', () => {
     const secret = 'abcd';
-    const a = signParams({ folder: 'afroitalia/logos', timestamp: 1 }, secret);
-    const b = signParams({ folder: 'afroitalia/covers', timestamp: 1 }, secret);
+    const a = signParams({ folder: 'ubuntuhub/logos', timestamp: 1 }, secret);
+    const b = signParams({ folder: 'ubuntuhub/covers', timestamp: 1 }, secret);
     expect(a).not.toBe(b);
   });
 
   it('produit une signature différente avec un autre secret', () => {
-    const params = { folder: 'afroitalia/logos', timestamp: 1 };
+    const params = { folder: 'ubuntuhub/logos', timestamp: 1 };
     expect(signParams(params, 'secret-a')).not.toBe(signParams(params, 'secret-b'));
   });
 });

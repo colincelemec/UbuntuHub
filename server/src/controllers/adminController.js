@@ -8,11 +8,11 @@ const prisma = new PrismaClient();
 
 /**
  * GET /api/admin/stats
- * Statistiques globales de la plateforme
+ * Platform-wide statistics
  */
 exports.getStats = async (req, res) => {
   try {
-    // Compter les différentes entités
+    // Count the various entities
     const [
       totalUsers,
       totalBusinesses,
@@ -33,19 +33,19 @@ exports.getStats = async (req, res) => {
       prisma.review.count({ where: { isReported: true } }),
     ]);
 
-    // Statistiques par rôle
+    // Breakdown by role
     const usersByRole = await prisma.user.groupBy({
       by: ['role'],
       _count: true,
     });
 
-    // Statistiques par statut d'entreprise
+    // Breakdown by business status
     const businessesByStatus = await prisma.business.groupBy({
       by: ['status'],
       _count: true,
     });
 
-    // Entreprises récentes (7 derniers jours)
+    // Businesses added in the last 7 days
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const recentBusinesses = await prisma.business.count({
@@ -92,14 +92,14 @@ exports.getStats = async (req, res) => {
 
 /**
  * GET /api/admin/businesses
- * Liste de toutes les entreprises avec filtres
+ * List every business, with filters
  */
 exports.getAllBusinesses = async (req, res) => {
   try {
     const { page = 1, limit = 20, status, cityId, categoryId, search } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Construire les filtres
+    // Build the filters
     const where = {};
     if (status) where.status = status;
     if (cityId) where.cityId = cityId;
@@ -153,7 +153,7 @@ exports.getAllBusinesses = async (req, res) => {
 
 /**
  * GET /api/admin/businesses/pending
- * Entreprises en attente de vérification
+ * Businesses awaiting a check
  */
 exports.getPendingBusinesses = async (req, res) => {
   try {
@@ -192,14 +192,14 @@ exports.getPendingBusinesses = async (req, res) => {
 
 /**
  * GET /api/admin/users
- * Liste de tous les utilisateurs
+ * List every user
  */
 exports.getAllUsers = async (req, res) => {
   try {
     const { page = 1, limit = 20, role, search } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Construire les filtres
+    // Build the filters
     const where = {};
     if (role) where.role = role;
     if (search) {
@@ -258,14 +258,14 @@ exports.getAllUsers = async (req, res) => {
 
 /**
  * PATCH /api/admin/users/:id/role
- * Changer le rôle d'un utilisateur
+ * Change a user's role
  */
 exports.updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
 
-    // Valider le rôle
+    // Validate the role
     if (!['USER', 'BUSINESS', 'ADMIN'].includes(role)) {
       return res.status(400).json({
         success: false,
@@ -273,7 +273,7 @@ exports.updateUserRole = async (req, res) => {
       });
     }
 
-    // Vérifier que l'utilisateur existe
+    // Make sure the user exists
     const user = await prisma.user.findUnique({
       where: { id },
     });
@@ -285,7 +285,7 @@ exports.updateUserRole = async (req, res) => {
       });
     }
 
-    // Empêcher de modifier son propre rôle
+    // Nobody may change their own role
     if (id === req.user.id) {
       return res.status(400).json({
         success: false,
@@ -293,7 +293,7 @@ exports.updateUserRole = async (req, res) => {
       });
     }
 
-    // Mettre à jour le rôle
+    // Apply the new role
     const updatedUser = await prisma.user.update({
       where: { id },
       data: { role },
@@ -323,7 +323,7 @@ exports.updateUserRole = async (req, res) => {
 
 /**
  * GET /api/admin/reviews/reported
- * Récupérer les avis signalés
+ * Fetch the reported reviews
  */
 exports.getReportedReviews = async (req, res) => {
   try {
@@ -366,7 +366,7 @@ exports.getReportedReviews = async (req, res) => {
 
 /**
  * DELETE /api/admin/reviews/:id
- * Supprimer un avis (modération)
+ * Delete a review (moderation)
  */
 exports.deleteReview = async (req, res) => {
   try {
@@ -385,12 +385,12 @@ exports.deleteReview = async (req, res) => {
 
     const businessId = review.businessId;
 
-    // Supprimer l'avis
+    // Delete the review
     await prisma.review.delete({
       where: { id },
     });
 
-    // Mettre à jour les statistiques de l'entreprise
+    // Refresh the business statistics
     const reviews = await prisma.review.findMany({
       where: { businessId, isVisible: true },
       select: { rating: true },
@@ -424,7 +424,7 @@ exports.deleteReview = async (req, res) => {
 
 /**
  * DELETE /api/admin/users/:id
- * Supprimer un utilisateur
+ * Delete a user
  */
 exports.deleteUser = async (req, res) => {
   try {
@@ -441,7 +441,7 @@ exports.deleteUser = async (req, res) => {
       });
     }
 
-    // Empêcher de supprimer son propre compte
+    // Nobody may delete their own account
     if (id === req.user.id) {
       return res.status(400).json({
         success: false,
@@ -449,7 +449,7 @@ exports.deleteUser = async (req, res) => {
       });
     }
 
-    // Supprimer l'utilisateur (cascade supprime les entreprises, avis, favoris)
+    // Delete the user (cascade removes businesses, reviews and favourites)
     await prisma.user.delete({
       where: { id },
     });

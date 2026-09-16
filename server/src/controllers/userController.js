@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 /**
  * GET /api/users/profile
- * Récupérer le profil de l'utilisateur connecté
+ * Fetch the signed-in user's profile
  */
 exports.getProfile = async (req, res) => {
   try {
@@ -51,13 +51,13 @@ exports.getProfile = async (req, res) => {
 
 /**
  * PUT /api/users/profile
- * Mettre à jour le profil de l'utilisateur
+ * Update the user's profile
  */
 exports.updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, phone, avatar } = req.body;
 
-    // Créer un objet avec uniquement les champs fournis
+    // Build an object holding only the fields that were supplied
     const updateData = {};
     if (firstName !== undefined) updateData.firstName = firstName;
     if (lastName !== undefined) updateData.lastName = lastName;
@@ -98,7 +98,7 @@ exports.updateProfile = async (req, res) => {
 
 /**
  * GET /api/users/favorites
- * Récupérer les entreprises favorites de l'utilisateur
+ * Fetch the user's favourite businesses
  */
 exports.getFavorites = async (req, res) => {
   try {
@@ -141,7 +141,7 @@ exports.getFavorites = async (req, res) => {
 
 /**
  * GET /api/users/my-reviews
- * Récupérer tous les avis de l'utilisateur
+ * Fetch every review written by the user
  */
 exports.getMyReviews = async (req, res) => {
   try {
@@ -189,11 +189,11 @@ exports.getMyReviews = async (req, res) => {
 
 /**
  * DELETE /api/users/account
- * Supprimer le compte utilisateur
+ * Delete the user account
  */
 exports.deleteAccount = async (req, res) => {
   try {
-    // Vérifier si l'utilisateur a des entreprises
+    // Check whether the user still owns businesses
     const userBusinesses = await prisma.business.count({
       where: { ownerId: req.user.id },
     });
@@ -205,7 +205,7 @@ exports.deleteAccount = async (req, res) => {
       });
     }
 
-    // Supprimer l'utilisateur (cascade supprime les avis et favoris)
+    // Delete the user (cascade removes reviews and favourites)
     await prisma.user.delete({
       where: { id: req.user.id },
     });

@@ -13,14 +13,14 @@ export const useLanguage = () => {
 export const LanguageProvider = ({ children }) => {
   // Get saved language from localStorage or default to English
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('afroitalia-language') || 'en';
+    return localStorage.getItem('ubuntuhub-language') || 'en';
   });
 
   // Save language preference to localStorage whenever it changes
   // and keep <html lang="…"> in sync (SEO + screen readers pronounce
   // the page correctly, and it drives CSS :lang() rules).
   useEffect(() => {
-    localStorage.setItem('afroitalia-language', language);
+    localStorage.setItem('ubuntuhub-language', language);
     document.documentElement.setAttribute('lang', language);
   }, [language]);
 

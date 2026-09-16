@@ -1,33 +1,33 @@
 // ============================================
-// Geocoding — da indirizzo a coordinate GPS
-// Usa Nominatim (OpenStreetMap): gratuito, senza chiave API,
-// coerente con le mappe Leaflet/OSM già usate nel progetto.
+// Geocoding — from a postal address to GPS coordinates
+// Uses Nominatim (OpenStreetMap): free, no API key required, and
+// consistent with the Leaflet/OSM maps already used in the project.
 //
-// Regole d'uso di Nominatim rispettate:
-//  - massimo ~1 richiesta al secondo (il chiamante fa il debounce)
-//  - ricerca limitata all'Italia (countrycodes=it)
-//  - una sola richiesta alla volta (le precedenti vengono annullate)
+// Nominatim usage rules respected here:
+//  - at most ~1 request per second (the caller debounces)
+//  - the search is restricted to Italy (countrycodes=it)
+//  - a single request at a time (earlier ones are aborted)
 // ============================================
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
-// Richiesta in corso: viene annullata se ne parte una nuova
+// The in-flight request: aborted as soon as a new one starts
 let currentController = null;
 
 /**
- * Converte un indirizzo in coordinate.
+ * Turns a postal address into coordinates.
  *
- * @param {string} address  Via e numero civico (es. "Via Padova 36")
- * @param {string} cityName Nome della città (es. "Milano")
+ * @param {string} address  Street and number (e.g. "Via Padova 36")
+ * @param {string} cityName City name (e.g. "Milano")
  * @returns {Promise<{lat: number, lng: number, displayName: string} | null>}
- *          null se l'indirizzo non è stato trovato.
- * @throws  {Error} in caso di problema di rete (non se semplicemente non trovato)
+ *          null when the address could not be found.
+ * @throws  {Error} on a network problem (not when simply not found)
  */
 export async function geocodeAddress(address, cityName) {
   const street = (address || '').trim();
   if (!street) return null;
 
-  // Annulla l'eventuale ricerca precedente ancora in corso
+  // Abort any previous search still running
   if (currentController) currentController.abort();
   currentController = new AbortController();
   const { signal } = currentController;
@@ -61,7 +61,7 @@ export async function geocodeAddress(address, cityName) {
   return { lat: latitude, lng: longitude, displayName };
 }
 
-/** Annulla la ricerca in corso (es. smontaggio del componente) */
+/** Aborts the running search (e.g. when the component unmounts) */
 export function cancelGeocoding() {
   if (currentController) {
     currentController.abort();

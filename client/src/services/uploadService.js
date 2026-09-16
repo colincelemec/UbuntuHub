@@ -2,17 +2,17 @@
 // Service Upload — envoi direct vers Cloudinary
 //
 // Notre API signe la demande, puis le navigateur envoie le fichier
-// directement à Cloudinary. Le serveur ne voit jamais le fichier :
-// pas de bande passante consommée, pas de disque utilisé.
+// straight to Cloudinary. The server never sees the file:
+// no bandwidth consumed, no disk used.
 // ============================================
 
 import api from './api';
 
-// Limites côté client : on refuse avant d'envoyer, pas après
+// Client-side limits: reject before uploading, not after
 export const MAX_SIZE_MB = 5;
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
-/** L'envoi de fichiers est-il disponible sur ce serveur ? */
+/** Is file upload available on this server? */
 export async function isUploadAvailable() {
   try {
     const res = await api.get('/uploads/status');
@@ -23,8 +23,8 @@ export async function isUploadAvailable() {
 }
 
 /**
- * Vérifie un fichier avant tout envoi.
- * @returns {string|null} message d'erreur, ou null si le fichier convient
+ * Validates a file before any upload.
+ * @returns {string|null} an error message, or null when the file is fine
  */
 export function validateFile(file, messages = {}) {
   if (!file) return null;
@@ -39,19 +39,19 @@ export function validateFile(file, messages = {}) {
 }
 
 /**
- * Envoie une image et retourne son URL définitive.
+ * Uploads an image and returns its final URL.
  *
  * @param {File} file
- * @param {string} folder      'afroitalia/logos' | 'afroitalia/covers'
- * @param {Function} onProgress  reçoit un pourcentage (0-100)
- * @returns {Promise<string>}  URL sécurisée de l'image
+ * @param {string} folder      'ubuntuhub/logos' | 'ubuntuhub/covers'
+ * @param {Function} onProgress  receives a percentage (0-100)
+ * @returns {Promise<string>}  the image's secure URL
  */
 export async function uploadImage(file, folder, onProgress) {
-  // 1. Demander une signature à notre API
+  // 1. Ask our API for a signature
   const res = await api.get('/uploads/signature', { folder });
   const { signature, timestamp, apiKey, uploadUrl, transformation } = res.data;
 
-  // 2. Construire la requête pour Cloudinary
+  // 2. Build the request for Cloudinary
   const form = new FormData();
   form.append('file', file);
   form.append('api_key', apiKey);
@@ -60,7 +60,7 @@ export async function uploadImage(file, folder, onProgress) {
   form.append('folder', folder);
   form.append('transformation', transformation);
 
-  // 3. Envoyer — XMLHttpRequest plutôt que fetch, pour la progression
+  // 3. Send it — XMLHttpRequest rather than fetch, to report progress
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', uploadUrl);

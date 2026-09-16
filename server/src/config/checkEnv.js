@@ -1,13 +1,13 @@
 // ============================================
-// Vérification de la configuration au démarrage
-// Empêche de lancer la production avec des valeurs d'exemple
-// (secret JWT public, mot de passe par défaut, etc.).
-// Mieux vaut refuser de démarrer que d'exposer le site.
+// Configuration check performed at start-up
+// Prevents starting production with example values
+// (public JWT secret, default password, and so on).
+// Refusing to boot is better than exposing the site.
 // ============================================
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Valeurs présentes dans .env.example : jamais acceptables en production
+// Values shipped in .env.example: never acceptable in production
 const EXAMPLE_VALUES = [
   'your-super-secret-jwt-key-change-this-in-production',
   'your-refresh-token-secret',
@@ -20,15 +20,15 @@ const EXAMPLE_VALUES = [
 const MIN_SECRET_LENGTH = 32;
 
 /**
- * Contrôle les variables critiques.
- * En production : arrête le processus si un problème est détecté.
- * En développement : affiche simplement des avertissements.
+ * Checks the critical environment variables.
+ * In production: halts the process when a problem is found.
+ * In development: simply prints warnings.
  */
 function checkEnv() {
   const errors = [];
   const warnings = [];
 
-  // ── JWT : le cœur de l'authentification ──
+  // ── JWT: the heart of authentication ──
   const jwt = process.env.JWT_SECRET;
   if (!jwt) {
     errors.push('JWT_SECRET est absent.');
@@ -44,7 +44,7 @@ function checkEnv() {
     }
   }
 
-  // ── Base de données ──
+  // ── Database ──
   if (!process.env.DATABASE_URL) {
     errors.push('DATABASE_URL est absent.');
   } else if (isProduction && process.env.DATABASE_URL.includes('localhost')) {

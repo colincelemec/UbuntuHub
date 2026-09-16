@@ -99,4 +99,9 @@ docker-compose.override.yml
 .cache
 .parcel-cache
 
-
+# ============================================
+# OUTILS LOCAUX (éditeurs, assistants)
+# Réglages propres à une machine : jamais committés
+# ============================================
+.claude/
+**/.claude/

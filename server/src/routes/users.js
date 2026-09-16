@@ -9,31 +9,31 @@ const { protect } = require('../middleware/auth');
 
 /**
  * GET /api/users/profile
- * Récupérer mon profil
+ * Fetch my profile
  */
 router.get('/profile', protect, userController.getProfile);
 
 /**
  * PUT /api/users/profile
- * Mettre à jour mon profil
+ * Update my profile
  */
 router.put('/profile', protect, userController.updateProfile);
 
 /**
  * GET /api/users/favorites
- * Récupérer mes entreprises favorites
+ * Fetch my favourite businesses
  */
 router.get('/favorites', protect, userController.getFavorites);
 
 /**
  * GET /api/users/my-reviews
- * Récupérer mes avis
+ * Fetch my reviews
  */
 router.get('/my-reviews', protect, userController.getMyReviews);
 
 /**
  * DELETE /api/users/account
- * Supprimer mon compte
+ * Delete my account
  */
 router.delete('/account', protect, userController.deleteAccount);
 

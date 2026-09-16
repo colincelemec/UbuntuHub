@@ -125,7 +125,7 @@
 
 .lang-option__check { color: var(--color-primary, #8b4513); }
 
-/* ── Variante header (sfondo bianco) ── */
+/* ── Header variant (white background) ── */
 .header .lang-trigger {
   background: var(--color-surface, #fff);
   border: 1.5px solid var(--color-border, #e8e0d6);
@@ -140,10 +140,10 @@
 }
 
 .header .lang-menu {
-  z-index: 1001; /* sopra l'header sticky */
+  z-index: 1001; /* above the sticky header */
 }
 
-/* Nel menu mobile il selettore occupa la riga intera */
+/* In the mobile menu the selector spans the full row */
 .mobile-nav .language-selector { width: 100%; }
 .mobile-nav .lang-trigger { width: 100%; justify-content: center; }
 .mobile-nav .lang-trigger__name { display: inline; }

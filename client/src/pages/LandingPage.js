@@ -1,11 +1,10 @@
 // ============================================
-// LandingPage — stile GitHub.com (dark, glow, beam)
-// adattato all'identità AfroItalia (marrone/ambra)
+// LandingPage — the public home page
+// Photo hero with search, then the presentation sections.
 // ============================================
 
 import React, { useEffect, useState, useRef } from 'react';
 import Icon from '../components/common/Icon';
-import SafeImage from '../components/common/SafeImage';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { getCategoryLabel } from '../utils/categoryLabel';
@@ -14,49 +13,23 @@ import { getTranslation } from '../locales/translations';
 import usePageMeta from '../hooks/usePageMeta';
 import '../styles/LandingPage.css';
 
-// Raccourcis de catégories affichés sur l'accueil
-const CATEGORY_SHORTCUTS = [
-  { slug: 'restaurant', icon: 'ristorante' },
-  { slug: 'coiffeur',   icon: 'bellezza' },
-  { slug: 'epicerie',   icon: 'negozio' },
-  { slug: 'mode',       icon: 'moda' },
-  { slug: 'beaute',     icon: 'cosmetici' },
-  { slug: 'service',    icon: 'servizi' },
-];
-
 const LandingPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const t = (path) => getTranslation(path, language);
 
-  // ── Aperçu de l'annuaire, directement sur l'accueil ──
-  // Le visiteur voit de vraies activités sans compte ni clic supplémentaire.
-  const [featured, setFeatured] = useState([]);
   const [query, setQuery] = useState('');
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const res = await api.get('/businesses', { limit: 6 });
-        if (active) setFeatured(res.data || []);
-      } catch {
-        if (active) setFeatured([]);
-      }
-    })();
-    return () => { active = false; };
-  }, []);
-
-  // ── Suggestions pendant la frappe ──
-  // Le visiteur voit apparaître les activités correspondantes dès les
-  // premières lettres, et peut aller directement sur une fiche.
+  // ── Suggestions while typing ──
+  // Matching businesses appear from the first few letters, and the
+  // visitor can jump straight to a listing.
   const [suggestions, setSuggestions] = useState([]);
   const [searching, setSearching] = useState(false);
   const [showSuggest, setShowSuggest] = useState(false);
   const [activeSuggest, setActiveSuggest] = useState(-1);
   const searchRef = useRef(null);
 
-  // Recherche différée : on n'interroge pas le serveur à chaque touche
+  // Deferred search: the server is not queried on every keystroke
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2) {
@@ -81,7 +54,7 @@ const LandingPage = () => {
     return () => { active = false; clearTimeout(timer); };
   }, [query]);
 
-  // Fermeture au clic à l'extérieur
+  // Close on an outside click
   useEffect(() => {
     if (!showSuggest) return;
     const onClickOutside = (e) => {
@@ -100,7 +73,7 @@ const LandingPage = () => {
 
   const submitSearch = (e) => {
     e.preventDefault();
-    // Une suggestion est surlignée au clavier : on ouvre sa fiche
+    // A suggestion is highlighted with the keyboard: open its listing
     if (activeSuggest >= 0 && suggestions[activeSuggest]) {
       openBusiness(suggestions[activeSuggest]);
       return;
@@ -110,7 +83,7 @@ const LandingPage = () => {
     navigate(q ? `/activities?q=${encodeURIComponent(q)}` : '/activities');
   };
 
-  // Navigation au clavier dans la liste
+  // Keyboard navigation inside the list
   const onSearchKeyDown = (e) => {
     if (!showSuggest || suggestions.length === 0) return;
     if (e.key === 'ArrowDown') {
@@ -130,7 +103,7 @@ const LandingPage = () => {
     description: t('landing.hero.description'),
   });
 
-  // ── Scroll-reveal in stile GitHub ──
+  // ── Reveal sections as they scroll into view ──
   useEffect(() => {
     const els = document.querySelectorAll('.landing-page .gh-reveal');
     const observer = new IntersectionObserver(
@@ -151,9 +124,9 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
 
-      {/* ════════ HERO — photo plein écran ════════ */}
-      {/* La photo se règle dans LandingPage.css (--hero-image).
-          Sans photo, un dégradé chaleureux prend le relais. */}
+      {/* ════════ HERO — full-screen photo ════════ */}
+      {/* The photo is set in LandingPage.css (--hero-image).
+          Without one, a warm gradient takes over. */}
       <section className="hero-section hero-section--photo">
         <div className="hero-media" aria-hidden="true" />
         <div className="hero-scrim" aria-hidden="true" />
@@ -165,7 +138,7 @@ const LandingPage = () => {
           </h1>
           <p className="hero-description">{t('landing.hero.description')}</p>
 
-          {/* Recherche : l'action principale de l'accueil, sans compte */}
+          {/* Search: the home page's primary action, no account needed */}
           <div className="hero-search-wrap" ref={searchRef}>
             <form className="hero-search" onSubmit={submitSearch} role="search">
               <Icon name="search" size={20} className="hero-search__icon" />
@@ -191,7 +164,7 @@ const LandingPage = () => {
               </button>
             </form>
 
-            {/* Propositions d'activités pendant la frappe */}
+            {/* Business suggestions while typing */}
             {showSuggest && query.trim().length >= 2 && (
               <div className="hero-suggest" id="hero-suggest-list" role="listbox">
                 {searching && suggestions.length === 0 ? (
@@ -246,92 +219,11 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════ STATS BAND ════════ */}
-      <section className="stats-band">
-        <div className="container">
-          <div className="stats-band__grid">
-            {[
-              { icon: 'pin', value: '16', label: 'cities' },
-              { icon: 'grid', value: '6', label: 'categories' },
-              { icon: 'globe', value: '3', label: 'languages' },
-              { icon: 'heart', value: '100%', label: 'free' },
-            ].map((s) => (
-              <div className="stat-item gh-reveal" key={s.label}>
-                <div className="stat-item__icon"><Icon name={s.icon} size={20} /></div>
-                <span className="stat-item__value">{s.value}</span>
-                <span className="stat-item__label">{t(`landing.stats.${s.label}`)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════ CATÉGORIES — accès direct ════════ */}
-      <section className="home-cats">
-        <div className="container">
-          <h2 className="home-cats__title">{t('landing.browseCategories.title')}</h2>
-          <div className="home-cats__grid">
-            {CATEGORY_SHORTCUTS.map((c) => (
-              <Link key={c.slug} to={`/activities?category=${c.slug}`} className="home-cat">
-                <Icon name={c.icon} size={26} />
-                <span>{getCategoryLabel({ slug: c.slug }, language)}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════ ACTIVITÉS EN VEDETTE — visibles sans compte ════════ */}
-      <section className="home-featured">
-        <div className="container">
-          <div className="home-featured__head">
-            <div>
-              <h2>{t('landing.featured.title')}</h2>
-              <p>{t('landing.featured.subtitle')}</p>
-            </div>
-            <Link to="/activities" className="home-featured__all">
-              {t('landing.featured.seeAll')} <Icon name="arrowR" size={15} />
-            </Link>
-          </div>
-
-          {featured.length === 0 ? (
-            <p className="home-featured__empty">{t('landing.featured.empty')}</p>
-          ) : (
-            <div className="home-featured__grid">
-              {featured.map((b) => (
-                <Link key={b.id} to={`/businesses/${b.slug}`} className="home-card">
-                  <div className="home-card__media">
-                    <SafeImage
-                      src={b.coverImage || b.logo}
-                      alt={b.name}
-                      loading="lazy"
-                      fallback={<Icon name="store" size={38} className="home-card__fallback" />}
-                    />
-                  </div>
-                  <div className="home-card__body">
-                    <h3>{b.name}</h3>
-                    <p className="home-card__meta">
-                      {getCategoryLabel(b.category, language)}
-                      {b.city?.name ? ` · ${b.city.name}` : ''}
-                    </p>
-                    <div className="home-card__rating">
-                      <Icon name="star" size={13} />
-                      <span>{(b.averageRating || 0).toFixed(1)}</span>
-                      <span className="home-card__count">({b.reviewCount || 0})</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ════════ MISSIONE ════════ */}
+      {/* ════════ MISSION ════════ */}
       <section id="mission" className="mission-section">
         <div className="container">
           <div className="section-header gh-reveal">
-            <span className="gh-eyebrow gh-eyebrow--gold">AfroItalia</span>
+            <span className="gh-eyebrow gh-eyebrow--gold">UbuntuHub</span>
             <h2 className="section-title">{t('landing.mission.title')}</h2>
           </div>
           <div className="mission-content">
@@ -345,7 +237,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════ COME FUNZIONA — beam verticale ════════ */}
+      {/* ════════ HOW IT WORKS — vertical beam ════════ */}
       <section className="how-it-works-section">
         <div className="gh-beam" aria-hidden="true"></div>
         <div className="container">
@@ -365,7 +257,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════ FUNZIONALITÀ ════════ */}
+      {/* ════════ FEATURES ════════ */}
       <section id="features" className="features-section">
         <div className="container">
           <div className="section-header gh-reveal">
@@ -391,11 +283,11 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════ VANTAGGI ════════ */}
+      {/* ════════ BENEFITS ════════ */}
       <section className="benefits-section">
         <div className="container">
           <div className="section-header gh-reveal">
-            <span className="gh-eyebrow gh-eyebrow--ember">Why AfroItalia</span>
+            <span className="gh-eyebrow gh-eyebrow--ember">Why UbuntuHub</span>
             <h2 className="section-title">{t('landing.benefits.title')}</h2>
           </div>
           <div className="benefits-container">
@@ -425,41 +317,20 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ════════ TESTIMONIANZE ════════ */}
-      <section className="testimonials-section">
-        <div className="container">
-          <div className="section-header gh-reveal">
-            <span className="gh-eyebrow gh-eyebrow--gold">Community</span>
-            <h2 className="section-title">{t('landing.testimonials.title')}</h2>
-          </div>
-          <div className="testimonials-grid">
-            {['t1', 't2', 't3'].map((key) => (
-              <div className="testimonial-card gh-card gh-reveal" key={key}>
-                <div className="testimonial-quote" aria-hidden="true">"</div>
-                <p className="testimonial-text">{t(`landing.testimonials.${key}.text`)}</p>
-                <div className="testimonial-author">
-                  <strong>{t(`landing.testimonials.${key}.name`)}</strong>
-                  <span>{t(`landing.testimonials.${key}.role`)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════ CTA FINALE ════════ */}
+      {/* ════════ FINAL CALL TO ACTION ════════ */}
       <section className="final-cta-section">
         <div className="gh-orb gh-orb--cta" aria-hidden="true"></div>
         <div className="container gh-reveal">
           <h2><span className="gh-gradient-text">{t('landing.finalCta.title')}</span></h2>
           <p>{t('landing.finalCta.description')}</p>
+          {/* Browsing comes first: an account is only needed to contribute. */}
           <div className="cta-buttons">
-            <Link to="/register" className="btn btn-primary btn-large">
-              {t('landing.finalCta.signUpButton')}
+            <Link to="/activities" className="btn btn-primary btn-large">
+              {t('landing.finalCta.exploreButton')}
               <Icon name="arrowR" size={16} />
             </Link>
-            <Link to="/login" className="btn btn-secondary btn-large">
-              {t('landing.finalCta.signInButton')}
+            <Link to="/add-service" className="btn btn-secondary btn-large">
+              {t('landing.finalCta.publishButton')}
             </Link>
           </div>
         </div>

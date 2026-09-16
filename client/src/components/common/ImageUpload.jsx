@@ -1,12 +1,12 @@
 // ============================================
-// ImageUpload — choix d'une image depuis l'appareil
+// ImageUpload — pick an image from the device
 //
-// Le propriétaire sélectionne une photo, elle part directement
-// vers Cloudinary et l'URL obtenue remplit le champ.
+// The owner selects a photo, it goes straight to Cloudinary and
+// the resulting URL fills the field.
 //
-// Si le serveur n'a pas de service d'images configuré, on retombe
-// automatiquement sur la saisie d'une URL : le formulaire reste
-// utilisable en toutes circonstances.
+// When the server has no image service configured, we fall back
+// automatically to a plain URL field: the form stays usable in
+// every circumstance.
 // ============================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -15,20 +15,20 @@ import Icon from './Icon';
 import './ImageUpload.css';
 
 const ImageUpload = ({
-  value,                 // URL actuelle (ou vide)
+  value,                 // current URL (or empty)
   onChange,              // (url: string) => void
-  folder,                // 'afroitalia/logos' | 'afroitalia/covers'
+  folder,                // 'ubuntuhub/logos' | 'ubuntuhub/covers'
   label,
-  t,                     // fonction de traduction du parent
+  t,                     // translation function supplied by the parent
 }) => {
-  const [available, setAvailable] = useState(null); // null = on ne sait pas encore
+  const [available, setAvailable] = useState(null); // null = not known yet
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef(null);
 
-  // Le serveur propose-t-il l'envoi de fichiers ?
+  // Does the server offer file upload?
   useEffect(() => {
     let active = true;
     isUploadAvailable().then((ok) => { if (active) setAvailable(ok); });
@@ -63,7 +63,7 @@ const ImageUpload = ({
     if (file) handleFile(file);
   };
 
-  // ── Repli : le serveur n'a pas de service d'images ──
+  // ── Fallback: the server has no image service ──
   if (available === false) {
     return (
       <div className="iu">
@@ -84,7 +84,7 @@ const ImageUpload = ({
     <div className="iu">
       <label className="iu__label">{label}</label>
 
-      {/* Image déjà choisie */}
+      {/* An image is already selected */}
       {value && !uploading ? (
         <div className="iu__preview">
           <img src={value} alt="" onError={(e) => { e.currentTarget.style.opacity = 0.15; }} />
@@ -98,7 +98,7 @@ const ImageUpload = ({
           </div>
         </div>
       ) : (
-        /* Zone de dépôt */
+        /* Drop zone */
         <button
           type="button"
           className={`iu__drop ${dragging ? 'is-dragging' : ''} ${uploading ? 'is-uploading' : ''}`}
@@ -133,7 +133,7 @@ const ImageUpload = ({
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleFile(file);
-          e.target.value = ''; // permet de re-choisir le même fichier
+          e.target.value = ''; // allows picking the same file again
         }}
       />
 

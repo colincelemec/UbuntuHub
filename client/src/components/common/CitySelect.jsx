@@ -1,26 +1,26 @@
 // ============================================
-// CitySelect — combobox città con ricerca
-// Con 107 capoluoghi un <select> è poco pratico:
-// qui si digita ("bol" → Bologna, Bolzano) e si sceglie.
-// Accessibile: ruolo combobox, navigazione da tastiera.
+// CitySelect — a searchable city combobox
+// With 107 provincial capitals a plain <select> is impractical:
+// here you type ("bol" → Bologna, Bolzano) and pick.
+// Accessible: combobox role, full keyboard navigation.
 // ============================================
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import Icon from './Icon';
 import './CitySelect.css';
 
-// Normalizza per la ricerca: minuscole e senza accenti (à→a, è→e…)
+// Normalise for searching: lowercase and accent-free (à→a, è→e…)
 const normalize = (s = '') =>
   s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 const CitySelect = ({
   cities = [],
-  value = '',            // id della città selezionata
+  value = '',            // id of the selected city
   onChange,              // (cityId) => void
   disabled = false,
   loading = false,
   error = false,
-  // I testi arrivano tradotti dal componente genitore.
+  // Labels arrive already translated from the parent component.
   placeholder = '',
   loadingLabel = '…',
   emptyLabel = '',
@@ -40,7 +40,7 @@ const CitySelect = ({
     [cities, value]
   );
 
-  // Filtro: le città che iniziano con la query vengono prima
+  // Filter: cities starting with the query come first
   const filtered = useMemo(() => {
     const q = normalize(query.trim());
     if (!q) return cities;
@@ -54,7 +54,7 @@ const CitySelect = ({
     });
   }, [cities, query]);
 
-  // Chiude la tendina cliccando fuori
+  // Close the dropdown on an outside click
   useEffect(() => {
     if (!open) return;
     const onClickOutside = (e) => {
@@ -67,7 +67,7 @@ const CitySelect = ({
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, [open]);
 
-  // Mantiene visibile l'elemento attivo durante la navigazione da tastiera
+  // Keep the active item visible while navigating with the keyboard
   useEffect(() => {
     if (!open || activeIndex < 0 || !listRef.current) return;
     const el = listRef.current.children[activeIndex];
@@ -119,7 +119,7 @@ const CitySelect = ({
 
   return (
     <div className={`cs ${open ? 'cs--open' : ''}`} ref={wrapRef}>
-      {/* Campo chiuso: mostra la selezione */}
+      {/* Closed field: shows the current selection */}
       {!open && (
         <button
           type="button"
@@ -137,7 +137,7 @@ const CitySelect = ({
         </button>
       )}
 
-      {/* Campo aperto: ricerca + lista */}
+      {/* Open field: search box + list */}
       {open && (
         <>
           <div className={`cs-control cs-control--input ${error ? 'cs-control--err' : ''}`}>

@@ -1,6 +1,6 @@
 // ============================================
-// Tests: sitemap.xml et health check
-// Pages publiques exposées aux moteurs de recherche.
+// Tests: sitemap.xml and the health check
+// Public pages exposed to search engines.
 // ============================================
 
 jest.mock('@prisma/client', () => require('./helpers/mockPrisma').prismaClientMock);
@@ -33,7 +33,7 @@ describe('GET /sitemap.xml', () => {
     expect(res.text).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>/);
     expect(res.text).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     expect(res.text.trim()).toMatch(/<\/urlset>$/);
-    // Autant de balises ouvrantes que fermantes
+    // As many opening tags as closing ones
     const open = (res.text.match(/<url>/g) || []).length;
     const close = (res.text.match(/<\/url>/g) || []).length;
     expect(open).toBe(close);
@@ -44,7 +44,7 @@ describe('GET /sitemap.xml', () => {
     const res = await request(app).get('/sitemap.xml');
     expect(res.text).toContain('/businesses/ristorante-teranga');
     expect(res.text).toContain('/businesses/salone-awa');
-    // Ne demande que les activités publiées
+    // Only asks for published businesses
     expect(mockPrisma.business.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { status: 'VERIFIED' },
@@ -91,8 +91,8 @@ describe('GET /health', () => {
 
 describe('Sécurité des réponses', () => {
   it('ne divulgue pas les détails techniques hors développement', async () => {
-    // NODE_ENV=test → devDetails() renvoie le message (comme en dev).
-    // On vérifie surtout qu'aucune trace de pile n'est exposée.
+    // NODE_ENV=test → devDetails() returns the message (as in dev).
+    // What matters is that no stack trace is exposed.
     mockPrisma.business.findMany.mockRejectedValue(new Error('secret interne'));
     mockPrisma.business.count.mockRejectedValue(new Error('secret interne'));
     const res = await request(app).get('/api/businesses');

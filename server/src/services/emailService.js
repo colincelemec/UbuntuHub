@@ -1,20 +1,20 @@
 // ============================================
-// Service Email — Nodemailer
-// Envoi des emails transactionnels (bienvenue, reset password).
-// Si le SMTP n'est pas configuré (dev), l'email est affiché dans la console
-// au lieu d'être envoyé, pour ne pas bloquer le développement.
+// Email service — Nodemailer
+// Sends the transactional emails (welcome, listing status).
+// When SMTP is not configured (dev), the email is printed to the console
+// instead of being sent, so development is never blocked.
 // ============================================
 
 const nodemailer = require('nodemailer');
 
-const BRAND = 'AfroItalia';
+const BRAND = 'UbuntuHub';
 const PRIMARY = '#e8a33d';
 
-// --- Détection de la config SMTP ---
-// Les valeurs d'exemple de .env.example ne sont PAS vides : sans ce contrôle,
-// le service se croyait configuré, tentait une vraie connexion avec de faux
-// identifiants, échouait, et l'erreur passait inaperçue. On les traite donc
-// comme « non configuré » et on retombe sur l'affichage console.
+// --- SMTP configuration detection ---
+// The example values in .env.example are NOT empty: without this check
+// the service believed it was configured, opened a real connection with
+// fake credentials, failed, and the error went unnoticed. They are
+// therefore treated as "not configured", falling back to the console.
 const PLACEHOLDERS = [
   'your-email@gmail.com',
   'your-app-password',
@@ -46,7 +46,7 @@ if (isConfigured) {
     },
   });
 } else if (smtpHost && (isPlaceholder(smtpUser) || isPlaceholder(smtpPass))) {
-  // Cas piégeux : des variables existent mais contiennent encore l'exemple
+  // Tricky case: the variables exist but still hold the example values
   console.warn(
     '\n⚠️  SMTP ignoré : SMTP_USER/SMTP_PASS contiennent encore les valeurs ' +
     'd\'exemple de .env.example.\n   Les emails seront affichés dans la console. ' +
@@ -55,7 +55,7 @@ if (isConfigured) {
 }
 
 /**
- * Teste la connexion au serveur SMTP.
+ * Tests the connection to the SMTP server.
  * @returns {Promise<{ok: boolean, reason?: string}>}
  */
 async function verifyConnection() {
@@ -70,10 +70,10 @@ async function verifyConnection() {
   }
 }
 
-const FROM = process.env.EMAIL_FROM || `${BRAND} <no-reply@afroitalia.com>`;
+const FROM = process.env.EMAIL_FROM || `${BRAND} <no-reply@ubuntuhub.com>`;
 
 /**
- * Enveloppe HTML commune (responsive, compatible clients mail)
+ * Shared HTML wrapper (responsive, compatible with mail clients)
  */
 function layout({ title, body }) {
   return `<!DOCTYPE html>
@@ -118,7 +118,7 @@ function button(url, label) {
   </table>`;
 }
 
-// --- Petites traductions internes pour le footer / fallback ---
+// --- Small internal translations for the footer and fallbacks ---
 function tr(key, lang) {
   const dict = {
     footer: {
@@ -131,11 +131,11 @@ function tr(key, lang) {
 }
 
 /**
- * Envoi bas niveau. Renvoie true si envoyé/affiché sans erreur.
+ * Low-level send. Returns true when sent or printed without error.
  */
 async function send({ to, subject, html, text }) {
   if (!isConfigured) {
-    // Mode dev : pas de SMTP → on logge l'email au lieu de l'envoyer
+    // Dev mode: no SMTP → log the email instead of sending it
     console.log('\n📧 [EMAIL - mode dev, SMTP non configuré]');
     console.log('   To:', to);
     console.log('   Subject:', subject);
@@ -148,8 +148,8 @@ async function send({ to, subject, html, text }) {
     console.log(`📧 Email envoyé à ${to} — « ${subject} » (id: ${info.messageId})`);
     return true;
   } catch (error) {
-    // Un échec d'envoi ne doit pas faire échouer l'inscription, mais il doit
-    // être clairement visible dans les logs : sinon le problème passe inaperçu.
+    // A send failure must not fail the sign-up, but it must be clearly
+    // visible in the logs: otherwise the problem goes unnoticed.
     console.error(`\n❌ Échec de l'envoi de l'email à ${to}`);
     console.error(`   Sujet : ${subject}`);
     console.error(`   Cause : ${error.message}`);
@@ -186,29 +186,6 @@ const T = {
     },
     cta: { en: 'Go to my dashboard', fr: 'Accéder à mon espace', it: 'Vai alla mia dashboard' },
   },
-  reset: {
-    subject: {
-      en: `Reset your ${BRAND} password`,
-      fr: `Réinitialisez votre mot de passe ${BRAND}`,
-      it: `Reimposta la tua password ${BRAND}`,
-    },
-    title: {
-      en: 'Password reset',
-      fr: 'Réinitialisation du mot de passe',
-      it: 'Reimposta password',
-    },
-    intro: {
-      en: 'We received a request to reset your password. Click the button below to choose a new one. This link expires in 1 hour.',
-      fr: 'Nous avons reçu une demande de réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau. Ce lien expire dans 1 heure.',
-      it: 'Abbiamo ricevuto una richiesta di reimpostazione della password. Clicca sul pulsante qui sotto per sceglierne una nuova. Questo link scade tra 1 ora.',
-    },
-    cta: { en: 'Reset my password', fr: 'Réinitialiser mon mot de passe', it: 'Reimposta la password' },
-    ignore: {
-      en: 'If you did not request this, you can safely ignore this email.',
-      fr: "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.",
-      it: 'Se non hai richiesto questa operazione, ignora pure questa email.',
-    },
-  },
   bizApproved: {
     subject: {
       en: `Your business has been approved on ${BRAND} ✅`,
@@ -221,9 +198,9 @@ const T = {
       it: 'Attività approvata',
     },
     intro: {
-      en: (biz) => `Good news! "${biz}" has been reviewed and approved by our team. It is now visible in the AfroItalia directory with a verified badge.`,
-      fr: (biz) => `Bonne nouvelle ! « ${biz} » a été vérifiée et approuvée par notre équipe. Elle est désormais visible dans l'annuaire AfroItalia avec un badge vérifié.`,
-      it: (biz) => `Ottima notizia! "${biz}" è stata verificata e approvata dal nostro team. Ora è visibile nella directory AfroItalia con il badge di verifica.`,
+      en: (biz) => `Good news! "${biz}" has been reviewed and approved by our team. It is now visible in the UbuntuHub directory with a verified badge.`,
+      fr: (biz) => `Bonne nouvelle ! « ${biz} » a été vérifiée et approuvée par notre équipe. Elle est désormais visible dans l'annuaire UbuntuHub avec un badge vérifié.`,
+      it: (biz) => `Ottima notizia! "${biz}" è stata verificata e approvata dal nostro team. Ora è visibile nella directory UbuntuHub con il badge di verifica.`,
     },
     cta: { en: 'View my business', fr: 'Voir mon activité', it: 'Vedi la mia attività' },
   },
@@ -245,49 +222,12 @@ const T = {
     },
     cta: { en: 'Update my listing', fr: 'Mettre à jour ma fiche', it: 'Aggiorna la mia scheda' },
   },
-  claimApproved: {
-    subject: {
-      en: `You now manage your business on ${BRAND} ✅`,
-      fr: `Vous gérez désormais votre activité sur ${BRAND} ✅`,
-      it: `Ora gestisci la tua attività su ${BRAND} ✅`,
-    },
-    title: {
-      en: 'Business claim approved',
-      fr: 'Revendication approuvée',
-      it: 'Richiesta approvata',
-    },
-    intro: {
-      en: (biz) => `Your request to manage "${biz}" has been approved. You can now edit the listing, add photos and reply to reviews from your dashboard.`,
-      fr: (biz) => `Votre demande pour gérer « ${biz} » a été approuvée. Vous pouvez désormais modifier la fiche, ajouter des photos et répondre aux avis depuis votre tableau de bord.`,
-      it: (biz) => `La tua richiesta per gestire "${biz}" è stata approvata. Ora puoi modificare la scheda, aggiungere foto e rispondere alle recensioni dalla tua dashboard.`,
-    },
-    cta: { en: 'Go to my dashboard', fr: 'Accéder à mon espace', it: 'Vai alla mia dashboard' },
-  },
-  claimRejected: {
-    subject: {
-      en: `About your request on ${BRAND}`,
-      fr: `Concernant votre demande sur ${BRAND}`,
-      it: `Riguardo alla tua richiesta su ${BRAND}`,
-    },
-    title: {
-      en: 'Business claim not approved',
-      fr: 'Revendication non approuvée',
-      it: 'Richiesta non approvata',
-    },
-    intro: {
-      en: (biz) => `We could not approve your request to manage "${biz}" at this time. If you believe this is a mistake, reply to this email with a proof of ownership (business licence, utility bill or registration document).`,
-      fr: (biz) => `Nous n'avons pas pu approuver votre demande pour gérer « ${biz} ». Si vous pensez qu'il s'agit d'une erreur, répondez à cet email avec un justificatif (licence, facture ou document d'enregistrement).`,
-      it: (biz) => `Non abbiamo potuto approvare la tua richiesta per gestire "${biz}". Se pensi si tratti di un errore, rispondi a questa email allegando un documento che attesti la proprietà (licenza, bolletta o visura).`,
-    },
-    cta: { en: 'View the listing', fr: 'Voir la fiche', it: 'Vedi la scheda' },
-    noteLabel: { en: 'Reason:', fr: 'Motif :', it: 'Motivo:' },
-  },
 };
 
 const pick = (obj, lang) => obj[lang] || obj.en;
 
 /**
- * Email de bienvenue après inscription
+ * Welcome email sent after registration
  */
 async function sendWelcomeEmail(user, lang = 'it') {
   const name = user.firstName || (user.email ? user.email.split('@')[0] : '');
@@ -305,26 +245,7 @@ async function sendWelcomeEmail(user, lang = 'it') {
 }
 
 /**
- * Email de réinitialisation de mot de passe
- */
-async function sendPasswordResetEmail(user, resetUrl, lang = 'it') {
-  const body = `
-    <p style="font-size:15px;line-height:1.7;color:#2d2118;">${pick(T.reset.intro, lang)}</p>
-    ${button(resetUrl, pick(T.reset.cta, lang))}
-    <p style="font-size:13px;line-height:1.6;color:#7a6a5c;">${pick(T.reset.ignore, lang)}</p>
-    <p style="font-size:12px;color:#9a8c7c;word-break:break-all;">${resetUrl}</p>
-  `;
-  return send({
-    to: user.email,
-    subject: pick(T.reset.subject, lang),
-    html: layout({ title: pick(T.reset.title, lang), body }),
-    text: `${pick(T.reset.intro, lang)} ${resetUrl}`,
-  });
-}
-
-/**
- * Notification au propriétaire : attività approvata / rifiutata
- * status: 'VERIFIED' | 'REJECTED'
+ * Notifies an owner that their listing was approved or rejected
  */
 async function sendBusinessStatusEmail(owner, business, status, lang = 'it') {
   if (!owner?.email) return false;
@@ -344,40 +265,9 @@ async function sendBusinessStatusEmail(owner, business, status, lang = 'it') {
   });
 }
 
-/**
- * Notification au demandeur : revendication approuvée / refusée
- * status: 'APPROVED' | 'REJECTED'
- */
-async function sendClaimStatusEmail(user, business, status, adminNote, lang = 'it') {
-  if (!user?.email) return false;
-  const approved = status === 'APPROVED';
-  const tpl = approved ? T.claimApproved : T.claimRejected;
-  const base = process.env.CLIENT_URL || '';
-  const url = approved ? `${base}/dashboard` : `${base}/businesses/${business.slug}`;
-
-  const note = !approved && adminNote
-    ? `<p style="font-size:14px;line-height:1.6;color:#7a6a5c;"><strong>${pick(tpl.noteLabel, lang)}</strong> ${adminNote}</p>`
-    : '';
-
-  const body = `
-    <p style="font-size:15px;line-height:1.7;color:#2d2118;">${pick(tpl.intro, lang)(business.name)}</p>
-    ${note}
-    ${button(url, pick(tpl.cta, lang))}
-  `;
-
-  return send({
-    to: user.email,
-    subject: pick(tpl.subject, lang),
-    html: layout({ title: pick(tpl.title, lang), body }),
-    text: `${pick(tpl.title, lang)} — ${pick(tpl.intro, lang)(business.name)} ${url}`,
-  });
-}
-
 module.exports = {
   isConfigured,
   verifyConnection,
   sendWelcomeEmail,
-  sendPasswordResetEmail,
   sendBusinessStatusEmail,
-  sendClaimStatusEmail,
 };

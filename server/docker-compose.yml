@@ -2,21 +2,21 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: afroitalia_postgres
+    container_name: ubuntuhub_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-afroitalia_db}
+      POSTGRES_DB: ${POSTGRES_DB:-ubuntuhub_db}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - afroitalia_network
+      - ubuntuhub_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-afroitalia_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ubuntuhub_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,14 +24,14 @@ services:
   # Redis Cache (optionnel, pour les sessions et cache)
   redis:
     image: redis:7-alpine
-    container_name: afroitalia_redis
+    container_name: ubuntuhub_redis
     restart: unless-stopped
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     networks:
-      - afroitalia_network
+      - ubuntuhub_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -43,14 +43,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: afroitalia_api
+    container_name: ubuntuhub_api
     restart: unless-stopped
     env_file:
       - .env
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: ${PORT:-5000}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-afroitalia_db}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-ubuntuhub_db}?schema=public
       REDIS_URL: redis://redis:6379
     ports:
       - "${API_PORT:-5001}:5000"
@@ -68,7 +68,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - afroitalia_network
+      - ubuntuhub_network
     command: npm run dev
 
   # Prisma Studio (Interface graphique pour la DB)
@@ -76,13 +76,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: afroitalia_prisma_studio
+    container_name: ubuntuhub_prisma_studio
     restart: unless-stopped
     user: root  # Run as root to avoid permission issues
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-afroitalia_db}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-ubuntuhub_db}?schema=public
     ports:
       - "5555:5555"
     volumes:
@@ -91,7 +91,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - afroitalia_network
+      - ubuntuhub_network
     command: npx prisma studio --port 5555 --browser none
 
 # Volumes persistants
@@ -105,5 +105,5 @@ volumes:
 
 # Réseau personnalisé
 networks:
-  afroitalia_network:
+  ubuntuhub_network:
     driver: bridge

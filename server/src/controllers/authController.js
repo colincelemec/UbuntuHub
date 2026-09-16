@@ -11,12 +11,12 @@ const { devDetails } = require('../utils/errorResponse');
 
 const prisma = new PrismaClient();
 
-// Langues supportées pour les emails
+// Languages supported for outgoing emails
 const SUPPORTED_LANGS = ['it', 'fr', 'en'];
 const pickLang = (lang) => (SUPPORTED_LANGS.includes(lang) ? lang : 'it');
 
 /**
- * Générer un token JWT
+ * Generate a JWT token
  */
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -26,13 +26,13 @@ const generateToken = (userId) => {
 
 /**
  * POST /api/auth/register
- * Inscription d'un nouvel utilisateur
+ * Register a new user
  */
 exports.register = async (req, res) => {
   try {
     const { email, password, firstName, lastName, phone } = req.body;
 
-    // Vérifier si l'utilisateur existe déjà
+    // Check whether the user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -44,10 +44,10 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Hasher le mot de passe
+    // Hash the password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Créer l'utilisateur
+    // Create the user
     const user = await prisma.user.create({
       data: {
         email,
@@ -69,10 +69,10 @@ exports.register = async (req, res) => {
       },
     });
 
-    // Générer le token
+    // Issue the token
     const token = generateToken(user.id);
 
-    // Envoyer l'email de bienvenue (non bloquant : on n'échoue pas l'inscription si l'email plante)
+    // Send the welcome email (non-blocking: a mail failure must not fail the sign-up)
     emailService
       .sendWelcomeEmail(user, pickLang(req.body.lang))
       .catch((err) => console.error('Email de bienvenue non envoyé:', err.message));
@@ -97,13 +97,13 @@ exports.register = async (req, res) => {
 
 /**
  * POST /api/auth/login
- * Connexion d'un utilisateur
+ * Sign a user in
  */
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Trouver l'utilisateur
+    // Find the user
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -115,7 +115,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Vérifier le mot de passe
+    // Verify the password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
@@ -125,10 +125,10 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Générer le token
+    // Issue the token
     const token = generateToken(user.id);
 
-    // Retourner l'utilisateur sans le mot de passe
+    // Return the user without the password
     const { passwordHash, ...userWithoutPassword } = user;
 
     res.status(200).json({
@@ -151,12 +151,12 @@ exports.login = async (req, res) => {
 
 /**
  * POST /api/auth/logout
- * Déconnexion (principalement géré côté client)
+ * Sign out (mostly handled on the client)
  */
 exports.logout = async (req, res) => {
   try {
-    // La déconnexion est principalement gérée côté client en supprimant le token
-    // Ici on peut ajouter une logique de blacklist de token si nécessaire
+    // Signing out is mostly a client-side matter: it discards the token
+    // A token blacklist could be added here if it ever becomes necessary
 
     res.status(200).json({
       success: true,
@@ -174,7 +174,7 @@ exports.logout = async (req, res) => {
 
 /**
  * GET /api/auth/me
- * Récupérer les informations de l'utilisateur connecté
+ * Return the signed-in user's details
  */
 exports.getMe = async (req, res) => {
   try {
@@ -217,13 +217,13 @@ exports.getMe = async (req, res) => {
 
 /**
  * PUT /api/auth/update-password
- * Changer le mot de passe
+ * Change the password
  */
 exports.updatePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    // Récupérer l'utilisateur avec le mot de passe
+    // Load the user together with the password hash
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
     });
@@ -235,7 +235,7 @@ exports.updatePassword = async (req, res) => {
       });
     }
 
-    // Vérifier l'ancien mot de passe
+    // Check the current password
     const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
 
     if (!isPasswordValid) {
@@ -245,10 +245,10 @@ exports.updatePassword = async (req, res) => {
       });
     }
 
-    // Hasher le nouveau mot de passe
+    // Hash the new password
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
-    // Mettre à jour le mot de passe
+    // Store the new password
     await prisma.user.update({
       where: { id: req.user.id },
       data: { passwordHash: newPasswordHash },
@@ -269,55 +269,8 @@ exports.updatePassword = async (req, res) => {
 };
 
 /**
- * POST /api/auth/forgot-password
- * Demander un reset de mot de passe
- */
-exports.forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    // Trouver l'utilisateur
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      // Pour des raisons de sécurité, on retourne toujours un succès
-      return res.status(200).json({
-        success: true,
-        message: 'Si cet email existe, un lien de réinitialisation a été envoyé',
-      });
-    }
-
-    // Générer un token de reset (valide 1 heure)
-    const resetToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-
-    const resetUrl = `${process.env.CLIENT_URL || ''}/reset-password?token=${resetToken}`;
-
-    // Envoyer l'email de réinitialisation (non bloquant)
-    emailService
-      .sendPasswordResetEmail(user, resetUrl, pickLang(req.body.lang))
-      .catch((err) => console.error('Email de reset non envoyé:', err.message));
-
-    res.status(200).json({
-      success: true,
-      message: 'Si cet email existe, un lien de réinitialisation a été envoyé',
-    });
-  } catch (error) {
-    console.error('Erreur lors de la demande de reset:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la demande de reset',
-      ...devDetails(error),
-    });
-  }
-};
-
-/**
  * POST /api/auth/google
- * Accesso con Google — riceve l'access token e verifica con Google userinfo
+ * Google sign-in — receives the access token and checks it against Google userinfo
  */
 exports.googleAuth = async (req, res) => {
   try {
@@ -327,7 +280,7 @@ exports.googleAuth = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Token Google mancante' });
     }
 
-    // Recupera le info utente da Google usando l'access token
+    // Fetch the user details from Google with the access token
     const googleRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -338,13 +291,13 @@ exports.googleAuth = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email non disponibile nel profilo Google' });
     }
 
-    // Cerca utente esistente per googleId o email
+    // Look for an existing user by googleId or email
     let user = await prisma.user.findFirst({
       where: { OR: [{ googleId }, { email }] },
     });
 
     if (user) {
-      // Collega googleId se l'utente esiste ma non ha ancora il googleId
+      // Link the googleId when the user exists but has none yet
       if (!user.googleId) {
         user = await prisma.user.update({
           where: { id: user.id },
@@ -352,12 +305,12 @@ exports.googleAuth = async (req, res) => {
         });
       }
     } else {
-      // Crea nuovo utente Google
+      // Create a new Google user
       user = await prisma.user.create({
         data: { email, googleId, firstName, lastName, avatar, isVerified: true },
       });
 
-      // Email de bienvenue pour le nouvel utilisateur Google (non bloquant)
+      // Welcome email for the new Google user (non-blocking)
       emailService
         .sendWelcomeEmail(user, pickLang(req.body.lang))
         .catch((err) => console.error('Email de bienvenue (Google) non envoyé:', err.message));
@@ -374,48 +327,5 @@ exports.googleAuth = async (req, res) => {
   } catch (error) {
     console.error('Errore Google Auth:', error);
     res.status(401).json({ success: false, message: 'Token Google non valido' });
-  }
-};
-
-/**
- * POST /api/auth/reset-password/:token
- * Réinitialiser le mot de passe avec le token
- */
-exports.resetPassword = async (req, res) => {
-  try {
-    const { token } = req.params;
-    const { newPassword } = req.body;
-
-    // Vérifier le token
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Token invalide ou expiré',
-      });
-    }
-
-    // Hasher le nouveau mot de passe
-    const passwordHash = await bcrypt.hash(newPassword, 10);
-
-    // Mettre à jour le mot de passe
-    await prisma.user.update({
-      where: { id: decoded.id },
-      data: { passwordHash },
-    });
-
-    res.status(200).json({
-      success: true,
-      message: 'Mot de passe réinitialisé avec succès',
-    });
-  } catch (error) {
-    console.error('Erreur lors de la réinitialisation du mot de passe:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la réinitialisation du mot de passe',
-      ...devDetails(error),
-    });
   }
 };

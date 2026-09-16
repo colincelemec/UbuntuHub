@@ -1,5 +1,5 @@
 // ============================================
-// Service API - Configuration AJAX avec Fetch
+// API service — AJAX configuration built on Fetch
 // ============================================
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -22,23 +22,23 @@ const getHeaders = () => {
 };
 
 // ============================================
-// GESTION DES ERREURS
+// ERROR HANDLING
 // ============================================
 
 const handleResponse = async (response) => {
   const data = await response.json();
 
   if (!response.ok) {
-    // Si le token est expiré (401), déconnecter l'utilisateur
+    // When the token has expired (401), sign the user out
     if (response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
 
-    // Erreurs de validation (express-validator) : le serveur renvoie
-    // un tableau `errors` détaillé. On le remonte au lieu du seul
-    // message générique « Erreurs de validation », inutilisable.
+    // Validation errors (express-validator): the server returns a detailed
+    // `errors` array. We surface it instead of the generic and useless
+    // "validation failed" message.
     let message = data.message || 'Une erreur est survenue';
     if (Array.isArray(data.errors) && data.errors.length > 0) {
       const details = data.errors
@@ -48,11 +48,11 @@ const handleResponse = async (response) => {
     }
 
     const error = new Error(message);
-    // Détail par champ, exploitable par les formulaires :
-    // { phone: 'Numéro de téléphone invalide', … }
+    // Per-field detail, directly usable by the forms:
+    // { phone: 'Invalid phone number', … }
     if (Array.isArray(data.errors)) {
       error.fieldErrors = data.errors.reduce((acc, e) => {
-        const field = e.path || e.param; // express-validator v7 = path, v6 = param
+        const field = e.path || e.param; // express-validator v7 uses `path`, v6 used `param`
         if (field && !acc[field]) acc[field] = e.msg || e.message;
         return acc;
       }, {});
@@ -66,7 +66,7 @@ const handleResponse = async (response) => {
 };
 
 // ============================================
-// MÉTHODES HTTP (AJAX avec Fetch API)
+// HTTP METHODS (AJAX with the Fetch API)
 // ============================================
 
 const api = {
@@ -173,7 +173,7 @@ const api = {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      // Ne pas définir Content-Type pour FormData (le navigateur le fera automatiquement)
+      // Do not set Content-Type for FormData (the browser does it automatically)
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers,

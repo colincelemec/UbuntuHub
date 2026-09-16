@@ -71,7 +71,7 @@
   color: var(--dh-accent);
 }
 
-/* ── Card "I miei servizi" con azioni modifica/elimina ── */
+/* ── "My businesses" cards, with edit and delete actions ── */
 .dh-myservice {
   display: flex;
   flex-direction: column;
@@ -155,7 +155,7 @@
   border: 1px solid var(--dh-border);
   background: var(--dh-card);
   position: relative;
-  z-index: 0; /* evita che la mappa copra header/dropdown */
+  z-index: 0; /* keeps the map from covering the header and dropdowns */
 }
 .dh-map .leaflet-container { font: inherit; }
 .dh-popup strong { font-size: 0.95rem; }
@@ -209,7 +209,7 @@
   border-color: var(--dh-accent);
 }
 
-/* ── Griglia card ── */
+/* ── Card grid ── */
 .dh-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

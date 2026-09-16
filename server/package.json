@@ -1,7 +1,7 @@
 {
-  "name": "afro-italia-server",
+  "name": "ubuntuhub-server",
   "version": "2.0.0",
-  "description": "Backend API REST pour AfroItalia Platform",
+  "description": "Backend API REST pour UbuntuHub Platform",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
@@ -28,9 +28,7 @@
     "db:seed:cities": "node prisma/seeds/cities-italia.js",
     "db:migrate:baseline": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql && prisma migrate resolve --applied 0_init && prisma migrate status",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script",
-    "email:test": "node scripts/test-email.js",
-    "db:publish-pending": "node scripts/publish-pending.js"
+    "db:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script"
   },
   "keywords": [
     "express",
@@ -39,7 +37,7 @@
     "postgresql",
     "prisma"
   ],
-  "author": "AfroItalia Team",
+  "author": "UbuntuHub Team",
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^5.7.1",

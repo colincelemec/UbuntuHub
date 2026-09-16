@@ -1,4 +1,4 @@
-# 🌍 AfroItalia
+# 🌍 UbuntuHub
 
 > A directory of African diaspora businesses in Italy — restaurants,
 > hairdressers, grocery stores, fashion, beauty and services.
@@ -18,11 +18,9 @@ detail page with photos, opening hours and an interactive map — **without
 needing an account**.
 
 Registered users save favourites, write reviews and publish their own
-business. Owners of listings created from our community census can **claim**
-them. Administrators verify submissions, moderate reviews and approve claims.
+business. Administrators verify submissions and moderate reported reviews.
 
-Everything is available in **Italian, French and English**, in a dark or light
-theme.
+Everything is available in **Italian, French and English**.
 
 ---
 
@@ -36,17 +34,13 @@ links, reviews with owner replies, Leaflet map, share buttons (WhatsApp,
 Facebook, email, copy link).
 
 **Publishing** — a guided form where typing an address automatically places the
-map pin (geocoding via OpenStreetMap), with an international phone field
-covering ~245 countries.
+map pin (geocoding via OpenStreetMap).
 
-**Accounts** — email/password or Google sign-in, password reset, favourites,
-personal dashboard.
+**Accounts** — email/password or Google sign-in, favourites, personal
+dashboard.
 
 **Administration** — statistics, business moderation, user management,
-reported-review moderation, ownership-claim approval.
-
-**Support chatbot** — nine predefined questions and answers in three
-languages, no external AI service.
+reported-review moderation.
 
 ---
 
@@ -59,7 +53,7 @@ languages, no external AI service.
 | Database | PostgreSQL 15 |
 | Auth | JWT + Google OAuth 2.0 |
 | Emails | Nodemailer (SMTP) |
-| Tests | Jest + Supertest — 62 tests, no database required |
+| Tests | Jest + Supertest — 78 tests, no database required |
 | Hosting | Vercel (frontend) + Railway (API and database) |
 
 ---
@@ -92,7 +86,7 @@ npm run dev            # API   → http://localhost:5000
 cd ../client && npm start   # site → http://localhost:3000
 ```
 
-Demo account: `admin@afroitalia.com` / `password123` (development only — never
+Demo account: `admin@ubuntuhub.com` / `password123` (development only — never
 created in production).
 
 ---
@@ -109,7 +103,6 @@ npm run db:seed:cities   # (re)load the 107 cities
 # Client
 npm start                # development server
 npm run build            # production build
-npm run check:i18n       # verify translation completeness
 ```
 
 ---

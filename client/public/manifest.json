@@ -1,6 +1,6 @@
 {
-  "short_name": "AfroItalia",
-  "name": "AfroItalia — African businesses in Italy",
+  "short_name": "UbuntuHub",
+  "name": "UbuntuHub — African businesses in Italy",
   "description": "Find and support African diaspora businesses across Italy.",
   "lang": "it",
   "icons": [
@@ -10,13 +10,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo-afroitalia.png",
+      "src": "logo_UH.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo-afroitalia.png",
+      "src": "logo_UH.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

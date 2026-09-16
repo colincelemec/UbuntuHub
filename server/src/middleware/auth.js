@@ -7,18 +7,18 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 /**
- * Middleware pour protéger les routes (authentification requise)
+ * Middleware protecting routes that require authentication.
  */
 exports.protect = async (req, res, next) => {
   try {
     let token;
 
-    // Récupérer le token depuis le header Authorization
+    // Read the token from the Authorization header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
 
-    // Vérifier si le token existe
+    // Make sure a token was provided
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -26,10 +26,10 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // Vérifier et décoder le token
+    // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Récupérer l'utilisateur depuis la base de données
+    // Load the user from the database
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
@@ -50,7 +50,7 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // Ajouter l'utilisateur à la requête
+    // Attach the user to the request
     req.user = user;
     next();
 
@@ -79,8 +79,8 @@ exports.protect = async (req, res, next) => {
 };
 
 /**
- * Middleware pour restreindre l'accès à certains rôles
- * @param  {...string} roles - Rôles autorisés (ex: 'ADMIN', 'BUSINESS')
+ * Middleware restricting access to specific roles.
+ * @param  {...string} roles - Allowed roles (e.g. 'ADMIN', 'BUSINESS')
  */
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
@@ -103,7 +103,7 @@ exports.restrictTo = (...roles) => {
 };
 
 /**
- * Middleware optionnel : Ajoute l'utilisateur s'il est connecté, sinon continue
+ * Optional middleware: attaches the user when signed in, otherwise continues.
  */
 exports.optionalAuth = async (req, res, next) => {
   try {
@@ -133,7 +133,7 @@ exports.optionalAuth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    // En cas d'erreur, continuer sans utilisateur
+    // On error, carry on without a user
     next();
   }
 };

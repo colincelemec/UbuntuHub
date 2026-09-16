@@ -5,71 +5,58 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
-const claimController = require('../controllers/claimController');
 const { protect, restrictTo } = require('../middleware/auth');
 
-// Toutes les routes admin nécessitent d'être ADMIN
+// Every admin route requires the ADMIN role
 router.use(protect);
 router.use(restrictTo('ADMIN'));
 
 /**
  * GET /api/admin/stats
- * Statistiques globales de la plateforme
+ * Platform-wide statistics
  */
 router.get('/stats', adminController.getStats);
 
 /**
  * GET /api/admin/businesses
- * Liste de toutes les entreprises (avec filtres)
+ * List every business (with filters)
  */
 router.get('/businesses', adminController.getAllBusinesses);
 
 /**
  * GET /api/admin/businesses/pending
- * Entreprises en attente de vérification
+ * Businesses awaiting a check
  */
 router.get('/businesses/pending', adminController.getPendingBusinesses);
 
 /**
  * GET /api/admin/users
- * Liste de tous les utilisateurs
+ * List every user
  */
 router.get('/users', adminController.getAllUsers);
 
 /**
  * PATCH /api/admin/users/:id/role
- * Changer le rôle d'un utilisateur
+ * Change a user's role
  */
 router.patch('/users/:id/role', adminController.updateUserRole);
 
 /**
  * GET /api/admin/reviews/reported
- * Avis signalés
+ * Reported reviews
  */
 router.get('/reviews/reported', adminController.getReportedReviews);
 
 /**
  * DELETE /api/admin/reviews/:id
- * Supprimer un avis (modération)
+ * Delete a review (moderation)
  */
 router.delete('/reviews/:id', adminController.deleteReview);
 
 /**
  * DELETE /api/admin/users/:id
- * Supprimer un utilisateur
+ * Delete a user
  */
 router.delete('/users/:id', adminController.deleteUser);
-
-/**
- * GET /api/admin/claims
- * Liste des revendications de fiches (query: status)
- */
-router.get('/claims', claimController.getClaims);
-
-/**
- * PATCH /api/admin/claims/:id
- * Approuver ou refuser une revendication
- */
-router.patch('/claims/:id', claimController.reviewClaim);
 
 module.exports = router;

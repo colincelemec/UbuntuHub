@@ -1,7 +1,7 @@
 // ============================================
-// Tests: validation della creazione attività
-// Regressione: i numeri fissi italiani venivano rifiutati
-// (isMobilePhone accettava solo i cellulari).
+// Tests: validation when creating a business
+// Regression: Italian landline numbers were rejected
+// (isMobilePhone only accepted mobile numbers).
 // ============================================
 
 jest.mock('@prisma/client', () => require('./helpers/mockPrisma').prismaClientMock);
@@ -23,7 +23,7 @@ const authUser = {
 
 const token = () => jwt.sign({ id: authUser.id }, process.env.JWT_SECRET);
 
-// Payload minimo valido
+// Smallest valid payload
 const basePayload = {
   name: 'Ristorante Teranga',
   description: 'Cucina senegalese autentica nel cuore di Milano, aperta dal 2015.',
@@ -32,21 +32,21 @@ const basePayload = {
   address: 'Via Padova 36',
 };
 
-/** Invia il payload e restituisce la risposta */
+/** Sends the payload and returns the response */
 const post = (payload) =>
   request(app)
     .post('/api/businesses')
     .set('Authorization', `Bearer ${token()}`)
     .send(payload);
 
-/** Estrae i campi in errore dalla risposta di validazione */
+/** Extracts the failing fields from the validation response */
 const failedFields = (res) =>
   (res.body.errors || []).map(e => e.path || e.param);
 
 beforeEach(() => {
   resetMockPrisma();
-  mockPrisma.user.findUnique.mockResolvedValue(authUser); // per protect()
-  // La creazione va a buon fine se la validazione passa
+  mockPrisma.user.findUnique.mockResolvedValue(authUser); // for protect()
+  // Creation succeeds once validation passes
   mockPrisma.city.findUnique.mockResolvedValue({ id: 'city_1', latitude: 45.46, longitude: 9.19 });
   mockPrisma.category.findUnique.mockResolvedValue({ id: 'cat_1', name: 'Ristorante', slug: 'restaurant' });
   mockPrisma.business.findUnique.mockResolvedValue(null);
@@ -56,14 +56,14 @@ beforeEach(() => {
 
 describe('Validazione telefono — numeri italiani reali', () => {
   const validPhones = [
-    '+39 02 1234567',    // fisso Milano con prefisso internazionale
-    '02 1234567',        // fisso Milano
-    '+39 06 12345678',   // fisso Roma
-    '3331234567',        // cellulare senza spazi
-    '+39 333 123 4567',  // cellulare con spazi
-    '02-1234567',        // con trattini
-    '(02) 1234567',      // con parentesi
-    '+39.06.12345678',   // con punti
+    '+39 02 1234567',    // Milan landline with international prefix
+    '02 1234567',        // Milan landline
+    '+39 06 12345678',   // Rome landline
+    '3331234567',        // mobile, no spaces
+    '+39 333 123 4567',  // mobile, with spaces
+    '02-1234567',        // with dashes
+    '(02) 1234567',      // with brackets
+    '+39.06.12345678',   // with dots
   ];
 
   it.each(validPhones)('accetta %s', async (phone) => {

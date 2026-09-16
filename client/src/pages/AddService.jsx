@@ -1,7 +1,7 @@
 // ============================================
-// Add Service — modulo per pubblicare un servizio/attività
-// Accessibile a qualunque utente autenticato.
-// I dati sono salvati come "business" (stato PENDING → moderazione admin).
+// AddService — the form used to publish a business
+// Available to any authenticated user.
+// The data is stored as a business, published straight away.
 // ============================================
 
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
@@ -16,11 +16,10 @@ import { getTranslation } from '../locales/translations';
 import Icon from '../components/common/Icon';
 import CitySelect from '../components/common/CitySelect';
 import { getCategoryLabel } from '../utils/categoryLabel';
-import PhoneInput from '../components/common/PhoneInput';
 import ImageUpload from '../components/common/ImageUpload';
 import '../styles/AddService.css';
 
-// Fix icone Leaflet (path di default rotto con i bundler)
+// Leaflet icon fix (the default paths break with bundlers)
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -30,7 +29,7 @@ L.Icon.Default.mergeOptions({
 
 const ITALY_CENTER = [42.5, 12.5];
 
-// Sposta la vista della mappa quando cambia il centro (es. città scelta)
+// Moves the map view when the centre changes (e.g. a city is picked)
 const Recenter = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
@@ -39,7 +38,7 @@ const Recenter = ({ center, zoom }) => {
   return null;
 };
 
-// Posiziona il pin al click sulla mappa
+// Drops the pin where the map is clicked
 const LocationPicker = ({ position, onChange }) => {
   useMapEvents({
     click(e) { onChange([e.latlng.lat, e.latlng.lng]); },
@@ -79,20 +78,20 @@ const AddService = () => {
     coverImage: '',
   });
   const [position, setPosition] = useState(null); // [lat, lng]
-  // Stato della ricerca automatica dell'indirizzo:
+  // State of the automatic address lookup:
   // 'idle' | 'searching' | 'found' | 'notfound' | 'error'
   const [geoStatus, setGeoStatus] = useState('idle');
-  // Se l'utente sposta il segnaposto a mano, non lo sovrascriviamo
-  // finché non modifica di nuovo l'indirizzo.
+  // If the user moves the pin by hand we never overwrite it until
+  // they edit the address again.
   const pinMovedManually = useRef(false);
-  // In modifica: salta la prima ricerca per non spostare la posizione salvata
+  // Edit mode: skip the first lookup so the saved position is kept
   const skipNextGeocode = useRef(isEdit);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Carica città + categorie
+  // Load cities and categories
   useEffect(() => {
     (async () => {
       try {
@@ -110,14 +109,14 @@ const AddService = () => {
     })();
   }, []);
 
-  // Modalità modifica: precompila dal servizio esistente
+  // Edit mode: prefill from the existing business
   useEffect(() => {
     if (!isEdit) return;
     (async () => {
       try {
         let biz = location.state?.business;
         if (!biz) {
-          // Fallback: nessuno stato di routing (es. refresh) → cerca nei miei servizi
+          // Fallback: no routing state (e.g. after a refresh) → look in my own businesses
           const res = await businessService.getMyBusinesses();
           biz = (res.data || []).find(b => b.id === id);
         }
@@ -145,7 +144,7 @@ const AddService = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, id]);
 
-  // Centro mappa: città scelta → suo centro, altrimenti Italia
+  // Map centre: the chosen city, otherwise the middle of Italy
   const selectedCity = useMemo(
     () => cities.find(c => c.id === form.cityId),
     [cities, form.cityId]
@@ -159,40 +158,29 @@ const AddService = () => {
     setForm(prev => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     setServerError(null);
-    // Modificando l'indirizzo la ricerca automatica torna attiva
+    // Editing the address re-enables the automatic lookup
     if (name === 'address') pinMovedManually.current = false;
   };
 
-  // Telefono / WhatsApp: il componente restituisce già il formato E.164.
-  // Teniamo traccia della validità per segnalarla prima dell'invio.
-  const [phoneValidity, setPhoneValidity] = useState({ phone: true, whatsapp: true });
-
-  const handlePhoneChange = useCallback((field, e164, meta) => {
-    setForm(prev => ({ ...prev, [field]: e164 }));
-    setPhoneValidity(prev => ({ ...prev, [field]: !e164 || meta.isValid }));
-    setErrors(prev => (prev[field] ? { ...prev, [field]: '' } : prev));
-    setServerError(null);
-  }, []);
-
-  // Segnaposto spostato/cliccato a mano: la ricerca automatica non lo tocca più
+  // Pin moved or clicked by hand: the automatic lookup leaves it alone
   const handlePinChange = useCallback((coords) => {
     pinMovedManually.current = true;
     setGeoStatus('idle');
     setPosition(coords);
   }, []);
 
-  // ── Ricerca automatica dell'indirizzo (debounce) ──
-  // Quando cambiano indirizzo o città, cerca le coordinate e sposta il segnaposto.
+  // ── Automatic address lookup (debounced) ──
+  // When the address or the city changes, look up the coordinates and move the pin.
   const address = form.address;
   const cityName = selectedCity?.name;
 
   useEffect(() => {
-    // In modifica, non sovrascrivere la posizione già salvata al primo render
+    // In edit mode, do not overwrite the saved position on first render
     if (skipNextGeocode.current) {
       skipNextGeocode.current = false;
       return;
     }
-    // Il segnaposto è stato messo a mano: rispettiamo la scelta dell'utente
+    // The pin was placed by hand: respect the user's choice
     if (pinMovedManually.current) return;
 
     const street = (address || '').trim();
@@ -200,7 +188,7 @@ const AddService = () => {
       setGeoStatus('idle');
       return;
     }
-    // Sotto i 3 caratteri la ricerca non è significativa
+    // Below 3 characters a lookup is meaningless
     if (street.length < 3) {
       setGeoStatus('idle');
       return;
@@ -209,7 +197,7 @@ const AddService = () => {
     let cancelled = false;
     setGeoStatus('searching');
 
-    // Debounce: rispetta il limite di ~1 richiesta/secondo di Nominatim
+    // Debounce: respects Nominatim's ~1 request per second limit
     const timer = setTimeout(async () => {
       try {
         const result = await geocodeAddress(street, cityName);
@@ -232,7 +220,7 @@ const AddService = () => {
     };
   }, [address, cityName]);
 
-  // Annulla eventuali richieste in corso allo smontaggio
+  // Abort any in-flight request when unmounting
   useEffect(() => () => cancelGeocoding(), []);
 
   const validate = () => {
@@ -244,14 +232,15 @@ const AddService = () => {
     if (!form.address.trim()) err.address = t('app.addService.errRequired');
     if (!form.description.trim()) err.description = t('app.addService.errRequired');
     else if (form.description.trim().length < 20) err.description = t('app.addService.errDescShort');
-    // Exige un domaine complet (miosito.it), avec ou sans http(s)://
+    // Requires a complete domain (mysite.it), with or without http(s)://
     if (form.website && !/^(https?:\/\/)?[\w-]+(\.[\w-]+)+([/?#].*)?$/i.test(form.website.trim())) {
       err.website = t('app.addService.errUrl');
     }
     if (form.email && !/\S+@\S+\.\S+/.test(form.email)) err.email = t('app.addService.errEmail');
-    // Numeri: libphonenumber-js verifica che il numero esista davvero nel paese
-    if (form.phone && !phoneValidity.phone) err.phone = t('app.addService.errPhone');
-    if (form.whatsapp && !phoneValidity.whatsapp) err.whatsapp = t('app.addService.errPhone');
+    // Shape check only; the real validation happens on the server
+    const phoneOk = (v) => /^\+?[\d\s().-]{6,25}$/.test(v.trim());
+    if (form.phone && !phoneOk(form.phone)) err.phone = t('app.addService.errPhone');
+    if (form.whatsapp && !phoneOk(form.whatsapp)) err.whatsapp = t('app.addService.errPhone');
     setErrors(err);
     return Object.keys(err).length === 0;
   };
@@ -263,7 +252,7 @@ const AddService = () => {
 
     setSubmitting(true);
     try {
-      // Coordinate: pin scelto, oppure centro città (fallback gestito anche dal backend)
+      // Coordinates: the chosen pin, or the city centre (the backend also falls back)
       const coords = position || (selectedCity ? [selectedCity.latitude, selectedCity.longitude] : null);
       const payload = {
         name: form.name.trim(),
@@ -289,10 +278,10 @@ const AddService = () => {
       setTimeout(() => navigate('/dashboard'), 1600);
     } catch (err) {
       setServerError(err.message);
-      // Le serveur indique quels champs sont en cause : on les met en évidence
+      // The server reports which fields are at fault: we highlight them
       if (err.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
         setErrors(prev => ({ ...prev, ...err.fieldErrors }));
-        // Remonte au premier champ en erreur pour que l'utilisateur le voie
+        // Scroll up to the first faulty field so the user can see it
         const first = Object.keys(err.fieldErrors)[0];
         document.getElementById(first)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -331,7 +320,7 @@ const AddService = () => {
         )}
 
         <form className="as-form" onSubmit={handleSubmit} noValidate>
-          {/* ── Informazioni principali ── */}
+          {/* ── Main details ── */}
           <section className="as-card">
             <h3 className="as-card__title">{t('app.addService.sectionMain')}</h3>
 
@@ -395,11 +384,11 @@ const AddService = () => {
             </div>
           </section>
 
-          {/* ── Posizione sulla mappa ── */}
+          {/* ── Position on the map ── */}
           <section className="as-card">
             <h3 className="as-card__title">{t('app.addService.sectionLocation')}</h3>
             <p className="as-hint as-hint--block">{t('app.addService.mapHelp')}</p>
-            {/* Stato della ricerca automatica dell'indirizzo */}
+            {/* State of the automatic address lookup */}
             {geoStatus !== 'idle' && (
               <div className={`as-geo as-geo--${geoStatus}`} role="status" aria-live="polite">
                 {geoStatus === 'searching' && (
@@ -439,7 +428,7 @@ const AddService = () => {
             </span>
           </section>
 
-          {/* ── Contatti ── */}
+          {/* ── Contact details ── */}
           <section className="as-card">
             <h3 className="as-card__title">{t('app.addService.sectionContact')}</h3>
             <div className="as-row">
@@ -452,16 +441,9 @@ const AddService = () => {
               </div>
               <div className="as-field">
                 <label htmlFor="phone">{t('app.addService.phone')}</label>
-                <PhoneInput
-                  id="phone"
-                  locale={language}
-                  value={form.phone}
-                  error={!!errors.phone}
-                  onChange={(e164, meta) => handlePhoneChange('phone', e164, meta)}
-                  searchPlaceholder={t('app.addService.searchCountry')}
-                  emptyLabel={t('app.addService.noCountryFound')}
-                  countryLabel={t('app.addService.country')}
-                />
+                <input id="phone" name="phone" type="tel" value={form.phone}
+                  onChange={handleChange} className={errors.phone ? 'as-input as-input--err' : 'as-input'}
+                  placeholder="+39 333 123 4567" />
                 {errors.phone && <span className="as-err">{errors.phone}</span>}
               </div>
             </div>
@@ -475,22 +457,15 @@ const AddService = () => {
               </div>
               <div className="as-field">
                 <label htmlFor="whatsapp">{t('app.addService.whatsapp')}</label>
-                <PhoneInput
-                  id="whatsapp"
-                  locale={language}
-                  value={form.whatsapp}
-                  error={!!errors.whatsapp}
-                  onChange={(e164, meta) => handlePhoneChange('whatsapp', e164, meta)}
-                  searchPlaceholder={t('app.addService.searchCountry')}
-                  emptyLabel={t('app.addService.noCountryFound')}
-                  countryLabel={t('app.addService.country')}
-                />
+                <input id="whatsapp" name="whatsapp" type="tel" value={form.whatsapp}
+                  onChange={handleChange} className={errors.whatsapp ? 'as-input as-input--err' : 'as-input'}
+                  placeholder="+39 333 123 4567" />
                 {errors.whatsapp && <span className="as-err">{errors.whatsapp}</span>}
               </div>
             </div>
           </section>
 
-          {/* ── Immagini (facoltative, via URL) ── */}
+          {/* ── Images (optional) ── */}
           <section className="as-card">
             <h3 className="as-card__title">{t('app.addService.sectionImages')}</h3>
             <p className="as-hint as-hint--block">{t('app.addService.imagesHelp')}</p>
@@ -498,14 +473,14 @@ const AddService = () => {
               <ImageUpload
                 value={form.logo}
                 onChange={(url) => setForm(p => ({ ...p, logo: url }))}
-                folder="afroitalia/logos"
+                folder="ubuntuhub/logos"
                 label={t('app.addService.logo')}
                 t={(k) => t(`app.addService.${k}`)}
               />
               <ImageUpload
                 value={form.coverImage}
                 onChange={(url) => setForm(p => ({ ...p, coverImage: url }))}
-                folder="afroitalia/covers"
+                folder="ubuntuhub/covers"
                 label={t('app.addService.cover')}
                 t={(k) => t(`app.addService.${k}`)}
               />

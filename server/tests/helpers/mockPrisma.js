@@ -1,7 +1,7 @@
 // ============================================
-// Mock Prisma — condiviso da tutti i test
-// Ogni test gira senza database: le query Prisma
-// sono jest.fn() configurabili per scenario.
+// Prisma mock — shared by every test suite.
+// Tests run without a database: Prisma queries are jest.fn()
+// stubs, configured per scenario.
 // ============================================
 
 const modelMethods = () => ({
@@ -27,12 +27,11 @@ const mockPrisma = {
   city: modelMethods(),
   category: modelMethods(),
   favorite: modelMethods(),
-  businessClaim: modelMethods(),
   $transaction: jest.fn((ops) => Promise.all(ops)),
   $disconnect: jest.fn(),
 };
 
-// Réinitialiser tous les mocks entre les tests
+// Reset every mock between tests
 const resetMockPrisma = () => {
   for (const model of Object.values(mockPrisma)) {
     if (typeof model === 'object') {
@@ -44,7 +43,7 @@ const resetMockPrisma = () => {
   mockPrisma.$transaction.mockImplementation((ops) => Promise.all(ops));
 };
 
-// Factory pour jest.mock('@prisma/client')
+// Factory used by jest.mock('@prisma/client')
 const prismaClientMock = {
   PrismaClient: jest.fn(() => mockPrisma),
 };
