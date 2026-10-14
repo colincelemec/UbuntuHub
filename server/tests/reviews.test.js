@@ -117,3 +117,112 @@ describe('POST /api/reviews', () => {
     expect(res.status).toBe(401);
   });
 });
+
+// ============================================
+// Editing and deleting your own review.
+// The rule is not the same for the two: only the author may edit,
+// while the author OR an admin may delete.
+// ============================================
+
+describe('PUT /api/reviews/:id', () => {
+  const putReview = (body, userId = authUser.id) =>
+    request(app)
+      .put('/api/reviews/rev_1')
+      .set('Authorization', `Bearer ${tokenFor(userId)}`)
+      .send(body);
+
+  beforeEach(() => {
+    mockPrisma.user.findUnique.mockResolvedValue(authUser);
+    mockPrisma.review.findUnique.mockResolvedValue(sampleReview);
+    mockPrisma.review.update.mockResolvedValue({ ...sampleReview, rating: 3, comment: 'Rivisto' });
+    mockPrisma.review.findMany.mockResolvedValue([{ rating: 3 }]);
+    mockPrisma.business.update.mockResolvedValue({});
+  });
+
+  it('aggiorna il voto e il commento (200)', async () => {
+    const res = await putReview({ rating: 3, comment: 'Rivisto' });
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.review.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'rev_1' } })
+    );
+  });
+
+  it('ricalcola la media dell\'attività quando il voto cambia', async () => {
+    await putReview({ rating: 3, comment: 'Rivisto' });
+
+    expect(mockPrisma.business.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ averageRating: 3 }),
+      })
+    );
+  });
+
+  it('impedisce di modificare la recensione di un altro (403)', async () => {
+    const intruder = { ...authUser, id: 'user_2' };
+    mockPrisma.user.findUnique.mockResolvedValue(intruder);
+
+    const res = await putReview({ rating: 1, comment: 'Non mia' }, 'user_2');
+
+    expect(res.status).toBe(403);
+    expect(mockPrisma.review.update).not.toHaveBeenCalled();
+  });
+
+  it('rifiuta senza autenticazione (401)', async () => {
+    const res = await request(app)
+      .put('/api/reviews/rev_1')
+      .send({ rating: 3, comment: 'Rivisto' });
+
+    expect(res.status).toBe(401);
+  });
+});
+
+describe('DELETE /api/reviews/:id', () => {
+  const deleteReview = (userId = authUser.id) =>
+    request(app)
+      .delete('/api/reviews/rev_1')
+      .set('Authorization', `Bearer ${tokenFor(userId)}`);
+
+  beforeEach(() => {
+    mockPrisma.user.findUnique.mockResolvedValue(authUser);
+    mockPrisma.review.findUnique.mockResolvedValue(sampleReview);
+    mockPrisma.review.delete.mockResolvedValue(sampleReview);
+    mockPrisma.review.findMany.mockResolvedValue([]);
+    mockPrisma.business.update.mockResolvedValue({});
+  });
+
+  it('cancella la propria recensione (200)', async () => {
+    const res = await deleteReview();
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.review.delete).toHaveBeenCalledWith({ where: { id: 'rev_1' } });
+  });
+
+  it('azzera le statistiche quando era l\'ultima recensione', async () => {
+    await deleteReview();
+
+    expect(mockPrisma.business.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ reviewCount: 0, averageRating: 0 }),
+      })
+    );
+  });
+
+  it('impedisce a un altro utente di cancellarla (403)', async () => {
+    mockPrisma.user.findUnique.mockResolvedValue({ ...authUser, id: 'user_2' });
+
+    const res = await deleteReview('user_2');
+
+    expect(res.status).toBe(403);
+    expect(mockPrisma.review.delete).not.toHaveBeenCalled();
+  });
+
+  it('permette a un amministratore di cancellarla (200)', async () => {
+    mockPrisma.user.findUnique.mockResolvedValue({ ...authUser, id: 'admin_1', role: 'ADMIN' });
+
+    const res = await deleteReview('admin_1');
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.review.delete).toHaveBeenCalled();
+  });
+});

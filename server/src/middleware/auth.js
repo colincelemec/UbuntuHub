@@ -22,7 +22,7 @@ exports.protect = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Non authentifié. Token manquant.'
+        message: 'Non autenticato. Token mancante.'
       });
     }
 
@@ -46,7 +46,7 @@ exports.protect = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Utilisateur non trouvé'
+        message: 'User non trovato'
       });
     }
 
@@ -60,14 +60,14 @@ exports.protect = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        message: 'Token invalide'
+        message: 'Token invalido'
       });
     }
 
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token expiré'
+        message: 'Token scaduto'
       });
     }
 

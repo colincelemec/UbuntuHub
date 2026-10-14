@@ -66,6 +66,20 @@ docker compose down                # stop everything
 > (`http://localhost:5001`). Run directly with `npm run dev`, it uses **5000**.
 > Make sure `REACT_APP_API_URL` in `client/.env` matches whichever you use.
 
+**Migrations run automatically.** The `api` service starts with
+`npm run migrate && npm run dev`, so any pending migration is applied before the
+server boots. You never have to remember to run it.
+
+> ⚠️ **The trade-off you are accepting.** `prisma migrate deploy` **creates the
+> database if it does not exist**. So a typo in `POSTGRES_DB` does not produce a
+> connection error: it produces a brand-new, empty database, fully migrated, and
+> an application that starts perfectly and displays nothing at all. See
+> [Troubleshooting](#the-site-works-but-shows-no-data).
+
+Only the `api` service runs the migrations. `prisma-studio` deliberately does
+not: two `prisma migrate deploy` racing for the same lock at start-up is how you
+get a random failure on one of them.
+
 ---
 
 ## Database commands
@@ -153,6 +167,53 @@ docker compose logs postgres
 
 A frequent cause is a corrupted volume after an unclean shutdown — see
 [Reset everything](#reset-everything).
+
+### The site works but shows no data
+
+No error anywhere: the API answers `200`, the browser console is clean, and the
+directory is simply empty. **The application is reading from a database that has
+the right tables and no rows.**
+
+Almost always a mismatch between the database that holds your data and the one
+named in the configuration. Because migrations run at start-up, a wrong name
+silently creates and migrates a new empty database instead of failing.
+
+Find out which databases exist and which one has your data:
+
+```bash
+docker compose exec postgres psql -U postgres -c "\l"
+docker compose exec postgres psql -U postgres -d ubuntuhub_db -c "SELECT count(*) FROM businesses;"
+```
+
+Then check what the API actually receives — `config` prints the file **after**
+variable substitution, which is the only reliable view:
+
+```bash
+docker compose config | grep DATABASE_URL
+```
+
+Compare that name character by character with `POSTGRES_DB` in `.env`. Once
+corrected, recreate the containers, because environment variables are read only
+at start-up:
+
+```bash
+docker compose up -d --force-recreate
+```
+
+> ⚠️ **Never add `-v` while investigating.** It deletes the volumes and your
+> data with them. Drop the empty leftover database only once the site works
+> again.
+
+**If the count really is zero** and no other database holds your rows, the data
+is gone and you need to reload it:
+
+```bash
+npm run db:seed && npm run db:seed:cities && npm run db:seed:censimento
+```
+
+This restores the categories, the 107 cities and the 53 censused businesses —
+but **not** the accounts, reviews or listings you created by hand through the
+interface. Those are only recoverable from a backup.
 
 ---
 

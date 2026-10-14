@@ -1,7 +1,7 @@
 // ============================================
 // ShareButtons — share a business listing
 // On mobile it uses the system share sheet (navigator.share);
-// otherwise it shows WhatsApp, Facebook, email and "copy link".
+// otherwise it shows WhatsApp, email and "copy link".
 // ============================================
 
 import React, { useState, useCallback } from 'react';
@@ -54,13 +54,6 @@ const ShareButtons = ({ business }) => {
       href: `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`,
     },
     {
-      key: 'facebook',
-      label: t('shareFacebook'),
-      icon: 'globe',
-      className: 'sb-btn--facebook',
-      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-    },
-    {
       key: 'email',
       label: t('shareEmail'),
       icon: 'mail',
@@ -94,7 +87,7 @@ const ShareButtons = ({ business }) => {
             title={l.label}
           >
             <Icon name={l.icon} size={15} />
-            <span className="sb-btn__text">{l.key === 'whatsapp' ? 'WhatsApp' : l.key === 'facebook' ? 'Facebook' : 'Email'}</span>
+            <span className="sb-btn__text">{l.key === 'whatsapp' ? 'WhatsApp' : 'Email'}</span>
           </a>
         ))}
 

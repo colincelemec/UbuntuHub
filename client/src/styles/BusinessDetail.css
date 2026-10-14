@@ -600,6 +600,64 @@
   font-size: 0.93rem;
 }
 
+/* ── Editing and deleting your own review ──
+   The actions stay discreet until the card is hovered: they belong to the
+   reader, not to the content. On touch screens there is no hover, so they
+   are always visible (see the media query at the end of the file). */
+
+.bd-review-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.bd-review-card:hover .bd-review-actions,
+.bd-review-actions:focus-within {
+  opacity: 1;
+}
+
+.bd-review-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bd-review-action:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.bd-review-action--danger:hover {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  background: var(--color-error-soft);
+}
+
+/* The card being edited is lifted out of the list */
+.bd-review-card.is-editing {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.bd-review-edit {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .bd-owner-response {
   margin-top: 1rem;
   background: #f0faf4;
@@ -658,6 +716,8 @@
   .bd-tabs-inner { padding: 0 0.5rem; overflow-x: auto; }
   .bd-tab { padding: 0.85rem 1rem; font-size: 0.85rem; }
   .bd-review-form-actions { flex-direction: column; }
+  /* No hover on touch screens: the actions must always be reachable */
+  .bd-review-actions { opacity: 1; }
 }
 
 .bd-contact-row span:first-child,

@@ -31,7 +31,7 @@ provincial capitals) and category, grid and map views, pagination.
 
 **Business pages** — photo gallery, contact details, opening hours, social
 links, reviews with owner replies, Leaflet map, share buttons (WhatsApp,
-Facebook, email, copy link).
+email, copy link).
 
 **Publishing** — a guided form where typing an address automatically places the
 map pin (geocoding via OpenStreetMap).

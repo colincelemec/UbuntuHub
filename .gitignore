@@ -52,6 +52,12 @@ yarn-error.log*
 pnpm-debug.log*
 
 # ============================================
+# BACKUP DEL DATABASE
+# I dump non vanno mai su Git: contengono dati personali.
+# ============================================
+server/backups/*.sql
+
+# ============================================
 # PRISMA
 # Les migrations, elles, DOIVENT être committées :
 # c'est l'historique du schéma en production.

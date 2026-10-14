@@ -69,7 +69,11 @@ services:
         condition: service_healthy
     networks:
       - ubuntuhub_network
-    command: npm run dev
+    # Applica le migrazioni in attesa, poi avvia il server con ricarica automatica.
+    # ATTENZIONE: `prisma migrate deploy` CREA il database se non esiste. Un nome
+    # sbagliato in POSTGRES_DB non dà quindi un errore di connessione, ma un
+    # database nuovo e vuoto — e un sito che funziona senza mostrare nulla.
+    command: sh -c "npm run migrate && npm run dev"
 
   # Prisma Studio (Interface graphique pour la DB)
   prisma-studio:
@@ -92,6 +96,9 @@ services:
         condition: service_healthy
     networks:
       - ubuntuhub_network
+    # Le migrazioni le applica il servizio `api`, una volta sola.
+    # Lanciarle anche qui significava due `prisma migrate deploy` in parallelo
+    # sullo stesso database all'avvio: si contendono il lock e uno dei due fallisce.
     command: npx prisma studio --port 5555 --browser none
 
 # Volumes persistants

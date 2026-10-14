@@ -15,7 +15,7 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'UbuntuHub';
-const DEFAULT_IMAGE = '/logo-ubuntuhub.png';
+const DEFAULT_IMAGE = '/logo_UH.png';
 
 /** Creates or updates a <meta> tag */
 function setMeta(attr, key, content) {

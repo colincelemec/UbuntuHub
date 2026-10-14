@@ -55,7 +55,6 @@
 }
 
 .sb-btn--whatsapp:hover { border-color: #25d366; color: #25d366; }
-.sb-btn--facebook:hover { border-color: #1877f2; color: #1877f2; }
 .sb-btn--email:hover    { border-color: var(--color-primary); color: var(--color-primary); }
 
 .sb-btn--copy.is-copied {

@@ -525,13 +525,57 @@ Let's be precise, because "free tiers" often hide limits.
 
 ### "The site loads but no data appears"
 
-This is almost always CORS. Open the console (F12) → **Console** tab. If you
-read `blocked by CORS policy`:
+Two very different causes. **Open the browser console (F12) first** — it tells
+you which one you are facing.
+
+**Cause 1 — CORS.** The Console tab shows `blocked by CORS policy`.
 
 - Check `CLIENT_URL` on Railway: it must match the browser address **exactly**
   (with or without `www`, using `https`)
 - No trailing slash
 - Redeploy the API after changing it
+
+**Cause 2 — the API is talking to the wrong database.** No error in the console,
+the Network tab shows a clean `200` response, and the payload is simply an empty
+array. The application is healthy; it is reading from a database that has the
+right tables and no rows.
+
+This happens when the database name in your configuration does not match the
+database that actually holds your data — a typo is enough. Because the API runs
+`prisma migrate deploy` at start-up, it will happily **create** the misspelled
+database, apply the migrations, and report success. A loud failure becomes a
+silent one.
+
+Diagnose it on the server that hosts the database:
+
+```bash
+# List the databases — do you see more than one that looks familiar?
+docker compose exec postgres psql -U postgres -c "\l"
+
+# Count the rows in the one you believe is in use
+docker compose exec postgres psql -U postgres -d YOUR_DB -c "SELECT count(*) FROM businesses;"
+```
+
+Then compare that name, character by character, with `POSTGRES_DB` in
+`server/.env` and with the `DATABASE_URL` your API actually receives:
+
+```bash
+docker compose config | grep DATABASE_URL
+```
+
+`docker compose config` prints the configuration **after variable substitution**,
+which is the only reliable way to see what the container really gets.
+
+Once the name is fixed, recreate the containers — environment variables are read
+only at start-up:
+
+```bash
+docker compose up -d --force-recreate
+```
+
+> ⚠️ **Never add `-v`** to that command while investigating. It deletes the
+> volumes, and with them your data. Delete the empty ghost database only once
+> the site is working again.
 
 ### 404 when reloading `/activities`
 
@@ -587,6 +631,17 @@ cd server && npm run db:migrate        # Prisma prompts for a migration name
 # 3. Push it — production applies it automatically
 git add prisma/migrations && git commit -m "…" && git push
 ```
+
+> **How migrations reach production.** The `start` script is
+> `prisma migrate deploy && node src/server.js`, so every deployment applies the
+> pending migrations before booting the server. Locally, the `api` service in
+> `docker-compose.yml` does the same through its `command`.
+>
+> This is convenient, but be aware of the trade-off: **applying migrations
+> automatically also creates the target database if it does not exist.** A
+> mistyped database name therefore produces a working application backed by an
+> empty database, instead of the clear connection error you would otherwise get.
+> See §13, "The site loads but no data appears".
 
 ### Read the logs
 

@@ -6,16 +6,16 @@
   "type": "commonjs",
   "scripts": {
     "start": "prisma migrate deploy && node src/server.js",
+    "migrate": "prisma migrate deploy",
     "dev": "nodemon src/server.js",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
-    "db:reset": "prisma migrate reset --force",
+    "db:reset": "echo '⛔ Cancella TUTTI i dati. Fai prima: npm run db:backup' && echo 'Poi, se sei sicuro: npx prisma migrate reset --force'",
     "db:generate": "prisma generate",
     "docker:up": "docker-compose up",
     "docker:up:build": "docker-compose up --build",
-    "docker:down": "docker-compose down",
-    "docker:down:volumes": "docker-compose down -v",
+    "docker:down": "docker compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:restart": "docker-compose restart",
     "docker:build": "docker-compose build",
@@ -27,8 +27,9 @@
     "test:watch": "jest --watch",
     "db:seed:cities": "node prisma/seeds/cities-italia.js",
     "db:migrate:baseline": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql && prisma migrate resolve --applied 0_init && prisma migrate status",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script"
+    "db:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script",
+    "db:backup": "docker compose exec -T postgres pg_dump -U postgres ${POSTGRES_DB:-ubuntuhub_db} > backups/$(date +%Y-%m-%d_%H%M).sql && ls -lh backups/ | tail -3",
+    "db:restore": "echo 'Uso: docker compose exec -T postgres psql -U postgres ubuntuhub_db < backups/NOME-FILE.sql'"
   },
   "keywords": [
     "express",

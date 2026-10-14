@@ -13,6 +13,7 @@ import usePageMeta from '../hooks/usePageMeta';
 import { getCategoryLabel } from '../utils/categoryLabel';
 import Icon from '../components/common/Icon';
 import SafeImage from '../components/common/SafeImage';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 import '../styles/BusinessDetail.css';
 
 // Fix leaflet default marker icons
@@ -68,6 +69,18 @@ const BusinessDetail = () => {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState('');
   const [reviewSuccess, setReviewSuccess] = useState('');
+
+  // Inline editing of your own review: `editingId` holds the review being
+  // edited, so at most one card is ever in edit mode.
+  const [editingId, setEditingId] = useState(null);
+  const [editRating, setEditRating] = useState(5);
+  const [editComment, setEditComment] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState('');
+
+  // The review awaiting delete confirmation (null = no dialog open)
+  const [reviewToDelete, setReviewToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [activeTab, setActiveTab] = useState('info');
   const [activeImage, setActiveImage] = useState(0);
@@ -151,6 +164,60 @@ const BusinessDetail = () => {
       setReviewError(isValidationError ? t('reviewError') : (err.message || t('reviewError')));
     } finally {
       setSubmittingReview(false);
+    }
+  };
+
+  // ── Editing your own review, in place on its card ──
+
+  const startEdit = (review) => {
+    setEditingId(review.id);
+    setEditRating(review.rating);
+    setEditComment(review.comment || '');
+    setEditError('');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditError('');
+  };
+
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+    if (!editComment.trim()) { setEditError(t('reviewEmpty')); return; }
+
+    setSavingEdit(true);
+    setEditError('');
+    try {
+      await api.put(`/reviews/${editingId}`, {
+        rating: editRating,
+        comment: editComment.trim(),
+      });
+      setEditingId(null);
+      toast.success(t('reviewUpdated'));
+      // The rating changed, so both the list and the average must be refetched.
+      fetchReviews(business.id);
+      fetchBusiness();
+    } catch (err) {
+      setEditError(err.message || t('reviewError'));
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleDeleteReview = async () => {
+    if (!reviewToDelete) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/reviews/${reviewToDelete.id}`);
+      setReviewToDelete(null);
+      toast.success(t('reviewDeleted'));
+      fetchReviews(business.id);
+      fetchBusiness();
+    } catch (err) {
+      toast.error(err.message || t('reviewDeleteError'));
+      setReviewToDelete(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -450,36 +517,90 @@ const BusinessDetail = () => {
               </div>
             ) : (
               <div className="bd-reviews-list">
-                {reviews.map(review => (
-                  <div key={review.id} className="bd-review-card">
-                    <div className="bd-review-header">
-                      <div className="bd-reviewer-avatar">
-                        {review.user?.avatar
-                          ? <img src={review.user.avatar} alt="" />
-                          : <span>{(review.user?.firstName?.[0] || '?').toUpperCase()}</span>
-                        }
+                {reviews.map(review => {
+                  const isMine = isAuthenticated && review.user?.id === user?.id;
+                  const isEditing = editingId === review.id;
+
+                  return (
+                    <div key={review.id} className={`bd-review-card ${isEditing ? 'is-editing' : ''}`}>
+                      <div className="bd-review-header">
+                        <div className="bd-reviewer-avatar">
+                          {review.user?.avatar
+                            ? <img src={review.user.avatar} alt="" />
+                            : <span>{(review.user?.firstName?.[0] || '?').toUpperCase()}</span>
+                          }
+                        </div>
+                        <div className="bd-reviewer-info">
+                          <strong>{review.user?.firstName} {review.user?.lastName}</strong>
+                          <span className="bd-review-date">
+                            {new Date(review.createdAt).toLocaleDateString('it-IT', {
+                              day: 'numeric', month: 'long', year: 'numeric'
+                            })}
+                            {review.updatedAt && review.updatedAt !== review.createdAt && (
+                              <> · {t('reviewEdited')}</>
+                            )}
+                          </span>
+                        </div>
+                        {/* While editing, the stars become the picker below */}
+                        {!isEditing && (
+                          <div className="bd-review-stars">
+                            <StarRating rating={review.rating} size="sm" />
+                          </div>
+                        )}
                       </div>
-                      <div className="bd-reviewer-info">
-                        <strong>{review.user?.firstName} {review.user?.lastName}</strong>
-                        <span className="bd-review-date">
-                          {new Date(review.createdAt).toLocaleDateString('it-IT', {
-                            day: 'numeric', month: 'long', year: 'numeric'
-                          })}
-                        </span>
-                      </div>
-                      <div className="bd-review-stars">
-                        <StarRating rating={review.rating} size="sm" />
-                      </div>
+
+                      {isEditing ? (
+                        <form className="bd-review-edit" onSubmit={handleUpdateReview}>
+                          <div className="bd-review-form-rating">
+                            <label>{t('rating')}</label>
+                            <StarPicker value={editRating} onChange={setEditRating} />
+                          </div>
+                          <textarea
+                            className="bd-review-textarea"
+                            value={editComment}
+                            onChange={e => setEditComment(e.target.value)}
+                            rows={3}
+                            required
+                          />
+                          {editError && <p className="bd-form-error">{editError}</p>}
+                          <div className="bd-review-form-actions">
+                            <button type="button" className="bd-cancel-btn" onClick={cancelEdit}>
+                              {t('cancel')}
+                            </button>
+                            <button type="submit" className="bd-submit-btn" disabled={savingEdit}>
+                              {savingEdit ? t('saving') : t('save')}
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <>
+                          <p className="bd-review-comment">{review.comment}</p>
+                          {isMine && (
+                            <div className="bd-review-actions">
+                              <button type="button" className="bd-review-action" onClick={() => startEdit(review)}>
+                                <Icon name="pen" size={14} /> {t('editReview')}
+                              </button>
+                              <button
+                                type="button"
+                                className="bd-review-action bd-review-action--danger"
+                                onClick={() => setReviewToDelete(review)}
+                              >
+                                <Icon name="trash" size={14} /> {t('deleteReview')}
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {review.response && (
+                        <div className="bd-owner-response">
+                          <strong>{t('ownerResponse')}</strong>
+                          <p>{review.response}</p>
+                        </div>
+                      )}
                     </div>
-                    <p className="bd-review-comment">{review.comment}</p>
-                    {review.response && (
-                      <div className="bd-owner-response">
-                        <strong>{t('ownerResponse')}</strong>
-                        <p>{review.response}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -520,6 +641,18 @@ const BusinessDetail = () => {
           </div>
         )}
       </div>
+
+      {/* Deleting a review is irreversible: always ask first */}
+      <ConfirmDialog
+        open={Boolean(reviewToDelete)}
+        icon="trash"
+        title={t('deleteReviewTitle')}
+        message={t('deleteReviewMessage')}
+        yesLabel={deleting ? t('deleting') : t('deleteReview')}
+        cancelLabel={t('cancel')}
+        onConfirm={handleDeleteReview}
+        onCancel={() => setReviewToDelete(null)}
+      />
     </div>
   );
 };

@@ -1084,6 +1084,39 @@ export const translations = {
       loginToReview: { en: "to leave a review.", fr: "pour laisser un avis.", it: "per lasciare una recensione." },
       login: { en: "Sign in", fr: "Connectez-vous", it: "Accedi" },
 
+      // ── Editing and deleting your own review ──
+      editReview: { en: "Edit", fr: "Modifier", it: "Modifica" },
+      deleteReview: { en: "Delete", fr: "Supprimer", it: "Elimina" },
+      save: { en: "Save", fr: "Enregistrer", it: "Salva" },
+      saving: { en: "Saving…", fr: "Enregistrement…", it: "Salvataggio…" },
+      deleting: { en: "Deleting…", fr: "Suppression…", it: "Eliminazione…" },
+      reviewEdited: { en: "edited", fr: "modifié", it: "modificata" },
+      reviewUpdated: {
+        en: "Your review has been updated.",
+        fr: "Votre avis a été mis à jour.",
+        it: "La tua recensione è stata aggiornata."
+      },
+      reviewDeleted: {
+        en: "Your review has been deleted.",
+        fr: "Votre avis a été supprimé.",
+        it: "La tua recensione è stata eliminata."
+      },
+      reviewDeleteError: {
+        en: "The review could not be deleted.",
+        fr: "L'avis n'a pas pu être supprimé.",
+        it: "Non è stato possibile eliminare la recensione."
+      },
+      deleteReviewTitle: {
+        en: "Delete this review?",
+        fr: "Supprimer cet avis ?",
+        it: "Eliminare questa recensione?"
+      },
+      deleteReviewMessage: {
+        en: "This cannot be undone. The business rating will be recalculated.",
+        fr: "Cette action est irréversible. La note de l'activité sera recalculée.",
+        it: "L'operazione è irreversibile. La valutazione dell'attività verrà ricalcolata."
+      },
+
       // Map
       noCoords: {
         en: "GPS coordinates not available for this business.",
@@ -1095,7 +1128,6 @@ export const translations = {
       // ── Sharing ──
       share: { en: "Share", fr: "Partager", it: "Condividi" },
       shareWhatsapp: { en: "Share on WhatsApp", fr: "Partager sur WhatsApp", it: "Condividi su WhatsApp" },
-      shareFacebook: { en: "Share on Facebook", fr: "Partager sur Facebook", it: "Condividi su Facebook" },
       shareEmail: { en: "Share by email", fr: "Partager par email", it: "Condividi via email" },
       copyLink: { en: "Copy link", fr: "Copier le lien", it: "Copia link" },
       linkCopied: { en: "Link copied!", fr: "Lien copié !", it: "Link copiato!" },
