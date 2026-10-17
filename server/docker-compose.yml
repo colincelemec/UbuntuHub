@@ -21,23 +21,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis Cache (optionnel, pour les sessions et cache)
-  redis:
-    image: redis:7-alpine
-    container_name: ubuntuhub_redis
-    restart: unless-stopped
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - ubuntuhub_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Node.js API
   api:
     build:
@@ -51,7 +34,6 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: ${PORT:-5000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-ubuntuhub_db}?schema=public
-      REDIS_URL: redis://redis:6379
     ports:
       - "${API_PORT:-5001}:5000"
     volumes:
@@ -64,8 +46,6 @@ services:
       - uploads:/app/uploads
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     networks:
       - ubuntuhub_network
@@ -104,8 +84,6 @@ services:
 # Volumes persistants
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
     driver: local
   uploads:
     driver: local

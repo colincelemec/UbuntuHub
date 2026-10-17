@@ -132,9 +132,9 @@ const authService = {
    * @param {string} idToken - Google ID token from @react-oauth/google
    * @returns {Promise} User data with token
    */
-  googleLogin: async (accessToken) => {
+  googleLogin: async (idToken) => {
     try {
-      const response = normalizeAuthResponse(await api.post('/auth/google', { accessToken }));
+      const response = normalizeAuthResponse(await api.post('/auth/google', { idToken }));
 
       if (response.token) {
         localStorage.setItem('token', response.token);

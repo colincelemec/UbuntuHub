@@ -4,6 +4,15 @@
 
 jest.mock('@prisma/client', () => require('./helpers/mockPrisma').prismaClientMock);
 
+// Google ID token verification is stubbed: no network call to Google
+jest.mock('google-auth-library', () => {
+  const verifyIdToken = jest.fn();
+  return {
+    OAuth2Client: jest.fn(() => ({ verifyIdToken })),
+    __verifyIdToken: verifyIdToken,
+  };
+});
+
 const request = require('supertest');
 const bcrypt = require('bcryptjs');
 const app = require('../src/app');
@@ -115,5 +124,105 @@ describe('GET /api/auth/me', () => {
   it('refuse sans token (401)', async () => {
     const res = await request(app).get('/api/auth/me');
     expect(res.status).toBe(401);
+  });
+});
+
+// ============================================
+// POST /api/auth/google — ID token verification
+// ============================================
+
+describe('POST /api/auth/google', () => {
+  const { __verifyIdToken: verifyIdToken } = require('google-auth-library');
+
+  const googlePayload = (overrides = {}) => ({
+    sub: 'google-sub-123',
+    email: 'mario@gmail.com',
+    email_verified: true,
+    given_name: 'Mario',
+    family_name: 'Rossi',
+    picture: 'https://example.com/a.png',
+    ...overrides,
+  });
+
+  const ticketFor = (payload) => ({ getPayload: () => payload });
+
+  beforeEach(() => verifyIdToken.mockReset());
+
+  it('rifiuta la richiesta senza ID token (400)', async () => {
+    const res = await request(app).post('/api/auth/google').send({});
+    expect(res.status).toBe(400);
+    expect(verifyIdToken).not.toHaveBeenCalled();
+  });
+
+  it("verifica il token indicando il client ID di UbuntuHub come audience", async () => {
+    verifyIdToken.mockResolvedValue(ticketFor(googlePayload()));
+    mockPrisma.user.findUnique.mockResolvedValue(null);
+    mockPrisma.user.create.mockResolvedValue({ id: 'u_g', email: 'mario@gmail.com' });
+
+    await request(app).post('/api/auth/google').send({ idToken: 'tok' });
+
+    expect(verifyIdToken).toHaveBeenCalledWith({
+      idToken: 'tok',
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+  });
+
+  it("rifiuta un token emesso per un'altra applicazione (401) senza toccare il database", async () => {
+    verifyIdToken.mockRejectedValue(new Error('Wrong recipient, payload audience != requiredAudience'));
+
+    const res = await request(app).post('/api/auth/google').send({ idToken: 'tok-altra-app' });
+
+    expect(res.status).toBe(401);
+    expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("non collega un account esistente se l'email non è verificata da Google (401)", async () => {
+    verifyIdToken.mockResolvedValue(ticketFor(googlePayload({ email_verified: false })));
+
+    const res = await request(app).post('/api/auth/google').send({ idToken: 'tok' });
+
+    expect(res.status).toBe(401);
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
+    expect(mockPrisma.user.create).not.toHaveBeenCalled();
+  });
+
+  it("collega l'account esistente con la stessa email verificata (200)", async () => {
+    verifyIdToken.mockResolvedValue(ticketFor(googlePayload()));
+    mockPrisma.user.findUnique
+      .mockResolvedValueOnce(null) // nessun utente con questo googleId
+      .mockResolvedValueOnce({ id: 'user_1', email: 'mario@gmail.com', googleId: null, avatar: null });
+    mockPrisma.user.update.mockResolvedValue({ id: 'user_1', email: 'mario@gmail.com', googleId: 'google-sub-123' });
+
+    const res = await request(app).post('/api/auth/google').send({ idToken: 'tok' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.token).toBeDefined();
+    expect(mockPrisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'user_1' } })
+    );
+  });
+
+  it("rifiuta un'email già collegata a un altro account Google (409)", async () => {
+    verifyIdToken.mockResolvedValue(ticketFor(googlePayload()));
+    mockPrisma.user.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: 'user_1', email: 'mario@gmail.com', googleId: 'altro-sub' });
+
+    const res = await request(app).post('/api/auth/google').send({ idToken: 'tok' });
+
+    expect(res.status).toBe(409);
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it('crea un nuovo utente al primo accesso (200)', async () => {
+    verifyIdToken.mockResolvedValue(ticketFor(googlePayload()));
+    mockPrisma.user.findUnique.mockResolvedValue(null);
+    mockPrisma.user.create.mockResolvedValue({ id: 'u_new', email: 'mario@gmail.com' });
+
+    const res = await request(app).post('/api/auth/google').send({ idToken: 'tok' });
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.user.create).toHaveBeenCalled();
   });
 });

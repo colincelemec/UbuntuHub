@@ -43,13 +43,12 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ubuntuhub_db?schema=
 
 ## Available services
 
-`docker-compose.yml` defines four services. You rarely need more than the
+`docker-compose.yml` defines three services. You rarely need more than the
 first one.
 
 | Service | Port | Purpose |
 |---|---|---|
 | `postgres` | 5432 | The database — **the only one you normally need** |
-| `redis` | 6379 | Cache, reserved for future use |
 | `api` | 5001 | The API inside a container (alternative to `npm run dev`) |
 | `prisma-studio` | 5555 | Visual database browser |
 

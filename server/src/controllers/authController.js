@@ -5,7 +5,7 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
+const { OAuth2Client } = require('google-auth-library');
 const emailService = require('../services/emailService');
 const { devDetails } = require('../utils/errorResponse');
 
@@ -268,52 +268,87 @@ exports.updatePassword = async (req, res) => {
   }
 };
 
+// Google client used only to verify ID tokens (no secret needed:
+// verification relies on Google's public signing keys)
+const googleClient = new OAuth2Client();
+
 /**
  * POST /api/auth/google
- * Google sign-in — receives the access token and checks it against Google userinfo
+ * Google sign-in. The client sends the ID token issued by Google
+ * Identity Services; the server verifies it before trusting anything:
+ *   - signature and expiry, against Google's public keys;
+ *   - audience: the token must have been issued for UbuntuHub's own
+ *     client ID, so a token obtained by another application is refused;
+ *   - email_verified: an existing account is linked by email only when
+ *     Google certifies that the address belongs to the user.
  */
 exports.googleAuth = async (req, res) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({ success: false, message: 'Token Google mancante' });
+  }
+
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    console.error('GOOGLE_CLIENT_ID non configurato: accesso Google disattivato');
+    return res.status(503).json({ success: false, message: 'Accesso con Google non configurato' });
+  }
+
+  // 1. Verify the token: signature, expiry and audience
+  let payload;
   try {
-    const { accessToken } = req.body;
-
-    if (!accessToken) {
-      return res.status(400).json({ success: false, message: 'Token Google mancante' });
-    }
-
-    // Fetch the user details from Google with the access token
-    const googleRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: { Authorization: `Bearer ${accessToken}` },
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
+    payload = ticket.getPayload();
+  } catch (error) {
+    return res.status(401).json({ success: false, message: 'Token Google non valido' });
+  }
 
-    const { sub: googleId, email, given_name: firstName, family_name: lastName, picture: avatar } = googleRes.data;
+  const {
+    sub: googleId,
+    email,
+    email_verified: emailVerified,
+    given_name: firstName,
+    family_name: lastName,
+    picture: avatar,
+  } = payload;
 
-    if (!email) {
-      return res.status(400).json({ success: false, message: 'Email non disponibile nel profilo Google' });
-    }
+  // 2. Only an address verified by Google may identify the user
+  if (!email || emailVerified !== true) {
+    return res.status(401).json({ success: false, message: 'Email Google non verificata' });
+  }
 
-    // Look for an existing user by googleId or email
-    let user = await prisma.user.findFirst({
-      where: { OR: [{ googleId }, { email }] },
-    });
+  try {
+    // 3. Same Google account already known?
+    let user = await prisma.user.findUnique({ where: { googleId } });
 
-    if (user) {
-      // Link the googleId when the user exists but has none yet
-      if (!user.googleId) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { googleId, avatar: user.avatar || avatar, isVerified: true },
-        });
+    if (!user) {
+      // 4. Existing account with the same (verified) email: link it
+      const byEmail = await prisma.user.findUnique({ where: { email } });
+
+      if (byEmail && byEmail.googleId && byEmail.googleId !== googleId) {
+        // The address is already linked to a different Google account
+        return res.status(409).json({ success: false, message: 'Email già collegata a un altro account Google' });
       }
-    } else {
-      // Create a new Google user
-      user = await prisma.user.create({
-        data: { email, googleId, firstName, lastName, avatar, isVerified: true },
-      });
 
-      // Welcome email for the new Google user (non-blocking)
-      emailService
-        .sendWelcomeEmail(user, pickLang(req.body.lang))
-        .catch((err) => console.error('Email de bienvenue (Google) non envoyé:', err.message));
+      if (byEmail) {
+        user = await prisma.user.update({
+          where: { id: byEmail.id },
+          data: { googleId, avatar: byEmail.avatar || avatar, isVerified: true },
+        });
+      } else {
+        // 5. Brand-new user
+        user = await prisma.user.create({
+          data: { email, googleId, firstName, lastName, avatar, isVerified: true },
+        });
+
+        // Welcome email (non-blocking)
+        emailService
+          .sendWelcomeEmail(user, pickLang(req.body.lang))
+          .catch((err) => console.error('Email di benvenuto (Google) non inviata:', err.message));
+      }
     }
 
     const token = generateToken(user.id);
@@ -326,6 +361,10 @@ exports.googleAuth = async (req, res) => {
     });
   } catch (error) {
     console.error('Errore Google Auth:', error);
-    res.status(401).json({ success: false, message: 'Token Google non valido' });
+    res.status(500).json({
+      success: false,
+      message: "Errore durante l'accesso con Google",
+      ...devDetails(error),
+    });
   }
 };

@@ -194,6 +194,7 @@ In the API service → **Variables** tab → **New Variable** for each:
 | `JWT_SECRET` | your secret from step 2.1 | ⚠️ never reuse it elsewhere |
 | `JWT_EXPIRES_IN` | `7d` | session lifetime |
 | `CLIENT_URL` | `https://ubuntuhub.com,https://www.ubuntuhub.com` | see box below |
+| `GOOGLE_CLIENT_ID` | the same OAuth client ID as `REACT_APP_GOOGLE_CLIENT_ID` | ⚠️ without it Google sign-in answers 503 |
 | `EMAIL_FROM` | `UbuntuHub <no-reply@ubuntuhub.com>` | |
 | `SMTP_HOST` | `smtp-relay.brevo.com` | step 8 |
 | `SMTP_PORT` | `587` | |
@@ -430,6 +431,11 @@ declare the real domain, otherwise the "Continue with Google" button will fail.
    - `https://www.ubuntuhub.com`
 4. **Authorized redirect URIs** → add the same addresses
 5. Save (changes can take a few minutes to apply)
+6. Make sure **the same client ID** is set in two places: `REACT_APP_GOOGLE_CLIENT_ID`
+   on Vercel and `GOOGLE_CLIENT_ID` on Railway. The API verifies that every Google
+   ID token was issued for this client ID (the token's *audience*): a token obtained
+   by any other application is rejected, and so is any Google account whose email
+   is not verified.
 
 ---
 
@@ -605,8 +611,11 @@ The brute-force protection did its job (5 login attempts per 15 minutes). Wait
 
 ### Google sign-in fails
 
-The production domain is not declared in the Google Cloud console (step 9).
-The exact error appears in the browser console.
+- The production domain is not declared in the Google Cloud console (step 9).
+  The exact error appears in the browser console.
+- The API answers **503**: `GOOGLE_CLIENT_ID` is missing on Railway.
+- The API answers **401 "Token Google non valido"**: the two client IDs (Vercel and
+  Railway) are different, so the token's audience does not match.
 
 ---
 

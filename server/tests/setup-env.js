@@ -3,6 +3,7 @@ process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-secret-key';
 process.env.JWT_EXPIRES_IN = '1h';
 process.env.CLIENT_URL = 'http://localhost:3000';
+process.env.GOOGLE_CLIENT_ID = 'test-client-id.apps.googleusercontent.com';
 // SMTP is deliberately disabled: the service falls back to console output.
 // They are set to '' (falsy) BEFORE dotenv loads: dotenv never overwrites
 // existing variables, so the local .env cannot switch them back on.

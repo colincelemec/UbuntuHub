@@ -55,10 +55,10 @@ const useAuthStore = create((set) => ({
   /**
    * Login with Google
    */
-  googleLogin: async (accessToken) => {
+  googleLogin: async (idToken) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await authService.googleLogin(accessToken);
+      const response = await authService.googleLogin(idToken);
       set({
         user: response.user,
         isAuthenticated: true,
